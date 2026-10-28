@@ -103,15 +103,15 @@ namespace DTT_AutoCAD_Plugin.UI
         {
             try
             {
-                _paletteSet = new PaletteSet("DTT CAD TOOLSET - 3D NATIVE PRO", PaletteGuid)
+                _paletteSet = new PaletteSet("DTT CAD MASTER - PRO AUTOMATION", PaletteGuid)
                 {
                     Style = PaletteSetStyles.ShowAutoHideButton |
                             PaletteSetStyles.ShowCloseButton |
                             PaletteSetStyles.ShowPropertiesMenu,
-                    Dock = DockSides.Right, // Neo cố định bên phải màn hình AutoCAD
+                    Dock = DockSides.Left, // Neo cố định bên trái màn hình AutoCAD làm bảng điều khiển trung tâm duy nhất
                     DockEnabled = DockSides.Left | DockSides.Right,
                     MinimumSize = new Size(300, 500),
-                    Size = new Size(340, 760)
+                    Size = new Size(360, 780)
                 };
 
                 _paletteView = new DTT_PaletteView();
@@ -121,7 +121,7 @@ namespace DTT_AutoCAD_Plugin.UI
                     Child = _paletteView
                 };
 
-                _paletteSet.Add("Trung Tâm Công Cụ DTT", _elementHost);
+                _paletteSet.Add("DTT CAD MASTER", _elementHost);
                 _paletteSet.KeepFocus = false; // Tránh cướp phím gõ lệnh của AutoCAD
                 return true;
             }

@@ -337,7 +337,14 @@ namespace DTT_AutoCAD_Plugin.Modules
                         return false;
                     }
 
-                    // 3. Yêu cầu người dùng chỉ định điểm chèn (Editor.GetPoint)
+                    // 3. Tự động tính toán Scale Factor phù hợp đơn vị/DIMSCALE/khung nhìn
+                    double effectiveScale = CadUtils.CalculateAutoSymbolScale(db, scale);
+                    if (Math.Abs(effectiveScale - 1.0) > 0.001)
+                    {
+                        ed.WriteMessage($"\n📏 [DTools Pro] Tỷ lệ Scale tự động: {effectiveScale:F2}x (căn cứ theo đơn vị bản vẽ / DIMSCALE / Viewport)");
+                    }
+
+                    // 4. Yêu cầu người dùng chỉ định điểm chèn (Editor.GetPoint)
                     PromptPointOptions ppo = new PromptPointOptions($"\n📍 [DTools] Click chọn điểm đặt ký hiệu [{sym.NameVi}] [Enter/Esc để kết thúc]: ");
                     ppo.AllowNone = true;
 
@@ -360,7 +367,7 @@ namespace DTT_AutoCAD_Plugin.Modules
 
                             BlockReference br = new BlockReference(insertPt, blockId)
                             {
-                                ScaleFactors = new Scale3d(scale > 0 ? scale : 1.0),
+                                ScaleFactors = new Scale3d(effectiveScale),
                                 Rotation = rotationDeg * (Math.PI / 180.0),
                                 LayerId = symbolLayer
                             };
@@ -370,12 +377,16 @@ namespace DTT_AutoCAD_Plugin.Modules
                             tr.Commit();
                         }
 
+                        // Cập nhật tức thì hiển thị đồ họa và con trỏ
+                        CadUtils.RefreshScreenAndGraphics(ed);
+
                         count++;
                         ppo.Message = $"\n📍 [DTools] Đã đặt {count} ký hiệu [{sym.NameVi}]. Click điểm tiếp theo [Enter/Esc để kết thúc]: ";
                     }
 
                     if (count > 0)
                     {
+                        CadUtils.RefreshScreenAndGraphics(ed);
                         ed.WriteMessage($"\n✅ [DTools Pro] Đã hoàn thành chèn {count} ký hiệu [{sym.NameVi}] vào bản vẽ.\n");
                     }
 
@@ -457,9 +468,10 @@ namespace DTT_AutoCAD_Plugin.Modules
                     short layerColor = (item.Category == "ARCH") ? (short)3 : (short)2; // 2: Yellow, 3: Green
                     ObjectId symbolLayer = CadUtils.GetOrCreateLayer(db, layerName, layerColor, LineWeight.LineWeight025);
 
+                    double effectiveScale = CadUtils.CalculateAutoSymbolScale(db, scale);
                     BlockReference br = new BlockReference(insertPt, blockId)
                     {
-                        ScaleFactors = new Scale3d(scale > 0 ? scale : 1.0),
+                        ScaleFactors = new Scale3d(effectiveScale),
                         Rotation = rotationDeg * (Math.PI / 180.0),
                         LayerId = symbolLayer
                     };
@@ -470,6 +482,7 @@ namespace DTT_AutoCAD_Plugin.Modules
                     tr.Commit();
                 }
 
+                CadUtils.RefreshScreenAndGraphics(ed);
                 ed.WriteMessage($"\n✅ [DTools Pro] Đã chèn ký hiệu: {item.NameVi} tại ({insertPt.X:F1}, {insertPt.Y:F1})\n");
                 return true;
             }

@@ -1197,6 +1197,42 @@
                             </WrapPanel>
                         </Border>
 
+                        <!-- CỬA SỔ XEM TRƯỚC HÌNH HỌC KÝ HIỆU (DWG THUMBNAIL PREVIEW) -->
+                        <Border x:Name="BorderSymbolPreview" Background="#0F172A" CornerRadius="8" BorderBrush="#0284C7" BorderThickness="1.2" Margin="0,3,0,6" Padding="6">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="110"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- Header Preview: Tên ký hiệu và danh mục -->
+                                <DockPanel Grid.Row="0" Margin="0,0,0,4">
+                                    <Border Background="#1E293B" CornerRadius="3" Padding="4,1" DockPanel.Dock="Right">
+                                        <TextBlock x:Name="TxtPreviewCategory" Text="[XEM TRƯỚC]" FontSize="8.5" FontWeight="Bold" Foreground="#38BDF8"/>
+                                    </Border>
+                                    <TextBlock x:Name="TxtPreviewTitle" Text="Di chuột hoặc bấm ký hiệu để xem trước" FontSize="10.5" FontWeight="SemiBold" Foreground="#F8FAFC" TextTrimming="CharacterEllipsis"/>
+                                </DockPanel>
+
+                                <!-- Vùng hiển thị Thumbnail / Vector preview -->
+                                <Border Grid.Row="1" Background="#020617" CornerRadius="5" ClipToBounds="True" BorderBrush="#1E293B" BorderThickness="1">
+                                    <Grid>
+                                        <Image x:Name="ImgSymbolThumbnail" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality" Margin="4"/>
+                                        <StackPanel x:Name="GridThumbnailPlaceholder" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Visible">
+                                            <TextBlock x:Name="TxtThumbnailIcon" Text="⚡" FontSize="36" HorizontalAlignment="Center"/>
+                                            <TextBlock x:Name="TxtThumbnailSub" Text="Ký hiệu chuẩn IEC" FontSize="9" Foreground="#64748B" HorizontalAlignment="Center" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Footer Preview: Thông số & kích thước -->
+                                <DockPanel Grid.Row="2" Margin="0,4,0,0">
+                                    <TextBlock x:Name="TxtPreviewDwg" Text="AutoCAD 2021" FontSize="8.5" Foreground="#10B981" FontWeight="SemiBold" DockPanel.Dock="Right"/>
+                                    <TextBlock x:Name="TxtPreviewSpec" Text="Ký hiệu chuẩn IEC / TCVN" FontSize="8.5" Foreground="#94A3B8" TextTrimming="CharacterEllipsis"/>
+                                </DockPanel>
+                            </Grid>
+                        </Border>
+
                         <!-- DANH SÁCH GRID KÝ HIỆU DẠNG CARD TRỰC QUAN -->
                         <WrapPanel x:Name="SymbolsGridPanel" Margin="0,2,0,8"/>
                     </StackPanel>

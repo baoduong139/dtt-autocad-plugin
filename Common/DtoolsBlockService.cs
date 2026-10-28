@@ -565,6 +565,9 @@ namespace DTT_AutoCAD_Plugin.Common
                     }
 
                     // 3. Yêu cầu người dùng chỉ định điểm chèn (Editor.GetPoint)
+                    double autoScale = CadUtils.CalculateAutoSymbolScale(db, 1.0);
+                    Scale3d blockScale = (width > 0 || height > 0) ? new Scale3d(1, 1, 1) : new Scale3d(autoScale);
+
                     PromptPointOptions ppo = new PromptPointOptions($"\n📍 [DTools] Click chọn điểm đặt Block '{cleanName}' [Enter/Esc để kết thúc]: ");
                     ppo.AllowNone = true;
 
@@ -574,7 +577,7 @@ namespace DTT_AutoCAD_Plugin.Common
                         PromptPointResult ppr = ed.GetPoint(ppo);
                         if (ppr.Status != PromptStatus.OK) break;
 
-                        ObjectId blkRefId = InsertBlockReference(db, btrId, ppr.Value, new Scale3d(1, 1, 1), 0.0);
+                        ObjectId blkRefId = InsertBlockReference(db, btrId, ppr.Value, blockScale, 0.0);
                         if (!blkRefId.IsNull)
                         {
                             // Gán thuộc tính dynamic block nếu có
@@ -594,6 +597,9 @@ namespace DTT_AutoCAD_Plugin.Common
                                 FlipDynamicBlock(blkRefId);
                             }
 
+                            // Cập nhật hiển thị đồ họa tức thì
+                            CadUtils.RefreshScreenAndGraphics(ed);
+
                             count++;
                             ppo.Message = $"\n📍 [DTools] Đã đặt {count} block '{cleanName}'. Click điểm tiếp theo [Enter/Esc để kết thúc]: ";
                         }
@@ -606,6 +612,7 @@ namespace DTT_AutoCAD_Plugin.Common
 
                     if (count > 0)
                     {
+                        CadUtils.RefreshScreenAndGraphics(ed);
                         ed.WriteMessage($"\n✅ [DTools Pro] Đã hoàn thành chèn {count} block '{cleanName}'.\n");
                     }
 

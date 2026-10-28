@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
@@ -153,6 +155,179 @@ namespace DTT_AutoCAD_Plugin.Common
                     doc.Window.Focus();
                 }
             }
+        }
+
+        private static readonly Dictionary<string, System.Windows.Media.ImageSource> _thumbnailCache =
+            new Dictionary<string, System.Windows.Media.ImageSource>(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// Đọc trực tiếp block thumbnail từ file .dwg trong thư mục Symbols (Database.ReadDwgFile + Database.ThumbnailBitmap)
+        /// Cung cấp bộ nhớ đệm cache tự động để tối ưu hiệu năng và RAM
+        /// </summary>
+        public static System.Windows.Media.ImageSource GetDwgThumbnail(string dwgPath)
+        {
+            if (string.IsNullOrEmpty(dwgPath) || !File.Exists(dwgPath))
+                return null;
+
+            lock (_thumbnailCache)
+            {
+                if (_thumbnailCache.TryGetValue(dwgPath, out var cached))
+                    return cached;
+            }
+
+            try
+            {
+                using (Database extDb = new Database(false, true))
+                {
+                    extDb.ReadDwgFile(dwgPath, FileOpenMode.OpenForReadAndAllShare, true, "");
+                    using (System.Drawing.Bitmap bmp = extDb.ThumbnailBitmap)
+                    {
+                        if (bmp != null)
+                        {
+                            using (var ms = new MemoryStream())
+                            {
+                                bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+                                ms.Position = 0;
+                                var bi = new System.Windows.Media.Imaging.BitmapImage();
+                                bi.BeginInit();
+                                bi.CacheOption = System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;
+                                bi.StreamSource = ms;
+                                bi.EndInit();
+                                bi.Freeze();
+
+                                lock (_thumbnailCache)
+                                {
+                                    _thumbnailCache[dwgPath] = bi;
+                                }
+                                return bi;
+                            }
+                        }
+                    }
+                }
+            }
+            catch { }
+
+            lock (_thumbnailCache)
+            {
+                _thumbnailCache[dwgPath] = null;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Tự động tính toán Scale Factor tối ưu cho ký hiệu dựa trên:
+        /// 1. Đơn vị bản vẽ (INSUNITS: Millimeters, Meters, Inches, v.v.)
+        /// 2. Tỷ lệ kích thước DIMSCALE
+        /// 3. Tỷ lệ ghi chú CANNOSCALE (Annotation Scale)
+        /// 4. Kích thước khung nhìn hiện tại (VIEWSIZE)
+        /// </summary>
+        public static double CalculateAutoSymbolScale(Database db, double userScale = 1.0, double baseSymbolSize = 50.0)
+        {
+            if (db == null) return userScale > 0 ? userScale : 1.0;
+
+            double scaleFactor = userScale > 0 ? userScale : 1.0;
+
+            try
+            {
+                // Áp dụng cấu hình mặc định nếu có
+                if (DTools.Core.DToolsConfiguration.DefaultSymbolScale > 0 && Math.Abs(scaleFactor - 1.0) < 0.001)
+                {
+                    scaleFactor = DTools.Core.DToolsConfiguration.DefaultSymbolScale;
+                }
+
+                // 1. Kiểm tra đơn vị bản vẽ INSUNITS
+                UnitsValue units = db.Insunits;
+
+                // 2. Lấy tỷ lệ DIMSCALE
+                double dimScale = db.Dimscale;
+
+                // 3. Lấy Annotation Scale (CANNOSCALE)
+                try
+                {
+                    var annoScale = db.Cannoscale;
+                    if (annoScale != null && annoScale.Scale > 0 && annoScale.Scale < 1.0)
+                    {
+                        double annoFactor = 1.0 / annoScale.Scale;
+                        if (annoFactor > dimScale)
+                        {
+                            dimScale = annoFactor;
+                        }
+                    }
+                }
+                catch { }
+
+                // 4. Nếu bản vẽ đặt đơn vị là METERS (UnitsValue.Meters = 6)
+                if (units == UnitsValue.Meters)
+                {
+                    if (dimScale > 1.0)
+                    {
+                        scaleFactor = scaleFactor * (dimScale * 0.001);
+                    }
+                    else
+                    {
+                        scaleFactor = scaleFactor * 0.001;
+                    }
+                    if (scaleFactor < 0.005) scaleFactor = 0.005;
+                    return scaleFactor;
+                }
+
+                // 5. Nếu bản vẽ là MILLIMETERS (4) hoặc UNITLESS (0)
+                if (userScale != 1.0 && userScale > 0)
+                {
+                    scaleFactor = userScale;
+                }
+                else if (dimScale > 1.0 && dimScale <= 1000.0)
+                {
+                    scaleFactor = dimScale;
+                }
+                else
+                {
+                    try
+                    {
+                        object vsObj = Application.GetSystemVariable("VIEWSIZE");
+                        if (vsObj != null)
+                        {
+                            double viewSize = Convert.ToDouble(vsObj);
+                            if (viewSize > 2500.0)
+                            {
+                                double sensibleScale = Math.Round(viewSize * 0.035 / (baseSymbolSize > 0 ? baseSymbolSize : 50.0));
+                                if (sensibleScale >= 2.0 && sensibleScale <= 500.0)
+                                {
+                                    scaleFactor = sensibleScale;
+                                }
+                            }
+                        }
+                    }
+                    catch { }
+                }
+            }
+            catch { }
+
+            return Math.Max(0.001, scaleFactor);
+        }
+
+        /// <summary>
+        /// Cập nhật đồ họa hiển thị bản vẽ tức thì bằng FlushGraphics(), Regen() và UpdateScreen()
+        /// </summary>
+        public static void RefreshScreenAndGraphics(Editor ed)
+        {
+            try
+            {
+                Autodesk.AutoCAD.Internal.Utils.FlushGraphics();
+            }
+            catch { }
+
+            try
+            {
+                ed?.Regen();
+            }
+            catch { }
+
+            try
+            {
+                ed?.UpdateScreen();
+            }
+            catch { }
         }
     }
 }

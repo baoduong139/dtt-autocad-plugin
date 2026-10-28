@@ -225,7 +225,7 @@ namespace DTT_AutoCAD_Plugin
                 }
                 catch { }
 
-                // 2. Luôn mở thanh công cụ Palette DTT bên phải màn hình (không toggle ẩn)
+                // 2. Luôn mở thanh công cụ Palette DTT bên trái màn hình (Bảng điều khiển trung tâm duy nhất)
                 try
                 {
                     DttPaletteManager.ShowPalette();
@@ -235,25 +235,35 @@ namespace DTT_AutoCAD_Plugin
                 if (ed != null)
                 {
                     ed.WriteMessage("\n=======================================================");
-                    ed.WriteMessage("\n⚡ [DTT TOOLS] HỆ THỐNG MENU & BẢNG CÔNG CỤ ĐÃ SẴN SÀNG:");
-                    ed.WriteMessage("\n  1. MenuBar: Đã nạp 'DTools Pro' trên đỉnh AutoCAD (MENUBAR=1).");
-                    ed.WriteMessage("\n  2. Palette: Đang hiển thị bảng điều khiển bên phải màn hình.");
-                    ed.WriteMessage("\n  3. Menu Popup: Đang hiển thị hộp thoại chọn công cụ trung tâm.");
+                    ed.WriteMessage("\n⚡ [DTT CAD MASTER] BẢNG ĐIỀU KHIỂN TRUNG TÂM ĐÃ SẴN SÀNG:");
+                    ed.WriteMessage("\n  1. Palette: Đang hiển thị bảng điều khiển bên trái màn hình.");
+                    ed.WriteMessage("\n  2. MenuBar: 'DTools Pro' trên đỉnh màn hình AutoCAD.");
+                    ed.WriteMessage("\n  3. Popup Menu: Gõ 'DTT_POPUP' nếu cần mở hộp thoại tổng hợp.");
                     ed.WriteMessage("\n=======================================================\n");
                 }
 
-                // 3. Hiển thị Menu Trung Tâm Tổng Hợp (Quick Menu Dialog)
-                try
-                {
-                    DTT_QuickMenuDialog.ShowMainMenu();
-                }
-                catch { }
+                // Đã tắt tự động Show cửa sổ Quick Menu Dialog (tránh popup che khuất màn hình vẽ)
             }
             catch (System.Exception ex)
             {
                 DToolsLogger.LogError("PaletteCommand", "Lỗi khi gọi lệnh DTT/DTOOLS", ex);
                 Application.DocumentManager.MdiActiveDocument?.Editor?.WriteMessage(
-                    $"\n[DTools ERROR] Lỗi hiển thị Menu: {ex.Message}\n");
+                    $"\n[DTools ERROR] Lỗi hiển thị Palette: {ex.Message}\n");
+            }
+        }
+
+        [CommandMethod("DTT_POPUP")]
+        [CommandMethod("DTT_POPUP_MENU")]
+        [CommandMethod("DTT_QUICK_MENU")]
+        public static void CmdShowQuickMenu()
+        {
+            try
+            {
+                DTT_QuickMenuDialog.ShowMainMenu();
+            }
+            catch (System.Exception ex)
+            {
+                DToolsLogger.LogError("QuickMenu", "Lỗi mở Quick Menu", ex);
             }
         }
 
@@ -303,8 +313,7 @@ namespace DTT_AutoCAD_Plugin
                 DtoolsResourceManager.EnsureDToolsTopMenuBar();
                 DttPaletteManager.ShowPalette();
                 DToolsLogger.LogInfo("Menu", "Đã cập nhật Menu DTools Pro trên thanh MenuBar và mở bảng Palette.");
-                DtoolsResourceManager.PrintMessage("\n⚡ [DTools Pro]: Đã kích hoạt Menu 'DTools Pro' trên thanh MenuBar và bảng Palette!\n");
-                DTT_QuickMenuDialog.ShowMainMenu();
+                DtoolsResourceManager.PrintMessage("\n⚡ [DTools Pro]: Đã kích hoạt Menu 'DTools Pro' trên thanh MenuBar và bảng Palette bên trái!\n");
             }
             catch (System.Exception ex)
             {

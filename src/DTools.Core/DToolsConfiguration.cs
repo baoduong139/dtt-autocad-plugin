@@ -54,5 +54,10 @@ namespace DTools.Core
         /// Trạng thái nạp YQArch Menu: Chỉ nạp khi người dùng yêu cầu hoặc chạy lệnh DTT_LOAD_YQ
         /// </summary>
         public static bool IsYqMenuLoaded { get; set; } = false;
+
+        /// <summary>
+        /// Hệ số phóng to ký hiệu mặc định (1, 10, hoặc 100 tùy theo đơn vị mm/m của bản vẽ)
+        /// </summary>
+        public static double DefaultSymbolScale { get; set; } = 1.0;
     }
 }

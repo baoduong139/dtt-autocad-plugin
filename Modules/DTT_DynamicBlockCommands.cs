@@ -355,12 +355,16 @@ namespace DTT_AutoCAD_Plugin.Modules
                         }
                     }
 
+                    // Cập nhật hiển thị đồ họa tức thì
+                    CadUtils.RefreshScreenAndGraphics(ed);
+
                     count++;
                     ppo.Message = $"\n📍 [DTools] Đã đặt {count} cấu kiện '{blockName}'. Click điểm tiếp theo [Enter/Esc để xong]: ";
                 }
 
                 if (count > 0)
                 {
+                    CadUtils.RefreshScreenAndGraphics(ed);
                     ed.WriteMessage($"\n✅ [DTools]: Đã chèn xong {count} linh kiện '{blockName}'.");
                 }
             }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -598,11 +599,68 @@ namespace DTT_AutoCAD_Plugin.UI
             SymbolsGridPanel.Children.Clear();
 
             var symbols = ElectricalSymbolsManager.SearchSymbols(_currentSymbolKeyword, _currentSymbolCategory);
+            if (symbols != null && symbols.Count > 0)
+            {
+                UpdateSymbolPreview(symbols[0]);
+            }
+
             foreach (var sym in symbols)
             {
                 var card = CreateSymbolCard(sym);
                 SymbolsGridPanel.Children.Add(card);
             }
+        }
+
+        private void UpdateSymbolPreview(ElectricalSymbolItem sym)
+        {
+            if (sym == null) return;
+            try
+            {
+                if (TxtPreviewTitle != null) TxtPreviewTitle.Text = sym.NameVi;
+                if (TxtPreviewCategory != null) TxtPreviewCategory.Text = $"[{sym.Category}]";
+                if (TxtPreviewSpec != null)
+                {
+                    TxtPreviewSpec.Text = !string.IsNullOrEmpty(sym.DefaultSpec) 
+                        ? $"{sym.DefaultSpec} • H={sym.DefaultHeight:F0}mm" 
+                        : sym.NameEn;
+                }
+
+                string dwgFile = sym.DwgFile ?? sym.Id;
+                string resolvedPath = ElectricalSymbolsManager.ResolveSymbolDwgPath(dwgFile);
+                if (TxtPreviewDwg != null)
+                {
+                    TxtPreviewDwg.Text = !string.IsNullOrEmpty(resolvedPath) 
+                        ? Path.GetFileName(resolvedPath) 
+                        : "IEC Native";
+                }
+
+                // Trích xuất Thumbnail Bitmap từ file DWG
+                System.Windows.Media.ImageSource thumb = !string.IsNullOrEmpty(resolvedPath)
+                    ? CadUtils.GetDwgThumbnail(resolvedPath)
+                    : null;
+
+                if (thumb != null && ImgSymbolThumbnail != null)
+                {
+                    ImgSymbolThumbnail.Source = thumb;
+                    ImgSymbolThumbnail.Visibility = Visibility.Visible;
+                    if (GridThumbnailPlaceholder != null) GridThumbnailPlaceholder.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    if (ImgSymbolThumbnail != null)
+                    {
+                        ImgSymbolThumbnail.Source = null;
+                        ImgSymbolThumbnail.Visibility = Visibility.Collapsed;
+                    }
+                    if (GridThumbnailPlaceholder != null)
+                    {
+                        GridThumbnailPlaceholder.Visibility = Visibility.Visible;
+                    }
+                    if (TxtThumbnailIcon != null) TxtThumbnailIcon.Text = sym.Icon ?? "⚡";
+                    if (TxtThumbnailSub != null) TxtThumbnailSub.Text = sym.NameVi;
+                }
+            }
+            catch { }
         }
 
         private Border CreateSymbolCard(ElectricalSymbolItem sym)
@@ -616,8 +674,22 @@ namespace DTT_AutoCAD_Plugin.UI
                 Background = new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                 BorderBrush = new SolidColorBrush(Color.FromRgb(203, 213, 225)),
                 BorderThickness = new Thickness(1),
-                Cursor = System.Windows.Input.Cursors.Hand,
-                ToolTip = $"{sym.NameVi}\n{sym.NameEn} (ID: {sym.Id})\n👉 Click để chèn vào bản vẽ AutoCAD"
+                Cursor = System.Windows.Input.Cursors.Hand
+            };
+
+            // Rich ToolTip Preview
+            var tooltipPanel = new StackPanel { Margin = new Thickness(4), MaxWidth = 230 };
+            tooltipPanel.Children.Add(new TextBlock { Text = $"{sym.Icon ?? "⚡"} {sym.NameVi}", FontWeight = FontWeights.Bold, Foreground = Brushes.White, FontSize = 11 });
+            tooltipPanel.Children.Add(new TextBlock { Text = sym.NameEn, Foreground = Brushes.LightGray, FontSize = 9, Margin = new Thickness(0, 2, 0, 0) });
+            if (!string.IsNullOrEmpty(sym.DefaultSpec))
+                tooltipPanel.Children.Add(new TextBlock { Text = $"Thông số: {sym.DefaultSpec}", Foreground = Brushes.LightSkyBlue, FontSize = 9 });
+            tooltipPanel.Children.Add(new TextBlock { Text = $"Cao độ: {sym.DefaultHeight:F0} mm • Click để đặt ra CAD", Foreground = Brushes.LightGreen, FontSize = 8.5, Margin = new Thickness(0, 2, 0, 0) });
+
+            border.ToolTip = new ToolTip 
+            { 
+                Content = tooltipPanel, 
+                Background = new SolidColorBrush(Color.FromRgb(15, 23, 42)), 
+                BorderBrush = new SolidColorBrush(Color.FromRgb(2, 132, 199)) 
             };
 
             var sp = new StackPanel
@@ -670,6 +742,7 @@ namespace DTT_AutoCAD_Plugin.UI
             {
                 border.Background = new SolidColorBrush(Color.FromRgb(240, 249, 255));
                 border.BorderBrush = new SolidColorBrush(Color.FromRgb(2, 132, 199));
+                UpdateSymbolPreview(sym);
             };
             border.MouseLeave += (s, e) =>
             {
@@ -679,6 +752,7 @@ namespace DTT_AutoCAD_Plugin.UI
 
             border.MouseLeftButtonDown += (s, e) =>
             {
+                UpdateSymbolPreview(sym);
                 OnSymbolCardClick(sym);
             };
 
