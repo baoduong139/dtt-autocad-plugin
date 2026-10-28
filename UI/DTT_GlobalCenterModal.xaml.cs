@@ -603,7 +603,11 @@ namespace DTT_AutoCAD_Plugin.UI
             try
             {
                 Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-                if (doc == null) return;
+                if (doc == null)
+                {
+                    MessageBox.Show("Không tìm thấy bản vẽ AutoCAD đang mở. Vui lòng mở hoặc tạo bản vẽ trước.", "DTools Cảnh Báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
 
                 // 1. Chuyển Focus về màn hình vẽ AutoCAD
                 CadUtils.FocusDwgView();
@@ -627,7 +631,10 @@ namespace DTT_AutoCAD_Plugin.UI
                     BlockPlacementContext.Width = sz;
                     BlockPlacementContext.Height = sz;
                     BlockPlacementContext.TagText = $"C{sz}x{sz}";
-                    doc.SendStringToExecute("DT_FAST_PLACE\n", true, false, false);
+                    using (DocumentLock docLock = doc.LockDocument())
+                    {
+                        DtoolsBlockService.InsertBlockInteractive(doc, "Architectural_Columns", sz, sz, false);
+                    }
                     return;
                 }
 
@@ -642,7 +649,10 @@ namespace DTT_AutoCAD_Plugin.UI
                     BlockPlacementContext.Flip = _isFlipped;
                     BlockPlacementContext.Angle = _openAngleDeg;
                     BlockPlacementContext.TagText = $"D ({sz}x2200)";
-                    doc.SendStringToExecute("DT_FAST_PLACE\n", true, false, false);
+                    using (DocumentLock docLock = doc.LockDocument())
+                    {
+                        DtoolsBlockService.InsertBlockInteractive(doc, "Architectural_Doors", sz, 2200, _isFlipped);
+                    }
                     return;
                 }
 
@@ -653,7 +663,10 @@ namespace DTT_AutoCAD_Plugin.UI
                 {
                     BlockPlacementContext.TargetBlockName = "Annotations";
                     BlockPlacementContext.ElevationText = !string.IsNullOrWhiteSpace(opt.SelectedSize) ? opt.SelectedSize : "+0.000";
-                    doc.SendStringToExecute("DT_FAST_PLACE\n", true, false, false);
+                    using (DocumentLock docLock = doc.LockDocument())
+                    {
+                        DtoolsBlockService.InsertBlockInteractive(doc, "Annotations", 0, 0, false);
+                    }
                     return;
                 }
 
@@ -665,7 +678,10 @@ namespace DTT_AutoCAD_Plugin.UI
                     BlockPlacementContext.TargetBlockName = blockName;
                     BlockPlacementContext.Width = _currentSize > 0 ? _currentSize : opt.ParamWidth;
                     BlockPlacementContext.Flip = _isFlipped;
-                    doc.SendStringToExecute("DT_FAST_PLACE\n", true, false, false);
+                    using (DocumentLock docLock = doc.LockDocument())
+                    {
+                        DtoolsBlockService.InsertBlockInteractive(doc, blockName, _currentSize > 0 ? _currentSize : opt.ParamWidth, 0, _isFlipped);
+                    }
                     return;
                 }
 

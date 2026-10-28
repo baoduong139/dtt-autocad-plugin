@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Autodesk.AutoCAD.ApplicationServices;
 using DTT_AutoCAD_Plugin.Modules;
 
 namespace DTT_AutoCAD_Plugin.UI
@@ -146,7 +147,14 @@ namespace DTT_AutoCAD_Plugin.UI
                     ElectricalPlacementContext.Rotation = 0.0;
 
                     Common.CadUtils.FocusDwgView();
-                    doc.SendStringToExecute("DTT_PLACE_SYMBOL\n", true, false, false);
+                    using (DocumentLock docLock = doc.LockDocument())
+                    {
+                        ElectricalSymbolsManager.InsertSymbolInteractive(doc, sym, scale, 0.0);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Không tìm thấy bản vẽ AutoCAD đang mở. Vui lòng mở hoặc tạo bản vẽ trước.", "DTools Cảnh Báo", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
             }
         }

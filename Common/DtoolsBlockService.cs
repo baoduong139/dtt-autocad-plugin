@@ -5,6 +5,7 @@ using System.Reflection;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
+using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;
 
 namespace DTT_AutoCAD_Plugin.Common
@@ -29,15 +30,53 @@ namespace DTT_AutoCAD_Plugin.Common
         }
 
         /// <summary>
-        /// Lấy đường dẫn đầy đủ tới 1 file block DWG trong thư viện
+        /// Lấy đường dẫn đầy đủ tới 1 file block DWG trong thư viện (tự động dò tìm trong Blocks/ và Symbols/)
         /// </summary>
         public static string GetBlockFilePath(string fileName)
         {
-            string blocksDir = GetBlocksDirectory();
-            if (!fileName.EndsWith(".dwg", StringComparison.OrdinalIgnoreCase))
-                fileName += ".dwg";
+            if (string.IsNullOrWhiteSpace(fileName)) return "";
 
-            return Path.Combine(blocksDir, fileName);
+            string cleanName = Path.GetFileNameWithoutExtension(fileName);
+            string withExt = cleanName + ".dwg";
+            string cleanRel = fileName.Replace('/', '\\');
+
+            string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+            string[] candidateDirs = new string[]
+            {
+                Path.Combine(assemblyPath, "Blocks"),
+                Path.Combine(assemblyPath, "Symbols"),
+                assemblyPath,
+                Path.Combine(assemblyPath, "Contents", "Blocks"),
+                Path.Combine(assemblyPath, "Contents", "Symbols"),
+                GetBlocksDirectory()
+            };
+
+            foreach (var dir in candidateDirs)
+            {
+                if (string.IsNullOrEmpty(dir) || !Directory.Exists(dir)) continue;
+
+                // 1. Khớp đường dẫn tương đối trực tiếp
+                string p1 = Path.Combine(dir, cleanRel);
+                if (File.Exists(p1)) return p1;
+
+                // 2. Khớp theo tên tệp trong thư mục
+                string p2 = Path.Combine(dir, withExt);
+                if (File.Exists(p2)) return p2;
+
+                // 3. Quét đệ quy tìm tệp trong các thư mục con
+                try
+                {
+                    string[] matches = Directory.GetFiles(dir, withExt, SearchOption.AllDirectories);
+                    if (matches != null && matches.Length > 0)
+                        return matches[0];
+                }
+                catch { }
+            }
+
+            // Fallback thư mục Blocks mặc định
+            string blocksDir = GetBlocksDirectory();
+            return Path.Combine(blocksDir, withExt);
         }
 
         #endregion
@@ -277,14 +316,11 @@ namespace DTT_AutoCAD_Plugin.Common
         /// </summary>
         public static ObjectId ImportBlockFromDwg(Database targetDb, string dwgPath, string blockName)
         {
-            if (!File.Exists(dwgPath))
-                throw new FileNotFoundException($"Không tìm thấy file Block DWG: {dwgPath}");
-
             using (Transaction tr = targetDb.TransactionManager.StartTransaction())
             {
                 BlockTable bt = (BlockTable)tr.GetObject(targetDb.BlockTableId, OpenMode.ForRead);
 
-                // Nếu đã tồn tại block definition, trả về ID ngay
+                // 1. Nếu đã tồn tại block definition, trả về ID ngay
                 if (bt.Has(blockName))
                 {
                     ObjectId existingId = bt[blockName];
@@ -293,6 +329,22 @@ namespace DTT_AutoCAD_Plugin.Common
                 }
                 tr.Commit();
             }
+
+            // 2. Nếu chưa có file DWG hợp lệ, thử tìm lại qua GetBlockFilePath
+            if (!File.Exists(dwgPath))
+            {
+                dwgPath = GetBlockFilePath(blockName);
+            }
+
+            if (!File.Exists(dwgPath))
+            {
+                // Thử tự động tạo mẫu block nếu thuộc 3 mẫu mặc định
+                EnsureDefaultBlocksExist();
+                dwgPath = GetBlockFilePath(blockName);
+            }
+
+            if (!File.Exists(dwgPath))
+                throw new FileNotFoundException($"Không tìm thấy file Block DWG: {dwgPath} (Tên block: {blockName})");
 
             // Nạp file DWG ngoài vào Database
             using (Database sourceDb = new Database(false, true))
@@ -441,6 +493,130 @@ namespace DTT_AutoCAD_Plugin.Common
 
             // 2. Chèn BlockReference tại tọa độ chỉ định bằng btrId
             return InsertBlockReference(db, btrId, insertPt, scale, rotationRad);
+        }
+
+        /// <summary>
+        /// Hoàn thiện hàm chèn Block tương tác từ giao diện WPF / Lệnh CAD:
+        /// 1. Kiểm tra khóa tài liệu (DocumentLock)
+        /// 2. Lấy BlockTableRecord nếu đã tồn tại, hoặc nạp từ Symbols/Blocks DWG nếu chưa có
+        /// 3. Yêu cầu người dùng chọn điểm đặt (Editor.GetPoint) và tạo BlockReference
+        /// </summary>
+        public static bool InsertBlockInteractive(Document doc, string blockNameOrFileName, double width = 0, double height = 0, bool flip = false)
+        {
+            if (doc == null)
+            {
+                doc = Application.DocumentManager.MdiActiveDocument;
+                if (doc == null) return false;
+            }
+
+            Editor ed = doc.Editor;
+            Database db = doc.Database;
+            string cleanName = Path.GetFileNameWithoutExtension(blockNameOrFileName);
+
+            try
+            {
+                using (DocumentLock docLock = doc.LockDocument())
+                {
+                    ObjectId btrId = ObjectId.Null;
+
+                    // 1. Kiểm tra block đã có trong database chưa
+                    using (Transaction tr = db.TransactionManager.StartTransaction())
+                    {
+                        BlockTable bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForRead);
+                        if (bt.Has(cleanName))
+                        {
+                            btrId = bt[cleanName];
+                        }
+                        tr.Commit();
+                    }
+
+                    // 2. Nếu chưa có: nạp từ file DWG
+                    if (btrId.IsNull || !btrId.IsValid)
+                    {
+                        string dwgPath = GetBlockFilePath(cleanName);
+                        if (!File.Exists(dwgPath))
+                        {
+                            EnsureDefaultBlocksExist();
+                            dwgPath = GetBlockFilePath(cleanName);
+                        }
+
+                        if (!File.Exists(dwgPath))
+                        {
+                            ed.WriteMessage($"\n❌ [DTools Lỗi]: Không tìm thấy file DWG cho block '{cleanName}' tại: {dwgPath}\n");
+                            return false;
+                        }
+
+                        try
+                        {
+                            btrId = ImportBlockFromDwg(db, dwgPath, cleanName);
+                            ed.WriteMessage($"\n[DTools] Đã nạp block '{cleanName}' từ tệp: {dwgPath}");
+                        }
+                        catch (System.Exception exImp)
+                        {
+                            ed.WriteMessage($"\n❌ [DTools Lỗi nạp Block '{cleanName}']: {exImp.Message}\n");
+                            return false;
+                        }
+                    }
+
+                    if (btrId.IsNull || !btrId.IsValid)
+                    {
+                        ed.WriteMessage($"\n❌ [DTools Lỗi]: Không thể tạo định nghĩa Block cho '{cleanName}'!\n");
+                        return false;
+                    }
+
+                    // 3. Yêu cầu người dùng chỉ định điểm chèn (Editor.GetPoint)
+                    PromptPointOptions ppo = new PromptPointOptions($"\n📍 [DTools] Click chọn điểm đặt Block '{cleanName}' [Enter/Esc để kết thúc]: ");
+                    ppo.AllowNone = true;
+
+                    int count = 0;
+                    while (true)
+                    {
+                        PromptPointResult ppr = ed.GetPoint(ppo);
+                        if (ppr.Status != PromptStatus.OK) break;
+
+                        ObjectId blkRefId = InsertBlockReference(db, btrId, ppr.Value, new Scale3d(1, 1, 1), 0.0);
+                        if (!blkRefId.IsNull)
+                        {
+                            // Gán thuộc tính dynamic block nếu có
+                            if (width > 0)
+                            {
+                                SetDynamicBlockProperty(blkRefId, "Door Size", width);
+                                SetDynamicBlockProperty(blkRefId, "W", width);
+                                SetDynamicBlockProperty(blkRefId, "Distance", width);
+                                SetDynamicBlockProperty(blkRefId, "Width", width);
+                            }
+                            if (height > 0)
+                            {
+                                SetDynamicBlockProperty(blkRefId, "H", height);
+                            }
+                            if (flip)
+                            {
+                                FlipDynamicBlock(blkRefId);
+                            }
+
+                            count++;
+                            ppo.Message = $"\n📍 [DTools] Đã đặt {count} block '{cleanName}'. Click điểm tiếp theo [Enter/Esc để kết thúc]: ";
+                        }
+                        else
+                        {
+                            ed.WriteMessage($"\n❌ [DTools]: Không thể tạo thực thể BlockReference cho '{cleanName}'.");
+                            break;
+                        }
+                    }
+
+                    if (count > 0)
+                    {
+                        ed.WriteMessage($"\n✅ [DTools Pro] Đã hoàn thành chèn {count} block '{cleanName}'.\n");
+                    }
+
+                    return count > 0;
+                }
+            }
+            catch (System.Exception ex)
+            {
+                ed.WriteMessage($"\n❌ [DTools Lỗi chèn Block]: {ex.Message}\n");
+                return false;
+            }
         }
 
         #endregion

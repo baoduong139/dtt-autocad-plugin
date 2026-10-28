@@ -688,7 +688,12 @@ namespace DTT_AutoCAD_Plugin.UI
         private void OnSymbolCardClick(ElectricalSymbolItem sym)
         {
             Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-            if (doc == null || sym == null) return;
+            if (doc == null)
+            {
+                MessageBox.Show("Vui lòng mở một bản vẽ AutoCAD trước khi chèn ký hiệu!", "DTools", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            if (sym == null) return;
 
             ElectricalPlacementContext.TargetSymbol = sym;
             ElectricalPlacementContext.Scale = 1.0;
@@ -696,7 +701,11 @@ namespace DTT_AutoCAD_Plugin.UI
 
             TxtStatus.Text = $"👉 Chọn vị trí đặt ký hiệu [{sym.NameVi}] trên bản vẽ CAD...";
             CadUtils.FocusDwgView();
-            doc.SendStringToExecute("\x03\x03DTT_PLACE_SYMBOL\n", true, false, false);
+
+            using (DocumentLock docLock = doc.LockDocument())
+            {
+                ElectricalSymbolsManager.InsertSymbolInteractive(doc, sym);
+            }
         }
 
         private void BtnFilterCategory_Click(object sender, RoutedEventArgs e)

@@ -55,6 +55,9 @@ jobs:
           if (Test-Path "Blocks") {
             Copy-Item "Blocks" "$staging/Contents/Blocks" -Recurse -Force
           }
+          if (Test-Path "Symbols") {
+            Copy-Item "Symbols" "$staging/Contents/Symbols" -Recurse -Force
+          }
           
           # Create dist/update.zip
           $zipPath = "dist/update.zip"

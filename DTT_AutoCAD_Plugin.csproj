@@ -36,6 +36,21 @@
   </ItemGroup>
 
   <!-- ========================================================================= -->
+  <!-- THƯ VIỆN KÝ HIỆU & BLOCKS DWG: TỰ ĐỘNG SAO CHÉP VÀO THƯ MỤC BUILD OUTPUT  -->
+  <!-- ========================================================================= -->
+  <ItemGroup>
+    <Content Include="Blocks\**\*.dwg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Symbols\**\*.dwg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="symbols_database.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <!-- ========================================================================= -->
   <!-- PHẦN 1: THAM CHIẾU AUTOCAD 2021 .NET API TỪ THƯ MỤC LIBS                   -->
   <!-- ========================================================================= -->
   <ItemGroup>

@@ -435,16 +435,28 @@ namespace DTT_AutoCAD_Plugin.UI
             try
             {
                 var doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-                if (doc == null || sym == null) return;
+                if (doc == null)
+                {
+                    MessageBox.Show("Không tìm thấy bản vẽ AutoCAD đang mở. Vui lòng mở hoặc tạo bản vẽ trước khi chèn ký hiệu.", "DTools Cảnh Báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+                if (sym == null) return;
 
                 ElectricalPlacementContext.TargetSymbol = sym;
                 ElectricalPlacementContext.Scale = 1.0;
                 ElectricalPlacementContext.Rotation = 0.0;
 
                 Common.CadUtils.FocusDwgView();
-                doc.SendStringToExecute("DTT_PLACE_SYMBOL\n", true, false, false);
+                using (DocumentLock docLock = doc.LockDocument())
+                {
+                    ElectricalSymbolsManager.InsertSymbolInteractive(doc, sym);
+                }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                var ed = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument?.Editor;
+                ed?.WriteMessage($"\n❌ [DTools Lỗi] Chèn ký hiệu thất bại: {ex.Message}\n");
+            }
         }
 
         private static void AddVipButton(StackPanel panel, string label, Action action, DTT_QuickMenuDialog dlg)

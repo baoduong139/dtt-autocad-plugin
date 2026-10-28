@@ -47,11 +47,31 @@ if (Test-Path $symJson) {
     Copy-Item -Path $symJson -Destination (Join-Path $releaseDir "symbols_database.json") -Force
 }
 
-# 2. Dong bo Blocks va Samples
-Write-Host "`n[2/6] Dong bo thu vien Dynamic Blocks va Mau ban ve..." -ForegroundColor Yellow
+# 2. Dong bo Blocks, Symbols va Samples
+Write-Host "`n[2/6] Dong bo thu vien Dynamic Blocks, Symbols va Mau ban ve..." -ForegroundColor Yellow
 $blocksSrc = Join-Path $root "Blocks"
 if (Test-Path $blocksSrc) {
-    Copy-Item -Path "$blocksSrc\*" -Destination (Join-Path $contentsDir "Blocks") -Recurse -Force
+    $blkDest1 = Join-Path $contentsDir "Blocks"
+    $blkDest2 = Join-Path $distDir "Blocks"
+    $blkDest3 = Join-Path $releaseDir "Blocks"
+    if (-not (Test-Path $blkDest1)) { New-Item -ItemType Directory -Path $blkDest1 -Force | Out-Null }
+    if (-not (Test-Path $blkDest2)) { New-Item -ItemType Directory -Path $blkDest2 -Force | Out-Null }
+    if (-not (Test-Path $blkDest3)) { New-Item -ItemType Directory -Path $blkDest3 -Force | Out-Null }
+    Copy-Item -Path "$blocksSrc\*" -Destination $blkDest1 -Recurse -Force
+    Copy-Item -Path "$blocksSrc\*" -Destination $blkDest2 -Recurse -Force
+    Copy-Item -Path "$blocksSrc\*" -Destination $blkDest3 -Recurse -Force
+}
+$symbolsSrc = Join-Path $root "Symbols"
+if (Test-Path $symbolsSrc) {
+    $symDest1 = Join-Path $contentsDir "Symbols"
+    $symDest2 = Join-Path $distDir "Symbols"
+    $symDest3 = Join-Path $releaseDir "Symbols"
+    if (-not (Test-Path $symDest1)) { New-Item -ItemType Directory -Path $symDest1 -Force | Out-Null }
+    if (-not (Test-Path $symDest2)) { New-Item -ItemType Directory -Path $symDest2 -Force | Out-Null }
+    if (-not (Test-Path $symDest3)) { New-Item -ItemType Directory -Path $symDest3 -Force | Out-Null }
+    Copy-Item -Path "$symbolsSrc\*" -Destination $symDest1 -Recurse -Force
+    Copy-Item -Path "$symbolsSrc\*" -Destination $symDest2 -Recurse -Force
+    Copy-Item -Path "$symbolsSrc\*" -Destination $symDest3 -Recurse -Force
 }
 $samplesSrc = Join-Path $contentsDir "samples"
 if (Test-Path $samplesSrc) {

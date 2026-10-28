@@ -29,6 +29,10 @@ dist/bundle_payload.zip
 *.dwl2
 *.bak
 
-# Libraries: Allow AutoCAD 2021 SDK DLLs
+# Libraries & Assets: Allow AutoCAD 2021 SDK DLLs, Blocks and Symbols
 !libs/
 !libs/*.dll
+!Blocks/
+!Blocks/**
+!Symbols/
+!Symbols/**

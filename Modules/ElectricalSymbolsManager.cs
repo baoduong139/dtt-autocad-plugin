@@ -193,6 +193,53 @@ namespace DTT_AutoCAD_Plugin.Modules
         // LỆNH ĐẶT KÝ HIỆU LIÊN TỤC TRÊN CAD (AUTOCAD COMMAND CONTEXT)
         // ============================================================
 
+        public static string ResolveSymbolDwgPath(string dwgFileOrId)
+        {
+            if (string.IsNullOrWhiteSpace(dwgFileOrId)) return null;
+
+            string fileName = Path.GetFileName(dwgFileOrId);
+            if (!fileName.EndsWith(".dwg", StringComparison.OrdinalIgnoreCase))
+                fileName += ".dwg";
+
+            string cleanRel = dwgFileOrId.Replace('/', '\\');
+
+            string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+            string[] candidateDirs = new string[]
+            {
+                Path.Combine(assemblyPath, "Symbols"),
+                Path.Combine(assemblyPath, "Blocks"),
+                assemblyPath,
+                Path.Combine(assemblyPath, "Contents", "Symbols"),
+                Path.Combine(assemblyPath, "Contents", "Blocks"),
+                DtoolsBlockService.GetBlocksDirectory()
+            };
+
+            foreach (var dir in candidateDirs)
+            {
+                if (string.IsNullOrEmpty(dir) || !Directory.Exists(dir)) continue;
+
+                // 1. Check relative path direct
+                string p1 = Path.Combine(dir, cleanRel);
+                if (File.Exists(p1)) return p1;
+
+                // 2. Check fileName direct
+                string p2 = Path.Combine(dir, fileName);
+                if (File.Exists(p2)) return p2;
+
+                // 3. Search in all subdirectories
+                try
+                {
+                    string[] matches = Directory.GetFiles(dir, fileName, SearchOption.AllDirectories);
+                    if (matches != null && matches.Length > 0)
+                        return matches[0];
+                }
+                catch { }
+            }
+
+            return null;
+        }
+
         [CommandMethod("DTT_PLACE_SYMBOL")]
         [CommandMethod("DT_PLACE_SYMBOL")]
         [CommandMethod("PLACE_SYMBOL")]
@@ -212,25 +259,133 @@ namespace DTT_AutoCAD_Plugin.Modules
             double scale = ElectricalPlacementContext.Scale > 0 ? ElectricalPlacementContext.Scale : 1.0;
             double rot = ElectricalPlacementContext.Rotation;
 
-            PromptPointOptions ppo = new PromptPointOptions($"\n⚡ [DTools] Click chọn điểm đặt ký hiệu [{sym.NameVi}] [Enter/Esc để kết thúc]: ");
-            ppo.AllowNone = true;
+            InsertSymbolInteractive(doc, sym, scale, rot);
+        }
 
-            int count = 0;
-            while (true)
+        public static bool InsertSymbolInteractive(Document doc, ElectricalSymbolItem sym, double scale = 1.0, double rotationDeg = 0.0)
+        {
+            if (doc == null)
             {
-                PromptPointResult ppr = ed.GetPoint(ppo);
-                if (ppr.Status != PromptStatus.OK) break;
-
-                bool ok = InsertSymbolToCad(sym, ppr.Value, scale, rot);
-                if (!ok) break;
-
-                count++;
-                ppo.Message = $"\n⚡ [DTools] Đã đặt {count} ký hiệu [{sym.NameVi}]. Click điểm tiếp theo [Enter/Esc để kết thúc]: ";
+                doc = Application.DocumentManager.MdiActiveDocument;
+                if (doc == null) return false;
             }
 
-            if (count > 0)
+            Editor ed = doc.Editor;
+            Database db = doc.Database;
+
+            if (sym == null)
             {
-                ed.WriteMessage($"\n✅ [DTools Pro] Đã hoàn thành chèn {count} ký hiệu [{sym.NameVi}] vào bản vẽ.\n");
+                ed.WriteMessage("\n[DTools] Không tìm thấy thông tin ký hiệu để chèn.\n");
+                return false;
+            }
+
+            string blockName = $"DTT_SYM_{sym.Id}";
+
+            try
+            {
+                using (DocumentLock docLock = doc.LockDocument())
+                {
+                    ObjectId blockId = ObjectId.Null;
+
+                    // 1. Nếu Block đã tồn tại trong bản vẽ: Lấy từ BlockTableRecord
+                    using (Transaction tr = db.TransactionManager.StartTransaction())
+                    {
+                        BlockTable bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForRead);
+                        if (bt.Has(blockName))
+                        {
+                            blockId = bt[blockName];
+                        }
+                        tr.Commit();
+                    }
+
+                    // 2. Nếu Block chưa tồn tại: Tự động nạp file .dwg từ thư mục Symbols/Blocks
+                    if (blockId.IsNull || !blockId.IsValid)
+                    {
+                        string dwgPath = ResolveSymbolDwgPath(sym.DwgFile ?? sym.Id);
+                        if (!string.IsNullOrEmpty(dwgPath) && File.Exists(dwgPath))
+                        {
+                            try
+                            {
+                                using (Database extDb = new Database(false, true))
+                                {
+                                    extDb.ReadDwgFile(dwgPath, FileOpenMode.OpenForReadAndAllShare, true, "");
+                                    blockId = db.Insert(blockName, extDb, true);
+                                    ed.WriteMessage($"\n[DTools] Đã nạp ký hiệu '{sym.NameVi}' từ tệp: {dwgPath}");
+                                }
+                            }
+                            catch (System.Exception exDwg)
+                            {
+                                ed.WriteMessage($"\n⚠️ [DTools Cảnh báo] Không thể nạp DWG '{dwgPath}': {exDwg.Message}. Sẽ tự sinh hình học ký hiệu.");
+                            }
+                        }
+
+                        // Nếu không có DWG hoặc lỗi nạp: Tự động sinh Block Native chuẩn IEC 100%
+                        if (blockId.IsNull || !blockId.IsValid)
+                        {
+                            using (Transaction tr = db.TransactionManager.StartTransaction())
+                            {
+                                BlockTable bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForWrite);
+                                blockId = CreateNativeSymbolBlock(db, tr, bt, blockName, sym);
+                                tr.Commit();
+                            }
+                        }
+                    }
+
+                    if (blockId.IsNull || !blockId.IsValid)
+                    {
+                        ed.WriteMessage($"\n❌ [DTools ERROR] Không thể tạo khối cho ký hiệu {sym.NameVi}!\n");
+                        return false;
+                    }
+
+                    // 3. Yêu cầu người dùng chỉ định điểm chèn (Editor.GetPoint)
+                    PromptPointOptions ppo = new PromptPointOptions($"\n📍 [DTools] Click chọn điểm đặt ký hiệu [{sym.NameVi}] [Enter/Esc để kết thúc]: ");
+                    ppo.AllowNone = true;
+
+                    int count = 0;
+                    while (true)
+                    {
+                        PromptPointResult ppr = ed.GetPoint(ppo);
+                        if (ppr.Status != PromptStatus.OK) break;
+
+                        Point3d insertPt = ppr.Value;
+
+                        using (Transaction tr = db.TransactionManager.StartTransaction())
+                        {
+                            BlockTable bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForRead);
+                            BlockTableRecord modelSpace = (BlockTableRecord)tr.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForWrite);
+
+                            string layerName = (sym.Category == "ARCH") ? "A-FURN" : "E-SYMBOLS";
+                            short layerColor = (sym.Category == "ARCH") ? (short)3 : (short)2; // 2: Yellow, 3: Green
+                            ObjectId symbolLayer = CadUtils.GetOrCreateLayer(db, layerName, layerColor, LineWeight.LineWeight025);
+
+                            BlockReference br = new BlockReference(insertPt, blockId)
+                            {
+                                ScaleFactors = new Scale3d(scale > 0 ? scale : 1.0),
+                                Rotation = rotationDeg * (Math.PI / 180.0),
+                                LayerId = symbolLayer
+                            };
+
+                            modelSpace.AppendEntity(br);
+                            tr.AddNewlyCreatedDBObject(br, true);
+                            tr.Commit();
+                        }
+
+                        count++;
+                        ppo.Message = $"\n📍 [DTools] Đã đặt {count} ký hiệu [{sym.NameVi}]. Click điểm tiếp theo [Enter/Esc để kết thúc]: ";
+                    }
+
+                    if (count > 0)
+                    {
+                        ed.WriteMessage($"\n✅ [DTools Pro] Đã hoàn thành chèn {count} ký hiệu [{sym.NameVi}] vào bản vẽ.\n");
+                    }
+
+                    return count > 0;
+                }
+            }
+            catch (System.Exception ex)
+            {
+                ed.WriteMessage($"\n❌ [DTools ERROR] Lỗi khi chèn ký hiệu: {ex.Message}\n");
+                return false;
             }
         }
 
@@ -263,10 +418,9 @@ namespace DTT_AutoCAD_Plugin.Modules
                     else
                     {
                         // 2. Thử load từ file .dwg nếu có
-                        string asmDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                        string fullDwgPath = Path.Combine(asmDir, item.DwgFile ?? "");
+                        string fullDwgPath = ResolveSymbolDwgPath(item.DwgFile ?? item.Id);
 
-                        if (!string.IsNullOrEmpty(item.DwgFile) && File.Exists(fullDwgPath))
+                        if (!string.IsNullOrEmpty(fullDwgPath) && File.Exists(fullDwgPath))
                         {
                             try
                             {
@@ -276,7 +430,10 @@ namespace DTT_AutoCAD_Plugin.Modules
                                     blockId = db.Insert(blockName, extDb, true);
                                 }
                             }
-                            catch { }
+                            catch (System.Exception exDwg)
+                            {
+                                ed.WriteMessage($"\n⚠️ [DTools Cảnh báo] Lỗi đọc file DWG '{fullDwgPath}': {exDwg.Message}");
+                            }
                         }
 
                         // 3. Nếu chưa có file .dwg, tự động sinh Block bằng Native AutoCAD API 100% chuẩn TCVN/IEC!
@@ -302,7 +459,7 @@ namespace DTT_AutoCAD_Plugin.Modules
 
                     BlockReference br = new BlockReference(insertPt, blockId)
                     {
-                        ScaleFactors = new Scale3d(scale),
+                        ScaleFactors = new Scale3d(scale > 0 ? scale : 1.0),
                         Rotation = rotationDeg * (Math.PI / 180.0),
                         LayerId = symbolLayer
                     };
