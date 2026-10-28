@@ -50,7 +50,7 @@
                             <TextBlock x:Name="TxtIcon" Text="⚡" FontSize="16" Foreground="#FFFFFF" Margin="0,0,8,0"/>
                             <TextBlock x:Name="TxtTitle" Text="NHẬP THÔNG SỐ VẼ" FontSize="13.5" FontWeight="Bold" Foreground="#FFFFFF"/>
                             <Border Background="#E0F2FE" CornerRadius="4" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                <TextBlock Text="DTools Pro v3.5" FontSize="8.5" FontWeight="Bold" Foreground="#0369A1"/>
+                                <TextBlock Text="DTools Pro v2026.2.0" FontSize="8.5" FontWeight="Bold" Foreground="#0369A1"/>
                             </Border>
                         </StackPanel>
                         <TextBlock x:Name="TxtSubtitle" Text="Nhập số trực tiếp (Enter để hoàn tất, Tab chuyển ô, Esc để hủy)" FontSize="9" Foreground="#E0F2FE" Margin="24,1,0,0"/>

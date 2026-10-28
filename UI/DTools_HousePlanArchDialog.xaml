@@ -79,7 +79,7 @@
                         <TextBlock Text="🏛️ " FontSize="19"/>
                         <TextBlock Text="VẼ MẶT BẰNG NHÀ KIẾN TRÚC &amp; PREVIEW 2D/3D TƯƠNG TÁC" FontSize="13.5" FontWeight="Bold" Foreground="#0F172A" VerticalAlignment="Center"/>
                         <Border Background="#E0F2FE" CornerRadius="4" Padding="6,2" Margin="10,0,0,0" VerticalAlignment="Center">
-                            <TextBlock Text="ARCHITECTURAL STUDIO PRO v5.0" FontSize="9.5" FontWeight="Bold" Foreground="#0284C7"/>
+                            <TextBlock Text="ARCHITECTURAL STUDIO PRO v2026.2.0" FontSize="9.5" FontWeight="Bold" Foreground="#0284C7"/>
                         </Border>
                     </StackPanel>
 

@@ -575,7 +575,7 @@ namespace DTT_AutoCAD_Plugin.Modules
             }
 
             // Nhãn tiêu đề dưới bảng
-            AddMText(btr, tr, textLayer, textStyle, "THIẾT KẾ BỞI DTools Pro v3.5 - DYNAMIC CABINET BUILDER", x + tableW / 2.0, y - 40.0, 14.0, AttachmentPoint.TopCenter);
+            AddMText(btr, tr, textLayer, textStyle, "THIẾT KẾ BỞI DTools Pro v2026.2.0 - DYNAMIC CABINET BUILDER", x + tableW / 2.0, y - 40.0, 14.0, AttachmentPoint.TopCenter);
         }
 
         // ============================================================

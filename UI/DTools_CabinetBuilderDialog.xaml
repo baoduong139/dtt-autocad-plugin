@@ -108,7 +108,7 @@
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="BỘ THIẾT KẾ TỦ ĐIỆN VẠN NĂNG" FontSize="14" FontWeight="Bold" Foreground="#0F172A"/>
                                 <Border Background="#0284C7" CornerRadius="4" Padding="6,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                    <TextBlock Text="DYNAMIC BUILDER v3.5" FontSize="9.5" FontWeight="Bold" Foreground="#FFFFFF"/>
+                                    <TextBlock Text="DYNAMIC BUILDER v2026.2.0" FontSize="9.5" FontWeight="Bold" Foreground="#FFFFFF"/>
                                 </Border>
                             </StackPanel>
                             <TextBlock Text="Tự động tính tọa độ, sắp xếp linh kiện &amp; sinh bản vẽ kỹ thuật CAD chuẩn 100%" FontSize="10.5" Foreground="#64748B"/>

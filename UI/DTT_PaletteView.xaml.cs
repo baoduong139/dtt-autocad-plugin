@@ -592,22 +592,34 @@ namespace DTT_AutoCAD_Plugin.UI
 
         private string _currentSymbolCategory = "All";
         private string _currentSymbolKeyword = "";
+        private ElectricalSymbolItem _selectedSymbol = null;
+        private Border _selectedCardBorder = null;
+        private bool _isInsertingSymbol = false;
 
         private void LoadSymbolsGrid()
         {
             if (SymbolsGridPanel == null) return;
             SymbolsGridPanel.Children.Clear();
+            _selectedCardBorder = null;
 
             var symbols = ElectricalSymbolsManager.SearchSymbols(_currentSymbolKeyword, _currentSymbolCategory);
             if (symbols != null && symbols.Count > 0)
             {
-                UpdateSymbolPreview(symbols[0]);
+                _selectedSymbol = symbols[0];
+                UpdateSymbolPreview(_selectedSymbol);
+            }
+            else
+            {
+                _selectedSymbol = null;
             }
 
-            foreach (var sym in symbols)
+            if (symbols != null)
             {
-                var card = CreateSymbolCard(sym);
-                SymbolsGridPanel.Children.Add(card);
+                foreach (var sym in symbols)
+                {
+                    var card = CreateSymbolCard(sym);
+                    SymbolsGridPanel.Children.Add(card);
+                }
             }
         }
 
@@ -665,25 +677,31 @@ namespace DTT_AutoCAD_Plugin.UI
 
         private Border CreateSymbolCard(ElectricalSymbolItem sym)
         {
+            bool isCurrentSelected = (_selectedSymbol != null && _selectedSymbol.Id == sym.Id);
+
             var border = new Border
             {
-                Width = 126,
-                Height = 64,
-                Margin = new Thickness(2, 2, 2, 2),
+                Margin = new Thickness(0, 2, 0, 2),
+                Padding = new Thickness(8, 6, 8, 6),
                 CornerRadius = new CornerRadius(6),
-                Background = new SolidColorBrush(Color.FromRgb(255, 255, 255)),
-                BorderBrush = new SolidColorBrush(Color.FromRgb(203, 213, 225)),
-                BorderThickness = new Thickness(1),
+                Background = new SolidColorBrush(isCurrentSelected ? Color.FromRgb(240, 249, 255) : Color.FromRgb(255, 255, 255)),
+                BorderBrush = new SolidColorBrush(isCurrentSelected ? Color.FromRgb(2, 132, 199) : Color.FromRgb(226, 232, 240)),
+                BorderThickness = new Thickness(isCurrentSelected ? 1.5 : 1),
                 Cursor = System.Windows.Input.Cursors.Hand
             };
 
+            if (isCurrentSelected)
+            {
+                _selectedCardBorder = border;
+            }
+
             // Rich ToolTip Preview
-            var tooltipPanel = new StackPanel { Margin = new Thickness(4), MaxWidth = 230 };
+            var tooltipPanel = new StackPanel { Margin = new Thickness(4), MaxWidth = 240 };
             tooltipPanel.Children.Add(new TextBlock { Text = $"{sym.Icon ?? "⚡"} {sym.NameVi}", FontWeight = FontWeights.Bold, Foreground = Brushes.White, FontSize = 11 });
             tooltipPanel.Children.Add(new TextBlock { Text = sym.NameEn, Foreground = Brushes.LightGray, FontSize = 9, Margin = new Thickness(0, 2, 0, 0) });
             if (!string.IsNullOrEmpty(sym.DefaultSpec))
                 tooltipPanel.Children.Add(new TextBlock { Text = $"Thông số: {sym.DefaultSpec}", Foreground = Brushes.LightSkyBlue, FontSize = 9 });
-            tooltipPanel.Children.Add(new TextBlock { Text = $"Cao độ: {sym.DefaultHeight:F0} mm • Click để đặt ra CAD", Foreground = Brushes.LightGreen, FontSize = 8.5, Margin = new Thickness(0, 2, 0, 0) });
+            tooltipPanel.Children.Add(new TextBlock { Text = $"Cao độ: {sym.DefaultHeight:F0} mm • Click chọn | Nhấp đúp để chèn CAD", Foreground = Brushes.LightGreen, FontSize = 8.5, Margin = new Thickness(0, 2, 0, 0) });
 
             border.ToolTip = new ToolTip 
             { 
@@ -692,93 +710,211 @@ namespace DTT_AutoCAD_Plugin.UI
                 BorderBrush = new SolidColorBrush(Color.FromRgb(2, 132, 199)) 
             };
 
-            var sp = new StackPanel
+            var mainGrid = new Grid();
+            mainGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(34) });
+            mainGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            mainGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+
+            // Cột 0: Icon Badge
+            var iconBadge = new Border
             {
-                Margin = new Thickness(6, 4, 6, 4),
+                Width = 28,
+                Height = 28,
+                CornerRadius = new CornerRadius(4),
+                Background = new SolidColorBrush(Color.FromRgb(241, 245, 249)),
+                HorizontalAlignment = HorizontalAlignment.Left,
                 VerticalAlignment = VerticalAlignment.Center
             };
-
-            var topGrid = new Grid();
             var txtIcon = new TextBlock
             {
                 Text = sym.Icon ?? "⚡",
-                FontSize = 15,
-                HorizontalAlignment = HorizontalAlignment.Left
+                FontSize = 14,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            iconBadge.Child = txtIcon;
+            Grid.SetColumn(iconBadge, 0);
+            mainGrid.Children.Add(iconBadge);
+
+            // Cột 1: Thông tin tên (2 dòng rõ ràng, không bị xén chữ) và spec
+            var textStack = new StackPanel
+            {
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(4, 0, 4, 0)
+            };
+            var txtNameVi = new TextBlock
+            {
+                Text = sym.NameVi,
+                FontSize = 10,
+                FontWeight = FontWeights.SemiBold,
+                Foreground = new SolidColorBrush(Color.FromRgb(15, 23, 42)),
+                TextWrapping = TextWrapping.Wrap,
+                LineHeight = 13
+            };
+            var txtSpec = new TextBlock
+            {
+                Text = !string.IsNullOrEmpty(sym.DefaultSpec) ? $"{sym.DefaultSpec} • H={sym.DefaultHeight:F0}mm" : sym.NameEn,
+                FontSize = 8.5,
+                Foreground = new SolidColorBrush(Color.FromRgb(100, 116, 139)),
+                TextTrimming = TextTrimming.CharacterEllipsis,
+                Margin = new Thickness(0, 1, 0, 0)
+            };
+            textStack.Children.Add(txtNameVi);
+            textStack.Children.Add(txtSpec);
+            Grid.SetColumn(textStack, 1);
+            mainGrid.Children.Add(textStack);
+
+            // Cột 2: Tag phân loại nhỏ gọn
+            var tagBadge = new Border
+            {
+                CornerRadius = new CornerRadius(3),
+                Padding = new Thickness(4, 2, 4, 2),
+                Background = new SolidColorBrush(Color.FromRgb(241, 245, 249)),
+                VerticalAlignment = VerticalAlignment.Center
             };
             var txtCat = new TextBlock
             {
                 Text = sym.Category,
-                FontSize = 8,
-                Foreground = new SolidColorBrush(Color.FromRgb(100, 116, 139)),
-                HorizontalAlignment = HorizontalAlignment.Right
+                FontSize = 7.5,
+                FontWeight = FontWeights.Medium,
+                Foreground = new SolidColorBrush(Color.FromRgb(71, 85, 105))
             };
-            topGrid.Children.Add(txtIcon);
-            topGrid.Children.Add(txtCat);
+            tagBadge.Child = txtCat;
+            Grid.SetColumn(tagBadge, 2);
+            mainGrid.Children.Add(tagBadge);
 
-            var txtNameVi = new TextBlock
-            {
-                Text = sym.NameVi,
-                FontSize = 9.5,
-                FontWeight = FontWeights.Bold,
-                Foreground = new SolidColorBrush(Color.FromRgb(15, 23, 42)),
-                TextTrimming = TextTrimming.CharacterEllipsis,
-                Margin = new Thickness(0, 2, 0, 0)
-            };
+            border.Child = mainGrid;
 
-            var txtNameEn = new TextBlock
-            {
-                Text = sym.NameEn,
-                FontSize = 8,
-                Foreground = new SolidColorBrush(Color.FromRgb(100, 116, 139)),
-                TextTrimming = TextTrimming.CharacterEllipsis
-            };
-
-            sp.Children.Add(topGrid);
-            sp.Children.Add(txtNameVi);
-            sp.Children.Add(txtNameEn);
-            border.Child = sp;
-
+            // Hover state
             border.MouseEnter += (s, e) =>
             {
-                border.Background = new SolidColorBrush(Color.FromRgb(240, 249, 255));
-                border.BorderBrush = new SolidColorBrush(Color.FromRgb(2, 132, 199));
-                UpdateSymbolPreview(sym);
+                if (_selectedSymbol != sym)
+                {
+                    border.Background = new SolidColorBrush(Color.FromRgb(248, 250, 252));
+                    border.BorderBrush = new SolidColorBrush(Color.FromRgb(186, 230, 253));
+                }
             };
             border.MouseLeave += (s, e) =>
             {
-                border.Background = new SolidColorBrush(Color.FromRgb(255, 255, 255));
-                border.BorderBrush = new SolidColorBrush(Color.FromRgb(203, 213, 225));
+                if (_selectedSymbol != sym)
+                {
+                    border.Background = new SolidColorBrush(Color.FromRgb(255, 255, 255));
+                    border.BorderBrush = new SolidColorBrush(Color.FromRgb(226, 232, 240));
+                }
             };
 
+            // Single click selects card; Double click executes insertion
             border.MouseLeftButtonDown += (s, e) =>
             {
-                UpdateSymbolPreview(sym);
-                OnSymbolCardClick(sym);
+                if (e.ClickCount == 2)
+                {
+                    SelectSymbolCard(border, sym);
+                    ExecuteSymbolInsertion(sym);
+                }
+                else
+                {
+                    SelectSymbolCard(border, sym);
+                }
             };
 
             return border;
         }
 
-        private void OnSymbolCardClick(ElectricalSymbolItem sym)
+        private void SelectSymbolCard(Border card, ElectricalSymbolItem sym)
         {
+            if (_selectedCardBorder != null)
+            {
+                _selectedCardBorder.Background = new SolidColorBrush(Color.FromRgb(255, 255, 255));
+                _selectedCardBorder.BorderBrush = new SolidColorBrush(Color.FromRgb(226, 232, 240));
+                _selectedCardBorder.BorderThickness = new Thickness(1);
+            }
+
+            _selectedSymbol = sym;
+            _selectedCardBorder = card;
+
+            if (card != null)
+            {
+                card.Background = new SolidColorBrush(Color.FromRgb(240, 249, 255));
+                card.BorderBrush = new SolidColorBrush(Color.FromRgb(2, 132, 199));
+                card.BorderThickness = new Thickness(1.5);
+            }
+
+            UpdateSymbolPreview(sym);
+        }
+
+        private void BtnInsertSelectedSymbol_Click(object sender, RoutedEventArgs e)
+        {
+            if (_selectedSymbol == null)
+            {
+                var symbols = ElectricalSymbolsManager.SearchSymbols(_currentSymbolKeyword, _currentSymbolCategory);
+                if (symbols != null && symbols.Count > 0)
+                {
+                    _selectedSymbol = symbols[0];
+                }
+            }
+            ExecuteSymbolInsertion(_selectedSymbol);
+        }
+
+        private void ChkContinuousInsert_Click(object sender, RoutedEventArgs e)
+        {
+            bool isCont = ChkContinuousInsert != null && ChkContinuousInsert.IsChecked == true;
+            ElectricalPlacementContext.IsContinuous = isCont;
+            if (BtnInsertSelectedSymbol != null)
+            {
+                BtnInsertSelectedSymbol.Content = isCont 
+                    ? "⚡ CHÈN LIÊN TỤC RA CAD" 
+                    : "⚡ CHÈN 1 KÝ HIỆU RA CAD";
+            }
+        }
+
+        private void ExecuteSymbolInsertion(ElectricalSymbolItem sym)
+        {
+            if (_isInsertingSymbol) return;
+
+            if (sym == null)
+            {
+                MessageBox.Show("Vui lòng chọn một ký hiệu từ danh sách trước khi chèn!", "DTools Pro", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
             Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
             if (doc == null)
             {
-                MessageBox.Show("Vui lòng mở một bản vẽ AutoCAD trước khi chèn ký hiệu!", "DTools", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Vui lòng mở một bản vẽ AutoCAD trước khi chèn ký hiệu!", "DTools Pro", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
-            if (sym == null) return;
 
-            ElectricalPlacementContext.TargetSymbol = sym;
-            ElectricalPlacementContext.Scale = 1.0;
-            ElectricalPlacementContext.Rotation = 0.0;
-
-            TxtStatus.Text = $"👉 Chọn vị trí đặt ký hiệu [{sym.NameVi}] trên bản vẽ CAD...";
-            CadUtils.FocusDwgView();
-
-            using (DocumentLock docLock = doc.LockDocument())
+            _isInsertingSymbol = true;
+            try
             {
-                ElectricalSymbolsManager.InsertSymbolInteractive(doc, sym);
+                bool isCont = ChkContinuousInsert != null && ChkContinuousInsert.IsChecked == true;
+                ElectricalPlacementContext.TargetSymbol = sym;
+                ElectricalPlacementContext.Scale = 1.0;
+                ElectricalPlacementContext.Rotation = 0.0;
+                ElectricalPlacementContext.IsContinuous = isCont;
+
+                TxtStatus.Text = isCont
+                    ? $"👉 [Chèn liên tục] Click các vị trí đặt [{sym.NameVi}]... (Enter/Esc kết thúc)"
+                    : $"👉 [Chèn 1 điểm] Click chọn vị trí đặt ký hiệu [{sym.NameVi}]...";
+
+                CadUtils.FocusDwgView();
+
+                using (DocumentLock docLock = doc.LockDocument())
+                {
+                    ElectricalSymbolsManager.InsertSymbolInteractive(doc, sym, 1.0, 0.0, isCont);
+                }
+            }
+            catch (System.Exception ex)
+            {
+                doc.Editor.WriteMessage($"\n❌ [DTools Lỗi chèn ký hiệu] {ex.Message}\n");
+            }
+            finally
+            {
+                _isInsertingSymbol = false;
+                if (TxtStatus != null)
+                {
+                    TxtStatus.Text = "⚡ DTools Pro v2026.2.0 - Sẵn sàng thực thi 100% Native CAD";
+                }
             }
         }
 

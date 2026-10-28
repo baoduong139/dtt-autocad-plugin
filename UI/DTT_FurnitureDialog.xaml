@@ -1,0 +1,246 @@
+<Window x:Class="DTT_AutoCAD_Plugin.UI.DTT_FurnitureDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Bố Trí Nội Thất Hoàn Thiện Tự Động - DTools Pro"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        Topmost="True"
+        Width="850" Height="640"
+        FontFamily="Segoe UI, Tahoma, sans-serif"
+        TextOptions.TextFormattingMode="Display"
+        TextOptions.TextRenderingMode="ClearType"
+        RenderOptions.ClearTypeHint="Enabled"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True"
+        PreviewKeyDown="Window_PreviewKeyDown">
+
+    <Border Margin="14" CornerRadius="12" Background="#FFFFFF" BorderBrush="#0284C7" BorderThickness="1.8">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="18" ShadowDepth="5" Direction="270" Color="#0284C7" Opacity="0.35"/>
+        </Border.Effect>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="52"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="56"/>
+            </Grid.RowDefinitions>
+
+            <!-- 1. HEADER KÉO THẢ HIỆN ĐẠI -->
+            <Border Grid.Row="0" CornerRadius="10,10,0,0" Padding="14,0" MouseDown="Header_MouseDown" Cursor="SizeAll">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                        <GradientStop Color="#0284C7" Offset="0.0"/>
+                        <GradientStop Color="#0EA5E9" Offset="0.6"/>
+                        <GradientStop Color="#38BDF8" Offset="1.0"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="🛋️" FontSize="18" Foreground="#FFFFFF" Margin="0,0,8,0"/>
+                            <TextBlock Text="BỐ TRÍ NỘI THẤT HOÀN THIỆN TỰ ĐỘNG" FontSize="14" FontWeight="Bold" Foreground="#FFFFFF"/>
+                            <Border Background="#E0F2FE" CornerRadius="4" Padding="6,1.5" Margin="10,0,0,0" VerticalAlignment="Center">
+                                <TextBlock Text="DTools Pro v2026.2.0" FontSize="8.5" FontWeight="Bold" Foreground="#0369A1"/>
+                            </Border>
+                        </StackPanel>
+                        <TextBlock Text="Bố trí trọn bộ không gian kiến trúc chuẩn tỉ lệ, tính toán hành lang lưu thông và xuất CAD 2D" FontSize="9.5" Foreground="#E0F2FE" Margin="26,2,0,0"/>
+                    </StackPanel>
+
+                    <!-- Nút Đóng [X] -->
+                    <Button Grid.Column="1" Content="✕" Width="30" Height="30" VerticalAlignment="Center"
+                            Background="Transparent" Foreground="#FFFFFF" BorderThickness="0" FontSize="14" FontWeight="Bold"
+                            Cursor="Hand" Click="BtnCancel_Click" ToolTip="Đóng (Esc)"/>
+                </Grid>
+            </Border>
+
+            <!-- 2. NỘI DUNG CHÍNH (THÔNG SỐ BÊN TRÁI - PREVIEW BẢN VẼ BÊN PHẢI) -->
+            <Grid Grid.Row="1" Margin="14,10,14,6">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="360"/>
+                    <ColumnDefinition Width="14"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- KHU VỰC THÔNG SỐ NHẬP LIỆU -->
+                <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,4,0">
+                    <StackPanel>
+                        <!-- NHÓM 1: CHỌN LOẠI PHÒNG -->
+                        <Border Background="#F8FAFC" CornerRadius="8" BorderBrush="#E2E8F0" BorderThickness="1" Padding="10,8" Margin="0,0,0,10">
+                            <StackPanel>
+                                <TextBlock Text="🏠 KHÔNG GIAN CHỨC NĂNG" FontSize="11" FontWeight="Bold" Foreground="#0284C7" Margin="0,0,0,6"/>
+
+                                <TextBlock Text="Loại phòng &amp; tổ hợp nội thất:" FontSize="9.5" FontWeight="SemiBold" Foreground="#334155" Margin="0,2,0,2"/>
+                                <ComboBox x:Name="CboRoomType" Height="28" SelectionChanged="CboRoomType_SelectionChanged">
+                                    <ComboBoxItem Content="Phòng Khách (Sofa Góc L + Bàn Trà + Kệ Tivi + Thảm)" IsSelected="True"/>
+                                    <ComboBoxItem Content="Phòng Ngủ Master (Giường King + Tab + Tủ Áo + Bàn Phấn)"/>
+                                    <ComboBoxItem Content="Phòng Bếp &amp; Ăn (Bếp Chữ L + Bồn Rửa + Bàn Ăn 6 Ghế)"/>
+                                    <ComboBoxItem Content="Phòng Vệ Sinh WC (Lavabo Bàn Đá + Bồn Cầu + Vách Tắm)"/>
+                                    <ComboBoxItem Content="Phòng Làm Việc (Bàn Giám Đốc + Ghế Xoay + Tủ Sách + Ghế Khách)"/>
+                                </ComboBox>
+
+                                <Border Background="#EFF6FF" BorderBrush="#BFDBFE" BorderThickness="1" CornerRadius="6" Padding="8,4" Margin="0,6,0,0">
+                                    <TextBlock x:Name="TxtRoomDesc" Text="Bộ nội thất: Sofa góc L 2600x1800, Bàn trà 1200x600, Kệ Tivi 2000x400 (Tivi 65 inch), Thảm trang trí" FontSize="8.5" Foreground="#1E40AF" TextWrapping="Wrap"/>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- NHÓM 2: KÍCH THƯỚC PHÒNG & RANH GIỚI -->
+                        <Border Background="#F8FAFC" CornerRadius="8" BorderBrush="#E2E8F0" BorderThickness="1" Padding="10,8" Margin="0,0,0,10">
+                            <StackPanel>
+                                <TextBlock Text="📐 KÍCH THƯỚC PHÒNG &amp; RANH GIỚI" FontSize="11" FontWeight="Bold" Foreground="#0284C7" Margin="0,0,0,6"/>
+
+                                <Grid Margin="0,2,0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0" Margin="0,0,4,0">
+                                        <TextBlock Text="Chiều dài L (mm):" FontSize="9.5" FontWeight="SemiBold" Foreground="#334155" Margin="0,0,0,2"/>
+                                        <TextBox x:Name="TxtRoomLength" Text="5000" Height="28" TextChanged="Param_Changed" VerticalContentAlignment="Center" Padding="4,0"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Margin="4,0,0,0">
+                                        <TextBlock Text="Chiều rộng W (mm):" FontSize="9.5" FontWeight="SemiBold" Foreground="#334155" Margin="0,0,0,2"/>
+                                        <TextBox x:Name="TxtRoomWidth" Text="4000" Height="28" TextChanged="Param_Changed" VerticalContentAlignment="Center" Padding="4,0"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <!-- Nút chọn ranh giới phòng từ CAD -->
+                                <Button x:Name="BtnPickBoundary" Content="📍 CHỌN RANH GIỚI PHÒNG TỪ BẢN VẼ CAD" Height="28" Margin="0,4,0,4"
+                                        Background="#F1F5F9" Foreground="#0284C7" BorderBrush="#0284C7" BorderThickness="1"
+                                        FontWeight="SemiBold" FontSize="9.5" Cursor="Hand" Click="BtnPickBoundary_Click">
+                                    <Button.Resources>
+                                        <Style TargetType="Border">
+                                            <Setter Property="CornerRadius" Value="4"/>
+                                        </Style>
+                                    </Button.Resources>
+                                </Button>
+
+                                <Grid Margin="0,4,0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0" Margin="0,0,4,0">
+                                        <TextBlock Text="Cách tường (mm):" FontSize="9.5" FontWeight="SemiBold" Foreground="#334155" Margin="0,0,0,2"/>
+                                        <TextBox x:Name="TxtWallClearance" Text="80" Height="28" TextChanged="Param_Changed" VerticalContentAlignment="Center" Padding="4,0"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Margin="4,0,0,0">
+                                        <TextBlock Text="Lối đi tối thiểu (mm):" FontSize="9.5" FontWeight="SemiBold" Foreground="#334155" Margin="0,0,0,2"/>
+                                        <TextBox x:Name="TxtWalkwayMin" Text="900" Height="28" TextChanged="Param_Changed" VerticalContentAlignment="Center" Padding="4,0"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <Grid Margin="0,4,0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0" Margin="0,0,4,0">
+                                        <TextBlock Text="Góc xoay bố trí:" FontSize="9.5" FontWeight="SemiBold" Foreground="#334155" Margin="0,0,0,2"/>
+                                        <ComboBox x:Name="CboRotation" Height="28" SelectionChanged="Param_Changed">
+                                            <ComboBoxItem Content="0° (Mặc định)" IsSelected="True"/>
+                                            <ComboBoxItem Content="90° (Dọc theo trục Y)"/>
+                                            <ComboBoxItem Content="180° (Đối xứng ngược)"/>
+                                            <ComboBoxItem Content="270° (Xoay 270°)"/>
+                                        </ComboBox>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Margin="4,0,0,0">
+                                        <TextBlock Text="Layer gán:" FontSize="9.5" FontWeight="SemiBold" Foreground="#334155" Margin="0,0,0,2"/>
+                                        <ComboBox x:Name="CboLayer" Height="28">
+                                            <ComboBoxItem Content="A-FURN (Nội thất)" IsSelected="True"/>
+                                            <ComboBoxItem Content="A-SANR (Thiết bị vệ sinh)"/>
+                                            <ComboBoxItem Content="A-FURN-HIGH (Nội thất cao cấp)"/>
+                                        </ComboBox>
+                                    </StackPanel>
+                                </Grid>
+
+                                <CheckBox x:Name="ChkDrawWalls" Content="Vẽ tường bao quanh phòng (Tường đôi 220mm)" IsChecked="True" FontSize="9.5" FontWeight="SemiBold" Foreground="#334155" Margin="0,6,0,2" Click="Param_Changed"/>
+                                <CheckBox x:Name="ChkDimensions" Content="Ghi kích thước tổng thể L x W và nhãn thiết bị" IsChecked="True" FontSize="9.5" FontWeight="SemiBold" Foreground="#334155" Margin="0,4,0,2" Click="Param_Changed"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- KHU VỰC PREVIEW BẢN VẼ CAD 2D CHI TIẾT (TOP-DOWN VIEW) -->
+                <Border Grid.Column="2" Background="#0F172A" CornerRadius="8" BorderBrush="#0284C7" BorderThickness="1.5" Padding="8">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Header Preview -->
+                        <DockPanel Grid.Row="0" Margin="2,0,2,6">
+                            <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+                                <Button Content="➕" Width="26" Height="22" Margin="2,0" Background="#1E293B" Foreground="#38BDF8" BorderThickness="0" Cursor="Hand" Click="BtnZoomIn_Click" ToolTip="Phóng to"/>
+                                <Button Content="➖" Width="26" Height="22" Margin="2,0" Background="#1E293B" Foreground="#38BDF8" BorderThickness="0" Cursor="Hand" Click="BtnZoomOut_Click" ToolTip="Thu nhỏ"/>
+                                <Button Content="⟲ Vừa khung" Padding="6,0" Height="22" Margin="2,0" Background="#1E293B" Foreground="#38BDF8" BorderThickness="0" FontSize="8.5" Cursor="Hand" Click="BtnFitView_Click" ToolTip="Đặt lại khung nhìn"/>
+                            </StackPanel>
+                            <TextBlock Text="👁️ MẶT BẰNG NỘI THẤT 2D TOP-DOWN" FontSize="11" FontWeight="Bold" Foreground="#38BDF8" VerticalAlignment="Center"/>
+                        </DockPanel>
+
+                        <!-- Canvas chứa bản vẽ 2D thực tế -->
+                        <Border Grid.Row="1" Background="#020617" CornerRadius="6" ClipToBounds="True" BorderBrush="#1E293B" BorderThickness="1">
+                            <ScrollViewer x:Name="PreviewScrollViewer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                                <Viewbox x:Name="FurnitureViewbox" Stretch="Uniform" Margin="10">
+                                    <Canvas x:Name="FurnitureCanvas" Width="600" Height="440" Background="#020617"/>
+                                </Viewbox>
+                            </ScrollViewer>
+                        </Border>
+
+                        <!-- Footer Preview: Kích thước tổng thể và diện tích -->
+                        <DockPanel Grid.Row="2" Margin="2,6,2,0">
+                            <TextBlock x:Name="TxtRoomArea" Text="Diện tích: 20.0 m² • Hành lang: 900mm Đạt" FontSize="8.5" Foreground="#10B981" FontWeight="SemiBold" DockPanel.Dock="Right"/>
+                            <TextBlock x:Name="TxtFurnitureDims" Text="Kích thước phòng: 5000 x 4000 mm" FontSize="9" Foreground="#94A3B8" FontWeight="SemiBold"/>
+                        </DockPanel>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <!-- 3. FOOTER HÀNH ĐỘNG -->
+            <Border Grid.Row="2" Background="#F1F5F9" CornerRadius="0,0,10,10" Padding="14,0" BorderBrush="#E2E8F0" BorderThickness="0,1,0,0">
+                <Grid VerticalAlignment="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                        <TextBlock Text="⌨ Phím tắt: [Enter] = Áp dụng &amp; Vẽ • [Esc] = Hủy bỏ" FontSize="9.5" Foreground="#64748B"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <Button Content="Hủy (Esc)" Width="85" Height="32" Margin="0,0,8,0"
+                                Background="#FFFFFF" Foreground="#334155" BorderBrush="#CBD5E1" BorderThickness="1"
+                                FontWeight="SemiBold" FontSize="11" Cursor="Hand" Click="BtnCancel_Click">
+                            <Button.Resources>
+                                <Style TargetType="Border">
+                                    <Setter Property="CornerRadius" Value="6"/>
+                                </Style>
+                            </Button.Resources>
+                        </Button>
+
+                        <Button Content="✓ ÁP DỤNG &amp; VẼ (ENTER)" Width="175" Height="32"
+                                Background="#0284C7" Foreground="#FFFFFF" BorderThickness="0"
+                                FontWeight="Bold" FontSize="11" Cursor="Hand" Click="BtnApply_Click">
+                            <Button.Resources>
+                                <Style TargetType="Border">
+                                    <Setter Property="CornerRadius" Value="6"/>
+                                </Style>
+                            </Button.Resources>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</Window>

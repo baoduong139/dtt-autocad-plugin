@@ -38,6 +38,7 @@ namespace DTT_AutoCAD_Plugin.Modules
         public static ElectricalSymbolItem TargetSymbol { get; set; }
         public static double Scale { get; set; } = 1.0;
         public static double Rotation { get; set; } = 0.0;
+        public static bool IsContinuous { get; set; } = false;
     }
 
     public static class ElectricalSymbolsManager
@@ -258,11 +259,12 @@ namespace DTT_AutoCAD_Plugin.Modules
 
             double scale = ElectricalPlacementContext.Scale > 0 ? ElectricalPlacementContext.Scale : 1.0;
             double rot = ElectricalPlacementContext.Rotation;
+            bool continuous = ElectricalPlacementContext.IsContinuous;
 
-            InsertSymbolInteractive(doc, sym, scale, rot);
+            InsertSymbolInteractive(doc, sym, scale, rot, continuous);
         }
 
-        public static bool InsertSymbolInteractive(Document doc, ElectricalSymbolItem sym, double scale = 1.0, double rotationDeg = 0.0)
+        public static bool InsertSymbolInteractive(Document doc, ElectricalSymbolItem sym, double scale = 1.0, double rotationDeg = 0.0, bool continuous = false)
         {
             if (doc == null)
             {
@@ -344,8 +346,46 @@ namespace DTT_AutoCAD_Plugin.Modules
                         ed.WriteMessage($"\n📏 [DTools Pro] Tỷ lệ Scale tự động: {effectiveScale:F2}x (căn cứ theo đơn vị bản vẽ / DIMSCALE / Viewport)");
                     }
 
-                    // 4. Yêu cầu người dùng chỉ định điểm chèn (Editor.GetPoint)
-                    PromptPointOptions ppo = new PromptPointOptions($"\n📍 [DTools] Click chọn điểm đặt ký hiệu [{sym.NameVi}] [Enter/Esc để kết thúc]: ");
+                    string layerName = (sym.Category == "ARCH") ? "A-FURN" : "E-SYMBOLS";
+                    short layerColor = (sym.Category == "ARCH") ? (short)3 : (short)2; // 2: Yellow, 3: Green
+                    ObjectId symbolLayer = CadUtils.GetOrCreateLayer(db, layerName, layerColor, LineWeight.LineWeight025);
+
+                    // 4. MẶC ĐỊNH BẮT BUỘC: CHÈN ĐÚNG 1 KÝ HIỆU DUY NHẤT RỒI KẾT THÚC
+                    if (!continuous)
+                    {
+                        PromptPointOptions ppoOne = new PromptPointOptions($"\n📍 [DTools] Click chọn điểm đặt ký hiệu [{sym.NameVi}] [Esc để hủy]: ");
+                        PromptPointResult pprOne = ed.GetPoint(ppoOne);
+                        if (pprOne.Status != PromptStatus.OK)
+                        {
+                            ed.WriteMessage("\n[DTools] Đã hủy thao tác chèn ký hiệu.\n");
+                            return false;
+                        }
+
+                        Point3d insertPt = pprOne.Value;
+                        using (Transaction tr = db.TransactionManager.StartTransaction())
+                        {
+                            BlockTable bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForRead);
+                            BlockTableRecord modelSpace = (BlockTableRecord)tr.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForWrite);
+
+                            BlockReference br = new BlockReference(insertPt, blockId)
+                            {
+                                ScaleFactors = new Scale3d(effectiveScale),
+                                Rotation = rotationDeg * (Math.PI / 180.0),
+                                LayerId = symbolLayer
+                            };
+
+                            modelSpace.AppendEntity(br);
+                            tr.AddNewlyCreatedDBObject(br, true);
+                            tr.Commit();
+                        }
+
+                        CadUtils.RefreshScreenAndGraphics(ed);
+                        ed.WriteMessage($"\n✅ [DTools Pro] Đã chèn thành công 1 ký hiệu: {sym.NameVi} tại ({insertPt.X:F1}, {insertPt.Y:F1})\n");
+                        return true;
+                    }
+
+                    // 5. CHẾ ĐỘ CHÈN LIÊN TỤC (Chỉ chạy khi người dùng tích chọn 'Chèn liên tục')
+                    PromptPointOptions ppo = new PromptPointOptions($"\n📍 [DTools - Chèn Liên Tục] Click điểm đặt ký hiệu [{sym.NameVi}] [Enter/Esc để kết thúc]: ");
                     ppo.AllowNone = true;
 
                     int count = 0;
@@ -360,10 +400,6 @@ namespace DTT_AutoCAD_Plugin.Modules
                         {
                             BlockTable bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForRead);
                             BlockTableRecord modelSpace = (BlockTableRecord)tr.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForWrite);
-
-                            string layerName = (sym.Category == "ARCH") ? "A-FURN" : "E-SYMBOLS";
-                            short layerColor = (sym.Category == "ARCH") ? (short)3 : (short)2; // 2: Yellow, 3: Green
-                            ObjectId symbolLayer = CadUtils.GetOrCreateLayer(db, layerName, layerColor, LineWeight.LineWeight025);
 
                             BlockReference br = new BlockReference(insertPt, blockId)
                             {

@@ -177,43 +177,21 @@ namespace DTT_AutoCAD_Plugin.Modules
 
             try
             {
-                var pr = DTools_FloatingDialog.Prompt(
-                    "VẼ CẦU THANG KIẾN TRÚC PHONG THỦY",
-                    "Tự động tính bậc Cung Sinh (17, 21, 25 bậc) và vẽ chi tiết vế thang",
-                    "🪜",
-                    PreviewKind.Generic,
-                    new[]
-                    {
-                        new ParameterField("Steps", "Số bậc phong thủy (Cung Sinh):", "21", "bậc", new[] { "21", "17", "25", "19", "23" }),
-                        new ParameterField("Type", "Dạng thang:", "2 Vế Chữ U (Có Chiếu Nghỉ)", null, new[] { "2 Vế Chữ U (Có Chiếu Nghỉ)", "1 Vế Thẳng Chữ I" }),
-                        new ParameterField("Width", "Chiều rộng vế thang W:", "1000", "mm", new[] { "900", "1000", "1100", "1200" }),
-                        new ParameterField("Tread", "Chiều rộng mặt bậc b:", "260", "mm", new[] { "250", "260", "270", "280" }),
-                        new ParameterField("Landing", "Chiều sâu chiếu nghỉ:", "1000", "mm")
-                    });
+                var dlg = new DTT_StaircaseDialog();
+                bool? dr = Application.ShowModalWindow(dlg);
+                if (dr != true || dlg.ResultConfig == null) return;
 
-                if (pr == null) return;
-
-                PromptPointOptions ppo = new PromptPointOptions("\n[DTT] Chọn điểm đặt góc chân cầu thang: ");
+                PromptPointOptions ppo = new PromptPointOptions("\n[DTools] Chọn điểm đặt góc chân cầu thang: ");
                 PromptPointResult ppr = ed.GetPoint(ppo);
                 if (ppr.Status != PromptStatus.OK) return;
 
-                string typeStr = pr.GetString("Type", "2 Vế Chữ U");
-                var cfg = new StaircaseConfig
-                {
-                    Type = typeStr.Contains("1 Vế") ? StaircaseType.Straight1Flight : StaircaseType.UTurn2Flights,
-                    TotalSteps = pr.GetInt("Steps", 21),
-                    FlightWidth = pr.GetDouble("Width", 1000.0),
-                    TreadDepth = pr.GetDouble("Tread", 260.0),
-                    LandingDepth = pr.GetDouble("Landing", 1000.0),
-                    ShowStepNumbers = true
-                };
-
                 using (doc.LockDocument())
                 {
-                    InteriorAndStaircaseEngine.GenerateStaircase(doc.Database, ppr.Value, cfg);
+                    InteriorAndStaircaseEngine.GenerateStaircase(doc.Database, ppr.Value, dlg.ResultConfig);
                 }
 
-                ed.WriteMessage($"\n✅ [DTools] Đã vẽ Cầu thang phong thủy {cfg.TotalSteps} bậc (Cung Sinh) thành công!\n");
+                CadUtils.RefreshScreenAndGraphics(ed);
+                ed.WriteMessage($"\n✅ [DTools Pro] Đã vẽ Cầu thang phong thủy {dlg.ResultConfig.TotalSteps} bậc thành công!\n");
             }
             catch (System.Exception ex)
             {
@@ -230,36 +208,21 @@ namespace DTT_AutoCAD_Plugin.Modules
 
             try
             {
-                var pr = DTools_FloatingDialog.Prompt(
-                    "BỐ TRÍ NỘI THẤT HOÀN THIỆN TỰ ĐỘNG",
-                    "Chọn không gian chức năng để bố trí trọn bộ nội thất chuẩn kiến trúc",
-                    "🛋️",
-                    PreviewKind.Generic,
-                    new[]
-                    {
-                        new ParameterField("RoomType", "Không gian chức năng:", "Phòng Khách (Sofa Góc + Kệ TV)", null,
-                            new[] { "Phòng Khách (Sofa Góc + Kệ TV)", "Phòng Bếp & Ăn (Bàn ăn 6 Ghế + Tủ bếp L)", "Phòng Ngủ Master (Giường King + Tab + Tủ)", "Phòng Vệ Sinh WC (Lavabo + Bồn cầu + Tắm)", "Phòng Làm Việc (Bàn + Ghế xoay + Kệ sách)" })
-                    });
+                var dlg = new DTT_FurnitureDialog();
+                bool? dr = Application.ShowModalWindow(dlg);
+                if (dr != true || dlg.ResultConfig == null) return;
 
-                if (pr == null) return;
-
-                PromptPointOptions ppo = new PromptPointOptions("\n[DTT] Chọn tâm phòng để bố trí nội thất: ");
+                PromptPointOptions ppo = new PromptPointOptions("\n[DTools] Chọn góc đặt phòng để bố trí nội thất: ");
                 PromptPointResult ppr = ed.GetPoint(ppo);
                 if (ppr.Status != PromptStatus.OK) return;
 
-                string sel = pr.GetString("RoomType", "Phòng Khách");
-                FurnitureRoomType rType = FurnitureRoomType.LivingRoom;
-                if (sel.Contains("Bếp")) rType = FurnitureRoomType.KitchenDining;
-                else if (sel.Contains("Ngủ")) rType = FurnitureRoomType.MasterBedroom;
-                else if (sel.Contains("Vệ Sinh") || sel.Contains("WC")) rType = FurnitureRoomType.RestroomWc;
-                else if (sel.Contains("Làm Việc")) rType = FurnitureRoomType.HomeOffice;
-
                 using (doc.LockDocument())
                 {
-                    InteriorAndStaircaseEngine.GenerateRoomFurniture(doc.Database, ppr.Value, rType, 5000, 4000);
+                    InteriorAndStaircaseEngine.GenerateRoomFurniture(doc.Database, ppr.Value, dlg.ResultConfig);
                 }
 
-                ed.WriteMessage("\n✅ [DTools] Đã bố trí cụm nội thất kiến trúc thành công!\n");
+                CadUtils.RefreshScreenAndGraphics(ed);
+                ed.WriteMessage($"\n✅ [DTools Pro] Đã bố trí trọn bộ không gian nội thất ({dlg.ResultConfig.RoomLength:F0}x{dlg.ResultConfig.RoomWidth:F0}mm) thành công!\n");
             }
             catch (System.Exception ex)
             {

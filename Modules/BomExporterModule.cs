@@ -342,7 +342,7 @@ namespace DTT_AutoCAD_Plugin.Modules
 
                     // Dòng 2: Thông tin dự án
                     sb.Append("    <row r=\"2\" ht=\"18\" customHeight=\"1\">\r\n");
-                    sb.Append($"      <c r=\"B2\" t=\"inlineStr\"><is><t>Dự án: Thiết kế &amp; Sản xuất Tủ Điện • Xuất tự động bởi DTools Pro v3.5 • Ngày: {DateTime.Now:dd/MM/yyyy HH:mm}</t></is></c>\r\n");
+                    sb.Append($"      <c r=\"B2\" t=\"inlineStr\"><is><t>Dự án: Thiết kế &amp; Sản xuất Tủ Điện • Xuất tự động bởi DTools Pro v2026.2.0 • Ngày: {DateTime.Now:dd/MM/yyyy HH:mm}</t></is></c>\r\n");
                     sb.Append("    </row>\r\n");
 
                     // Dòng 4: Header Bảng

@@ -36,6 +36,19 @@ namespace DTT_AutoCAD_Plugin.Modules
         public bool ShowStepNumbers { get; set; } = true; // Đánh số thứ tự 1..21
     }
 
+    public class FurnitureLayoutConfig
+    {
+        public FurnitureRoomType RoomType { get; set; } = FurnitureRoomType.LivingRoom;
+        public double RoomLength { get; set; } = 5000.0;
+        public double RoomWidth { get; set; } = 4000.0;
+        public double WallClearance { get; set; } = 80.0;
+        public double WalkwayMin { get; set; } = 900.0;
+        public double RotationDeg { get; set; } = 0.0;
+        public bool DrawWalls { get; set; } = true;
+        public bool DrawDimensions { get; set; } = true;
+        public string TargetLayer { get; set; } = "A-FURN";
+    }
+
     public static class InteriorAndStaircaseEngine
     {
         // ============================================================
@@ -64,6 +77,10 @@ namespace DTT_AutoCAD_Plugin.Modules
                 if (cfg.Type == StaircaseType.UTurn2Flights)
                 {
                     DrawUTurnStaircase(btr, tr, bx, by, cfg, layerStep, layerHidden, layerRail, layerPath, layerText, linetypeDashed, styleId);
+                }
+                else if (cfg.Type == StaircaseType.LTurn2Flights)
+                {
+                    DrawLTurnStaircase(btr, tr, bx, by, cfg, layerStep, layerHidden, layerRail, layerPath, layerText, linetypeDashed, styleId);
                 }
                 else
                 {
@@ -263,9 +280,219 @@ namespace DTT_AutoCAD_Plugin.Modules
             }
         }
 
+        private static void DrawLTurnStaircase(BlockTableRecord btr, Transaction tr, double bx, double by, StaircaseConfig cfg,
+            ObjectId layerStep, ObjectId layerHidden, ObjectId layerRail, ObjectId layerPath, ObjectId layerText, ObjectId linetypeDashed, ObjectId styleId)
+        {
+            int flight1Steps = (cfg.TotalSteps - 1) / 2;
+            int flight2Steps = cfg.TotalSteps - 1 - flight1Steps;
+            double w = cfg.FlightWidth;
+            double tread = cfg.TreadDepth;
+            double flight1Len = flight1Steps * tread;
+            double flight2Len = flight2Steps * tread;
+
+            // 1. Khung vế 1 (Ngang)
+            Polyline f1 = new Polyline();
+            f1.AddVertexAt(0, new Point2d(bx, by), 0, 0, 0);
+            f1.AddVertexAt(1, new Point2d(bx + flight1Len + w, by), 0, 0, 0);
+            f1.AddVertexAt(2, new Point2d(bx + flight1Len + w, by + w), 0, 0, 0);
+            f1.AddVertexAt(3, new Point2d(bx, by + w), 0, 0, 0);
+            f1.Closed = true;
+            f1.LayerId = layerRail;
+            btr.AppendEntity(f1); tr.AddNewlyCreatedDBObject(f1, true);
+
+            // 2. Khung vế 2 (Dọc lên)
+            Polyline f2 = new Polyline();
+            f2.AddVertexAt(0, new Point2d(bx + flight1Len, by + w), 0, 0, 0);
+            f2.AddVertexAt(1, new Point2d(bx + flight1Len + w, by + w), 0, 0, 0);
+            f2.AddVertexAt(2, new Point2d(bx + flight1Len + w, by + w + flight2Len), 0, 0, 0);
+            f2.AddVertexAt(3, new Point2d(bx + flight1Len, by + w + flight2Len), 0, 0, 0);
+            f2.Closed = true;
+            f2.LayerId = layerRail;
+            btr.AppendEntity(f2); tr.AddNewlyCreatedDBObject(f2, true);
+
+            // 3. Đường chiếu nghỉ góc vuông
+            Line landLine = new Line(new Point3d(bx + flight1Len, by, 0), new Point3d(bx + flight1Len, by + w, 0)) { LayerId = layerStep };
+            btr.AppendEntity(landLine); tr.AddNewlyCreatedDBObject(landLine, true);
+
+            // 4. Các bậc vế 1
+            for (int i = 1; i <= flight1Steps; i++)
+            {
+                double sx = bx + i * tread;
+                Line step = new Line(new Point3d(sx, by, 0), new Point3d(sx, by + w, 0)) { LayerId = layerStep };
+                btr.AppendEntity(step); tr.AddNewlyCreatedDBObject(step, true);
+
+                if (cfg.ShowStepNumbers)
+                {
+                    DBText num = new DBText
+                    {
+                        Position = new Point3d(bx + (i - 0.5) * tread - 15, by + 120, 0),
+                        Height = 65,
+                        TextString = i.ToString(),
+                        TextStyleId = styleId,
+                        LayerId = layerText
+                    };
+                    btr.AppendEntity(num); tr.AddNewlyCreatedDBObject(num, true);
+                }
+            }
+
+            // Số bậc chiếu nghỉ
+            int landNum = flight1Steps + 1;
+            if (cfg.ShowStepNumbers)
+            {
+                DBText txtLand = new DBText
+                {
+                    Position = new Point3d(bx + flight1Len + w / 2 - 20, by + w / 2 - 20, 0),
+                    Height = 70,
+                    TextString = landNum.ToString(),
+                    TextStyleId = styleId,
+                    LayerId = layerText
+                };
+                btr.AppendEntity(txtLand); tr.AddNewlyCreatedDBObject(txtLand, true);
+            }
+
+            // 5. Các bậc vế 2
+            for (int j = 1; j <= flight2Steps; j++)
+            {
+                double sy = by + w + j * tread;
+                Line step = new Line(new Point3d(bx + flight1Len, sy, 0), new Point3d(bx + flight1Len + w, sy, 0)) { LayerId = layerStep };
+                btr.AppendEntity(step); tr.AddNewlyCreatedDBObject(step, true);
+
+                if (cfg.ShowStepNumbers)
+                {
+                    int stepNum = landNum + j;
+                    DBText num = new DBText
+                    {
+                        Position = new Point3d(bx + flight1Len + 120, by + w + (j - 0.5) * tread - 20, 0),
+                        Height = 65,
+                        TextString = stepNum.ToString(),
+                        TextStyleId = styleId,
+                        LayerId = layerText
+                    };
+                    btr.AppendEntity(num); tr.AddNewlyCreatedDBObject(num, true);
+                }
+            }
+
+            // 6. Tim đi bộ L
+            Point3d pStart = new Point3d(bx + 150, by + w / 2, 0);
+            Point3d pTurn = new Point3d(bx + flight1Len + w / 2, by + w / 2, 0);
+            Point3d pEnd = new Point3d(bx + flight1Len + w / 2, by + w + flight2Len - 150, 0);
+
+            Circle sc = new Circle(pStart, Vector3d.ZAxis, 25) { LayerId = layerPath };
+            btr.AppendEntity(sc); tr.AddNewlyCreatedDBObject(sc, true);
+
+            Line lp1 = new Line(new Point3d(pStart.X + 25, pStart.Y, 0), pTurn) { LayerId = layerPath };
+            Line lp2 = new Line(pTurn, new Point3d(pEnd.X, pEnd.Y - 50, 0)) { LayerId = layerPath };
+            btr.AppendEntity(lp1); tr.AddNewlyCreatedDBObject(lp1, true);
+            btr.AppendEntity(lp2); tr.AddNewlyCreatedDBObject(lp2, true);
+
+            Polyline arr = new Polyline();
+            arr.AddVertexAt(0, new Point2d(pEnd.X, pEnd.Y - 50), 0, 40, 0);
+            arr.AddVertexAt(1, new Point2d(pEnd.X, pEnd.Y), 0, 0, 0);
+            arr.LayerId = layerPath;
+            btr.AppendEntity(arr); tr.AddNewlyCreatedDBObject(arr, true);
+
+            DBText tUp = new DBText
+            {
+                Position = new Point3d(pStart.X + 60, pStart.Y + 35, 0),
+                Height = 85,
+                TextString = "LÊN (UP)",
+                TextStyleId = styleId,
+                LayerId = layerPath
+            };
+            btr.AppendEntity(tUp); tr.AddNewlyCreatedDBObject(tUp, true);
+        }
+
         // ============================================================
         // 2. THUẬT TOÁN TỰ ĐỘNG BỐ TRÍ NỘI THẤT HOÀN THIỆN
         // ============================================================
+
+        public static void GenerateRoomFurniture(Database db, Point3d insertPt, FurnitureLayoutConfig cfg)
+        {
+            if (db == null || cfg == null) return;
+
+            ObjectId layerFurn = CadUtils.GetOrCreateLayer(db, cfg.TargetLayer ?? "A-FURN", 30);
+            ObjectId layerSan = CadUtils.GetOrCreateLayer(db, "A-SANR", 4);
+            ObjectId layerText = CadUtils.GetOrCreateLayer(db, "A-FURN-TEXT", 7);
+            ObjectId layerWall = CadUtils.GetOrCreateLayer(db, "A-WALL", 8, LineWeight.LineWeight035);
+            ObjectId layerDim = CadUtils.GetOrCreateLayer(db, "A-DIMS", 1);
+            ObjectId styleId = CadUtils.GetOrCreateUnicodeStyle(db);
+
+            using (Transaction tr = db.TransactionManager.StartTransaction())
+            {
+                BlockTableRecord btr = (BlockTableRecord)tr.GetObject(db.CurrentSpaceId, OpenMode.ForWrite);
+
+                double bx = insertPt.X;
+                double by = insertPt.Y;
+                double len = cfg.RoomLength;
+                double wid = cfg.RoomWidth;
+
+                // 1. Tường phòng
+                if (cfg.DrawWalls)
+                {
+                    double wallThick = 220.0;
+                    Polyline wallOuter = new Polyline();
+                    wallOuter.AddVertexAt(0, new Point2d(bx - wallThick, by - wallThick), 0, 0, 0);
+                    wallOuter.AddVertexAt(1, new Point2d(bx + len + wallThick, by - wallThick), 0, 0, 0);
+                    wallOuter.AddVertexAt(2, new Point2d(bx + len + wallThick, by + wid + wallThick), 0, 0, 0);
+                    wallOuter.AddVertexAt(3, new Point2d(bx - wallThick, by + wid + wallThick), 0, 0, 0);
+                    wallOuter.Closed = true;
+                    wallOuter.LayerId = layerWall;
+                    btr.AppendEntity(wallOuter); tr.AddNewlyCreatedDBObject(wallOuter, true);
+
+                    Polyline wallInner = new Polyline();
+                    wallInner.AddVertexAt(0, new Point2d(bx, by), 0, 0, 0);
+                    wallInner.AddVertexAt(1, new Point2d(bx + len, by), 0, 0, 0);
+                    wallInner.AddVertexAt(2, new Point2d(bx + len, by + wid), 0, 0, 0);
+                    wallInner.AddVertexAt(3, new Point2d(bx, by + wid), 0, 0, 0);
+                    wallInner.Closed = true;
+                    wallInner.LayerId = layerWall;
+                    btr.AppendEntity(wallInner); tr.AddNewlyCreatedDBObject(wallInner, true);
+
+                    // Cửa ra vào
+                    double doorW = 900.0;
+                    Line doorLeaf = new Line(new Point3d(bx + len - doorW, by, 0), new Point3d(bx + len - doorW, by + doorW, 0)) { LayerId = layerFurn };
+                    btr.AppendEntity(doorLeaf); tr.AddNewlyCreatedDBObject(doorLeaf, true);
+
+                    Arc doorArc = new Arc(new Point3d(bx + len - doorW, by, 0), doorW, 0, Math.PI / 2.0) { LayerId = layerFurn };
+                    btr.AppendEntity(doorArc); tr.AddNewlyCreatedDBObject(doorArc, true);
+                }
+
+                // 2. Nội thất theo loại phòng
+                double cx = bx + len / 2.0;
+                double cy = by + wid / 2.0;
+
+                switch (cfg.RoomType)
+                {
+                    case FurnitureRoomType.LivingRoom:
+                        DrawLivingRoomLayout(btr, tr, cx, cy, layerFurn, layerText, styleId);
+                        break;
+                    case FurnitureRoomType.KitchenDining:
+                        DrawKitchenDiningLayout(btr, tr, cx, cy, layerFurn, layerText, styleId);
+                        break;
+                    case FurnitureRoomType.MasterBedroom:
+                        DrawMasterBedroomLayout(btr, tr, cx, cy, layerFurn, layerText, styleId);
+                        break;
+                    case FurnitureRoomType.RestroomWc:
+                        DrawRestroomSanitaryLayout(btr, tr, cx, cy, layerSan, layerText, styleId);
+                        break;
+                    case FurnitureRoomType.HomeOffice:
+                        DrawHomeOfficeLayout(btr, tr, cx, cy, layerFurn, layerText, styleId);
+                        break;
+                }
+
+                // 3. Kích thước
+                if (cfg.DrawDimensions)
+                {
+                    DBText tL = new DBText { Position = new Point3d(bx + len / 2.0 - 150, by - 350, 0), Height = 120, TextString = $"L = {len:F0} mm", TextStyleId = styleId, LayerId = layerDim };
+                    btr.AppendEntity(tL); tr.AddNewlyCreatedDBObject(tL, true);
+
+                    DBText tW = new DBText { Position = new Point3d(bx - 450, by + wid / 2.0, 0), Height = 120, TextString = $"W = {wid:F0} mm", TextStyleId = styleId, LayerId = layerDim, Rotation = Math.PI / 2.0 };
+                    btr.AppendEntity(tW); tr.AddNewlyCreatedDBObject(tW, true);
+                }
+
+                tr.Commit();
+            }
+        }
 
         public static void GenerateRoomFurniture(Database db, Point3d centerPt, FurnitureRoomType roomType, double roomW, double roomH)
         {
