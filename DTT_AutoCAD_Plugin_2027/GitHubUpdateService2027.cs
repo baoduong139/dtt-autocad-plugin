@@ -21,7 +21,7 @@ namespace DTT_AutoCAD_Plugin_2027
     public static class GitHubUpdateService2027
     {
         public const string CurrentVersion = "2027.1.0";
-        public const string DefaultGitHubRepo = "dtt-cad/dtt-autocad-electrical-2027";
+        public const string DefaultGitHubRepo = "baoduong139/dtt-autocad-plugin";
 
         private static readonly HttpClient _httpClient = new HttpClient();
         private static bool _isChecking = false;

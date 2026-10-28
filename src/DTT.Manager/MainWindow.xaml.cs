@@ -26,6 +26,10 @@ namespace DTT.Manager
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            if (string.IsNullOrWhiteSpace(TxtFeedUrl.Text) || TxtFeedUrl.Text.Contains("dtt-cad"))
+            {
+                TxtFeedUrl.Text = UpdateEngine.DefaultFeedUrl;
+            }
             RefreshAllStatus();
         }
 
@@ -234,7 +238,12 @@ namespace DTT.Manager
             TxtUpdateStatus.Text = "Đang kết nối kiểm tra cập nhật...";
             TxtFooterStatus.Text = "Đang kiểm tra máy chủ cập nhật...";
 
-            string url = TxtFeedUrl.Text.Trim();
+            string url = TxtFeedUrl.Text?.Trim();
+            if (string.IsNullOrWhiteSpace(url) || url.Contains("dtt-cad"))
+            {
+                url = UpdateEngine.DefaultFeedUrl;
+                TxtFeedUrl.Text = url;
+            }
             var check = await UpdateEngine.CheckForUpdatesAsync(url);
 
             TxtUpdateStatus.Text = check.Message;

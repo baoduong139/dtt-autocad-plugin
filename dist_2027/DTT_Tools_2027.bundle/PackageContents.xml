@@ -13,8 +13,8 @@
 
   <CompanyDetails 
       Name="DTT CAD Software Corporation" 
-      Url="https://github.com/dtt-cad" 
-      Email="support@dtt-cad.com" />
+      Url="https://github.com/baoduong139/dtt-autocad-plugin" 
+      Email="baoduong139@users.noreply.github.com" />
 
   <Components Description="AutoCAD Electrical 2025-2027 (.NET 8 Runtime Profile)">
     <RuntimeRequirements 

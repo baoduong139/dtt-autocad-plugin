@@ -7,7 +7,7 @@
 #define MyAppName "DTT CAD TOOLSET PRO"
 #define MyAppVersion "2026.2.0"
 #define MyAppPublisher "DTT CAD Software Corporation"
-#define MyAppURL "https://dtt-cad.vn"
+#define MyAppURL "https://github.com/baoduong139/dtt-autocad-plugin"
 
 [Setup]
 AppId={{9F3A5812-78E2-4C9D-9F01-7F23E4B8C0D1}

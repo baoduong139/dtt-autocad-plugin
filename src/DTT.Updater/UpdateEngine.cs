@@ -15,6 +15,7 @@ namespace DTT.Updater
     public class UpdateEngine
     {
         public static string DefaultFeedUrl => "https://raw.githubusercontent.com/baoduong139/dtt-autocad-plugin/main/dist/version.json";
+        public static string DefaultDownloadUrl => "https://raw.githubusercontent.com/baoduong139/dtt-autocad-plugin/main/dist/update.zip";
 
         public static string GetBundleDirectory()
         {
@@ -49,7 +50,7 @@ namespace DTT.Updater
                 CurrentVersion = DToolsConfiguration.Version
             };
 
-            string url = string.IsNullOrEmpty(feedUrl) ? DefaultFeedUrl : feedUrl;
+            string url = (string.IsNullOrEmpty(feedUrl) || feedUrl.Contains("dtt-cad")) ? DefaultFeedUrl : feedUrl;
 
             // Security: Enforce HTTPS for remote URLs
             if (!url.StartsWith("https://", StringComparison.OrdinalIgnoreCase) &&
@@ -110,10 +111,15 @@ namespace DTT.Updater
 
         public static async Task<bool> DownloadAndApplyUpdateAsync(UpdateManifest manifest, Action<string, int> progressCallback = null)
         {
-            if (manifest == null || string.IsNullOrEmpty(manifest.DownloadUrl))
+            if (manifest == null)
             {
-                DToolsLogger.LogError("Updater", "Manifest hoặc DownloadUrl rỗng");
+                DToolsLogger.LogError("Updater", "Manifest rỗng");
                 return false;
+            }
+
+            if (string.IsNullOrEmpty(manifest.DownloadUrl) || manifest.DownloadUrl.Contains("dtt-cad"))
+            {
+                manifest.DownloadUrl = DefaultDownloadUrl;
             }
 
             if (IsAutoCadRunning())
