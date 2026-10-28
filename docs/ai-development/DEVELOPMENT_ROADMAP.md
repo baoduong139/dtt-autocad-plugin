@@ -31,3 +31,4 @@ Lộ trình nâng cấp dài hạn biến DTT Tools thành bộ công cụ tự 
 - [ ] Trình quản lý block đám mây chia sẻ chung giữa các máy trạm trong công ty.
 - [ ] Tích hợp tính năng AI Scan-to-CAD nhận diện bản vẽ PDF scan sang DWG thông minh.
 - [ ] Hỗ trợ đa phiên bản AutoCAD từ AutoCAD 2020 đến AutoCAD 2027+.
+

@@ -33,3 +33,4 @@ try {
     Write-Host "Lỗi khi đăng ký Scheduled Task: $_"
     Write-Host "Gợi ý: Hãy mở PowerShell với quyền Administrator để đăng ký Task Scheduler."
 }
+

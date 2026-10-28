@@ -27,3 +27,4 @@ Theo dõi chi tiết các phiên bản phát hành chính thức của DTT CAD M
   2. Cửa sổ **Vẽ cầu thang phong thủy**: Tính bậc Cung Sinh, hiển thị live chiều cao cổ bậc $h = H / N$, kiểm tra công thức tiện nghi Blondel $2h + b \approx 600\text{--}650\text{ mm}$, hỗ trợ thang chữ U, chữ I và chữ L.
   3. **Kho ký hiệu điện**: Giao diện thẻ trực quan không cắt chữ, mặc định chèn đúng 1 ký hiệu duy nhất; bổ sung nút `⚡ CHÈN 1 KÝ HIỆU RA CAD` và checkbox `Chèn liên tục`.
   4. **Tối ưu RAM 8GB**: Cache thumbnail bằng `BitmapImage.Freeze()`, an toàn rò rỉ GDI/HBitmap.
+

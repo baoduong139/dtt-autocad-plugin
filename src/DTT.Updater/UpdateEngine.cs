@@ -319,8 +319,61 @@ namespace DTT.Updater
             {
                 string rel = file.Substring(sourceDir.Length).TrimStart('\\', '/');
                 string dest = Path.Combine(targetDir, rel);
-                File.Copy(file, dest, true);
+                SafeCopyFile(file, dest);
             }
+
+            // Dọn dẹp các tệp tạm .old.* còn sót lại sau khi đổi tên an toàn
+            CleanupObsoleteOldFiles(targetDir);
+        }
+
+        private static void SafeCopyFile(string source, string dest)
+        {
+            try
+            {
+                File.Copy(source, dest, true);
+            }
+            catch (IOException)
+            {
+                try
+                {
+                    // Trên Windows NT, một file .exe hoặc .dll đang chạy (bị khóa) KHÔNG thể bị ghi đè trực tiếp,
+                    // nhưng hoàn toàn CÓ THỂ ĐỔI TÊN (Move).
+                    // Kỹ thuật Safe Replacement: Đổi tên file đang khóa thành .old.<guid>, sau đó ghi file mới vào!
+                    string oldPath = dest + ".old." + Guid.NewGuid().ToString("N").Substring(0, 8);
+                    if (File.Exists(dest))
+                    {
+                        File.Move(dest, oldPath);
+                    }
+                    File.Copy(source, dest, true);
+                    DToolsLogger.LogInfo("Updater", $"Đã áp dụng kỹ thuật Safe Rename cho tệp đang bận: {Path.GetFileName(dest)} -> {Path.GetFileName(oldPath)}");
+                }
+                catch (Exception ex)
+                {
+                    DToolsLogger.LogWarning("Updater", $"Không thể ghi đè an toàn tệp {dest}: {ex.Message}");
+                    throw;
+                }
+            }
+        }
+
+        private static void CleanupObsoleteOldFiles(string targetDir)
+        {
+            try
+            {
+                if (!Directory.Exists(targetDir)) return;
+                var oldFiles = Directory.GetFiles(targetDir, "*.old.*", SearchOption.AllDirectories);
+                foreach (var f in oldFiles)
+                {
+                    try
+                    {
+                        File.Delete(f);
+                    }
+                    catch
+                    {
+                        // Nếu vẫn đang bận bởi tiến trình hiện tại thì bỏ qua, sẽ xóa ở lần chạy kế tiếp
+                    }
+                }
+            }
+            catch { }
         }
     }
 }

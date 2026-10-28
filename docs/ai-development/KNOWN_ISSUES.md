@@ -38,3 +38,4 @@ Tài liệu ghi nhận các hiện tượng kỹ thuật, ràng buộc phần c�
 - **Hiện tượng**: Bản vẽ kiến trúc có thể dùng đơn vị Millimeter (4), Meter (6) hoặc Không xác định (0). Nếu chèn symbol với scale cố định 1.0 thì ký hiệu có thể quá nhỏ hoặc quá to.
 - **Giải pháp**:
   - Hàm `CadUtils.CalculateAutoSymbolScale` tự động đọc biến hệ thống `INSUNITS`, `DIMSCALE` và tỷ lệ khung nhìn `CANOSCALE` để điều chỉnh hệ số scale hiệu dụng tự động.
+

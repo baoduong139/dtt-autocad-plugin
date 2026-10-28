@@ -31,3 +31,4 @@ Mỗi phiên làm việc (kích hoạt lúc 08:00 hằng ngày) phải tuân th�
 - **Không bao giờ phát hành khi có test thất bại**.
 - Nếu môi trường chạy kiểm thử không mở được giao diện AutoCAD thực tế, bài kiểm thử tương tác màn hình phải ghi nhận rõ ràng là **NOT TESTED (Headless)**.
 - Mọi tính toán hình học, điện, kết cấu, bóc tách dự toán đều phải có bài Unit Test kiểm tra biên trong `tests/DTools.Tests/`.
+

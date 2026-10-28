@@ -47,3 +47,4 @@ Theo dõi lịch sử kiểm thử tự động của dự án DTT CAD MASTER / 
 21. `Mô phỏng FSM chu trình Star-Delta`: Trạng thái OFF -> START -> STAR -> DEAD_TIME -> DELTA -> TRIP.
 22. `Kiểm tra hình học Mặt bằng Chiếu sáng 12x6m`: Tọa độ đèn trần và cửa đi.
 23. `GridSystem_SpanCoordinates_ShouldBeAccurate`: Tính toán tọa độ tim trục và nhịp liên tiếp phương X & Y.
+

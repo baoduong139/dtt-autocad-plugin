@@ -1,16 +1,16 @@
-{
-  "channel": "stable",
-  "downloadUrl": "https://raw.githubusercontent.com/baoduong139/dtt-autocad-plugin/main/dist/update.zip",
-  "version": "2026.2.0",
-  "releaseNotesUrl": "https://raw.githubusercontent.com/baoduong139/dtt-autocad-plugin/main/dist/release/CHANGELOG.md",
-  "pluginDllSha256": "E11D9B3D94AC84138F6454ED236B0767645251E556AB7FC7572D8ECB3CB8EF35",
-  "sha256": "ED1DCD298FC312AC1FF5604124C7F0C391A5C1188ED309B4FB418199E880F073",
-  "minAutoCadVersion": "2020",
-  "maxAutoCadVersion": "2026",
-  "packageSize": 46728860,
-  "publishedAt": "2026-10-28T23:21:17Z",
-  "mandatory": false,
-  "publisher": "DTT CAD Software Corporation",
-  "schemaVersion": "1.0",
-  "releaseNotes": "DTT TOOLS Pro v2026.2.0 - Tự động cập nhật từ GitHub Actions"
+﻿{
+    "version":  "2026.2.0",
+    "mandatory":  false,
+    "releaseNotes":  "DTT TOOLS Pro v2026.2.0: Day du DLL Plugin AutoCAD, DTT_Manager.exe, DTT_Updater.exe, Safe File Replacement va 23/23 bo kiem thu PASS.",
+    "channel":  "stable",
+    "publishedAt":  "2026-10-29T06:29:57Z",
+    "packageSize":  66334962,
+    "downloadUrl":  "https://raw.githubusercontent.com/baoduong139/dtt-autocad-plugin/main/dist/update.zip",
+    "publisher":  "DTT CAD Software Corporation",
+    "pluginDllSha256":  "35ACD1FFAEE9B4BEFC43CAB4CB6CFE95EDB9BB0EBBBEB7EA3BD810461BDF38A1",
+    "releaseNotesUrl":  "https://raw.githubusercontent.com/baoduong139/dtt-autocad-plugin/main/dist/release/CHANGELOG.md",
+    "maxAutoCadVersion":  "2026",
+    "schemaVersion":  "1.0",
+    "minAutoCadVersion":  "2020",
+    "sha256":  "F6C9755EBAB6D6AF35A7E66754F5531CB4C58D5580252E58F16A9B427A352ACD"
 }
