@@ -1,16 +1,16 @@
 {
-  "packageSize": 46694144,
-  "sha256": "56E637580907E8CB3B8B9706ED26DD8372118BDBA8B3D3FB908FA731CEDDBEF6",
-  "publisher": "DTT CAD Software Corporation",
-  "schemaVersion": "1.0",
-  "channel": "stable",
-  "releaseNotes": "DTT TOOLS Pro v2026.2.0 - Tự động cập nhật từ GitHub Actions",
   "downloadUrl": "https://raw.githubusercontent.com/baoduong139/dtt-autocad-plugin/main/dist/update.zip",
   "minAutoCadVersion": "2020",
-  "publishedAt": "2026-10-28T22:14:44Z",
-  "mandatory": false,
-  "releaseNotesUrl": "https://raw.githubusercontent.com/baoduong139/dtt-autocad-plugin/main/dist/release/CHANGELOG.md",
-  "maxAutoCadVersion": "2026",
+  "publishedAt": "2026-10-28T23:04:14Z",
   "version": "2026.2.0",
-  "pluginDllSha256": "CDDF3B06A09A29176701B2276093E32771CA7FC4A52A043060C5EEEE338E56EC"
+  "releaseNotes": "DTT TOOLS Pro v2026.2.0 - Tự động cập nhật từ GitHub Actions",
+  "pluginDllSha256": "2896D9EA67F6781B78D69F7A78D221B646480B44B6A97A030D0A026473456502",
+  "publisher": "DTT CAD Software Corporation",
+  "sha256": "C1859E9E4F6C22D0876BF3B0D5A9970A1642F04D28A6ADAB1498F8F47EA617C8",
+  "mandatory": false,
+  "schemaVersion": "1.0",
+  "maxAutoCadVersion": "2026",
+  "packageSize": 46725499,
+  "channel": "stable",
+  "releaseNotesUrl": "https://raw.githubusercontent.com/baoduong139/dtt-autocad-plugin/main/dist/release/CHANGELOG.md"
 }
