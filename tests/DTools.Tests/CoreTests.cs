@@ -268,6 +268,35 @@ namespace DTools.Tests
             StringAssert.Contains(dailyContent, "InvalidOperationException");
         }
 
+        [TestMethod]
+        public void GridSystem_ParseSpansAndOffsets_ShouldBeAccurate()
+        {
+            // 1. Kiểm tra phân tích nhịp hỗ trợ cú pháp nhân: 4000, 2*5000, 3500
+            string inputX = "4000, 2*5000, 3500";
+            var spansX = GridSystemCalculator.ParseSpans(inputX);
+            Assert.AreEqual(4, spansX.Count);
+            Assert.AreEqual(4000.0, spansX[0]);
+            Assert.AreEqual(5000.0, spansX[1]);
+            Assert.AreEqual(5000.0, spansX[2]);
+            Assert.AreEqual(3500.0, spansX[3]);
+
+            // 2. Kiểm tra tính toán tọa độ tích lũy: [0, 4000, 9000, 14000, 17500]
+            var offsetsX = GridSystemCalculator.CalculateOffsets(spansX);
+            Assert.AreEqual(5, offsetsX.Count);
+            Assert.AreEqual(0.0, offsetsX[0]);
+            Assert.AreEqual(4000.0, offsetsX[1]);
+            Assert.AreEqual(9000.0, offsetsX[2]);
+            Assert.AreEqual(14000.0, offsetsX[3]);
+            Assert.AreEqual(17500.0, offsetsX[4]);
+
+            // 3. Kiểm tra nhãn trục số (X) và chữ cái (Y)
+            var labelsX = GridSystemCalculator.GenerateLabels(offsetsX.Count, isAlphabet: false);
+            CollectionAssert.AreEqual(new[] { "1", "2", "3", "4", "5" }, labelsX);
+
+            var labelsY = GridSystemCalculator.GenerateLabels(4, isAlphabet: true);
+            CollectionAssert.AreEqual(new[] { "A", "B", "C", "D" }, labelsY);
+        }
+
         #endregion
     }
 }

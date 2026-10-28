@@ -1,0 +1,63 @@
+name: Daily Autonomous Development Pipeline
+
+on:
+  schedule:
+    # 08:00 AM Asia/Ho_Chi_Minh (UTC+7) = 01:00 AM UTC
+    - cron: '0 1 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  daily-autonomous-check:
+    name: Daily Autonomous Verification & Health Check
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Setup NuGet
+        uses: nuget/setup-nuget@v2
+
+      - name: Restore NuGet Packages
+        run: nuget restore DTools.sln
+
+      - name: Build Entire Solution (Release Any CPU)
+        run: msbuild DTools.sln /p:Configuration=Release /p:Platform="Any CPU" /p:UseSharedCompilation=false /verbosity:minimal
+
+      - name: Execute Automated Test Suite (QA Lead Verification)
+        shell: pwsh
+        run: |
+          $testExe = "tests/DTools.Tests/bin/Release/net48/DTools.Tests.exe"
+          if (Test-Path $testExe) {
+            Write-Host "Executing DTools automated test suite..."
+            & $testExe
+            if ($LASTEXITCODE -ne 0) {
+              Write-Error "DTools test suite failed with exit code $LASTEXITCODE"
+              exit 1
+            }
+          } else {
+            Write-Error "Test executable not found: $testExe"
+            exit 1
+          }
+
+      - name: Audit Repository Integrity
+        shell: pwsh
+        run: |
+          Write-Host "Checking repository health..."
+          if (-not (Test-Path "symbols_database.json")) {
+            Write-Error "Missing symbols_database.json"
+            exit 1
+          }
+          if (-not (Test-Path "DTT_Tools.bundle/PackageContents.xml")) {
+            Write-Error "Missing PackageContents.xml"
+            exit 1
+          }
+          Write-Host "Repository health check: PASS"

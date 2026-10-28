@@ -933,6 +933,9 @@
                         </Grid>
 
                         <TextBlock Text="🏡 MẶT BẰNG &amp; MẶT CẮT" FontSize="11.5" FontWeight="Bold" Foreground="#B45309" Margin="2,8,0,4"/>
+                        <Button Style="{StaticResource StyleVipButton}" Click="Btn_Click" Tag="DTT_GRID_SYSTEM " ToolTip="Sinh hệ thống lưới trục kiến trúc đa nhịp tự động (nhập khoảng cách nhịp X, Y) kèm bong bóng 2 đầu và chuỗi kích thước Dim">
+                            <TextBlock Text="📐 Sinh Lưới Trục Đa Nhịp &amp; Dim Tự Động (DTT_GRID_SYSTEM)" FontWeight="Bold" Foreground="#0284C7"/>
+                        </Button>
                         <Button Style="{StaticResource StyleVipButton}" Click="Btn_Click" Tag="DTT_SCAN_TO_CAD " ToolTip="Quét ảnh chụp / scan / PDF bản vẽ và tự động dựng lại nét CAD (DWG) bằng AI Vision &amp; Computer Vision">
                             <TextBlock Text="⚡🤖 Quét Bản Vẽ (Ảnh/PDF) Ra CAD (AI Vision)" FontWeight="Bold" Foreground="#7C3AED"/>
                         </Button>

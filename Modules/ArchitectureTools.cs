@@ -8,6 +8,7 @@ using Autodesk.AutoCAD.Geometry;
 using Autodesk.AutoCAD.Runtime;
 using DTT_AutoCAD_Plugin.Common;
 using DTT_AutoCAD_Plugin.UI;
+using DTools.Core;
 
 namespace DTT_AutoCAD_Plugin.Modules
 {
@@ -1205,6 +1206,256 @@ namespace DTT_AutoCAD_Plugin.Modules
                 tr.Commit(); ed.Regen();
             }
             ed.WriteMessage($"\n🎯 [DTT TRỤC] Đã vẽ trục định vị [{axisName}] thành công! ✓\n");
+        }
+
+        // ============================================================
+        // LỆNH SINH LƯỚI TRỤC ĐA NHỊP TỰ ĐỘNG (PARAMETRIC GRID SYSTEM)
+        // ============================================================
+
+        [CommandMethod("DTT_GRID_SYSTEM")]
+        [CommandMethod("DTT_GRID_MULTI")]
+        public static void CmdGridSystem()
+        {
+            Document doc = Application.DocumentManager.MdiActiveDocument;
+            if (doc == null) return;
+            Database db = doc.Database;
+            Editor ed = doc.Editor;
+
+            CadUtils.FocusDwgView();
+
+            try
+            {
+                // 1. Nhập nhịp phương X
+                PromptStringOptions psoX = new PromptStringOptions("\n📏 [DTT LƯỚI TRỤC] Nhập các khoảng cách nhịp phương X (VD: 4000, 2*5000, 4000): ")
+                {
+                    DefaultValue = "4000, 2*5000, 4000"
+                };
+                PromptResult prX = ed.GetString(psoX);
+                if (prX.Status != PromptStatus.OK) return;
+                string inputX = string.IsNullOrWhiteSpace(prX.StringResult) ? "4000, 2*5000, 4000" : prX.StringResult;
+                var spansX = GridSystemCalculator.ParseSpans(inputX);
+                if (spansX.Count == 0) spansX = new List<double> { 4000, 5000, 5000, 4000 };
+
+                // 2. Nhập nhịp phương Y
+                PromptStringOptions psoY = new PromptStringOptions("\n📏 [DTT LƯỚI TRỤC] Nhập các khoảng cách nhịp phương Y (VD: 5000, 6000, 4500): ")
+                {
+                    DefaultValue = "5000, 6000, 4500"
+                };
+                PromptResult prY = ed.GetString(psoY);
+                if (prY.Status != PromptStatus.OK) return;
+                string inputY = string.IsNullOrWhiteSpace(prY.StringResult) ? "5000, 6000, 4500" : prY.StringResult;
+                var spansY = GridSystemCalculator.ParseSpans(inputY);
+                if (spansY.Count == 0) spansY = new List<double> { 5000, 6000, 4500 };
+
+                // 3. Chọn điểm gốc đặt lưới trục
+                PromptPointOptions ppo = new PromptPointOptions("\n📍 [DTT LƯỚI TRỤC] Chọn điểm gốc đặt lưới trục (Giao trục 1 - A): ");
+                PromptPointResult ppr = ed.GetPoint(ppo);
+                if (ppr.Status != PromptStatus.OK) return;
+                Point3d origin = ppr.Value;
+
+                // 4. Tính toán tọa độ và vẽ vào AutoCAD
+                using (doc.LockDocument())
+                using (Transaction tr = db.TransactionManager.StartTransaction())
+                {
+                    GenerateParametricGridSystem(db, tr, origin, spansX, spansY);
+                    tr.Commit();
+                }
+
+                CadUtils.RefreshScreenAndGraphics(ed);
+                ed.WriteMessage($"\n✅ [DTT Pro] Đã sinh thành công hệ lưới trục: {spansX.Count + 1} trục dọc (1..{spansX.Count + 1}) và {spansY.Count + 1} trục ngang (A..{GridSystemCalculator.GenerateLabels(spansY.Count + 1, true)[spansY.Count]})!\n");
+            }
+            catch (System.Exception ex)
+            {
+                ed.WriteMessage($"\n❌ [DTT Lỗi lưới trục] {ex.Message}\n");
+            }
+        }
+
+        public static void GenerateParametricGridSystem(Database db, Transaction tr, Point3d origin, List<double> spansX, List<double> spansY)
+        {
+            var offsetsX = GridSystemCalculator.CalculateOffsets(spansX);
+            var offsetsY = GridSystemCalculator.CalculateOffsets(spansY);
+            var labelsX = GridSystemCalculator.GenerateLabels(offsetsX.Count, isAlphabet: false);
+            var labelsY = GridSystemCalculator.GenerateLabels(offsetsY.Count, isAlphabet: true);
+
+            double totalX = offsetsX[offsetsX.Count - 1];
+            double totalY = offsetsY[offsetsY.Count - 1];
+
+            // Tỷ lệ scale tự động theo DIMSCALE
+            double dimScale = db.Dimscale > 0 ? db.Dimscale : 1.0;
+            if (dimScale <= 1.0 && totalX > 2000.0) dimScale = 100.0;
+            double scaleFactor = (totalX > 500.0) ? (dimScale > 1.0 ? dimScale * 4.0 : 400.0) : 4.0;
+            double bubbleR = scaleFactor;
+            double overhang = scaleFactor * 3.0;
+
+            ObjectId axisLayer = CadUtils.GetOrCreateLayer(db, "A-GRID-AXIS", 1, LineWeight.LineWeight015);
+            ObjectId textLayer = CadUtils.GetOrCreateLayer(db, "A-GRID-TEXT", 3);
+            ObjectId dimLayer = CadUtils.GetOrCreateLayer(db, "A-DIMS", 2);
+            ObjectId centerLinetype = CadUtils.EnsureLinetype(db, "CENTER");
+            ObjectId textStyle = CadUtils.GetOrCreateUnicodeStyle(db);
+
+            BlockTable bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForRead);
+            BlockTableRecord btr = (BlockTableRecord)tr.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForWrite);
+
+            double ox = origin.X;
+            double oy = origin.Y;
+
+            // 1. Vẽ các trục dọc X (Trục 1, 2, 3...)
+            for (int i = 0; i < offsetsX.Count; i++)
+            {
+                double gx = ox + offsetsX[i];
+                Point3d pBottom = new Point3d(gx, oy - overhang, 0);
+                Point3d pTop = new Point3d(gx, oy + totalY + overhang, 0);
+
+                Line axisLine = new Line(pBottom, pTop)
+                {
+                    LayerId = axisLayer,
+                    LinetypeId = centerLinetype
+                };
+                btr.AppendEntity(axisLine); tr.AddNewlyCreatedDBObject(axisLine, true);
+
+                // Bóng trục dưới
+                Point3d ptBubbleBottom = new Point3d(gx, pBottom.Y - bubbleR, 0);
+                Circle cbBottom = new Circle(ptBubbleBottom, Vector3d.ZAxis, bubbleR) { LayerId = axisLayer };
+                btr.AppendEntity(cbBottom); tr.AddNewlyCreatedDBObject(cbBottom, true);
+
+                DBText txtBottom = new DBText
+                {
+                    Position = ptBubbleBottom,
+                    TextString = labelsX[i],
+                    Height = bubbleR * 1.1,
+                    HorizontalMode = TextHorizontalMode.TextCenter,
+                    VerticalMode = TextVerticalMode.TextVerticalMid,
+                    AlignmentPoint = ptBubbleBottom,
+                    LayerId = textLayer,
+                    TextStyleId = textStyle
+                };
+                btr.AppendEntity(txtBottom); tr.AddNewlyCreatedDBObject(txtBottom, true);
+
+                // Bóng trục trên
+                Point3d ptBubbleTop = new Point3d(gx, pTop.Y + bubbleR, 0);
+                Circle cbTop = new Circle(ptBubbleTop, Vector3d.ZAxis, bubbleR) { LayerId = axisLayer };
+                btr.AppendEntity(cbTop); tr.AddNewlyCreatedDBObject(cbTop, true);
+
+                DBText txtTop = new DBText
+                {
+                    Position = ptBubbleTop,
+                    TextString = labelsX[i],
+                    Height = bubbleR * 1.1,
+                    HorizontalMode = TextHorizontalMode.TextCenter,
+                    VerticalMode = TextVerticalMode.TextVerticalMid,
+                    AlignmentPoint = ptBubbleTop,
+                    LayerId = textLayer,
+                    TextStyleId = textStyle
+                };
+                btr.AppendEntity(txtTop); tr.AddNewlyCreatedDBObject(txtTop, true);
+            }
+
+            // 2. Vẽ các trục ngang Y (Trục A, B, C...)
+            for (int j = 0; j < offsetsY.Count; j++)
+            {
+                double gy = oy + offsetsY[j];
+                Point3d pLeft = new Point3d(ox - overhang, gy, 0);
+                Point3d pRight = new Point3d(ox + totalX + overhang, gy, 0);
+
+                Line axisLine = new Line(pLeft, pRight)
+                {
+                    LayerId = axisLayer,
+                    LinetypeId = centerLinetype
+                };
+                btr.AppendEntity(axisLine); tr.AddNewlyCreatedDBObject(axisLine, true);
+
+                // Bóng trục trái
+                Point3d ptBubbleLeft = new Point3d(pLeft.X - bubbleR, gy, 0);
+                Circle cbLeft = new Circle(ptBubbleLeft, Vector3d.ZAxis, bubbleR) { LayerId = axisLayer };
+                btr.AppendEntity(cbLeft); tr.AddNewlyCreatedDBObject(cbLeft, true);
+
+                DBText txtLeft = new DBText
+                {
+                    Position = ptBubbleLeft,
+                    TextString = labelsY[j],
+                    Height = bubbleR * 1.1,
+                    HorizontalMode = TextHorizontalMode.TextCenter,
+                    VerticalMode = TextVerticalMode.TextVerticalMid,
+                    AlignmentPoint = ptBubbleLeft,
+                    LayerId = textLayer,
+                    TextStyleId = textStyle
+                };
+                btr.AppendEntity(txtLeft); tr.AddNewlyCreatedDBObject(txtLeft, true);
+
+                // Bóng trục phải
+                Point3d ptBubbleRight = new Point3d(pRight.X + bubbleR, gy, 0);
+                Circle cbRight = new Circle(ptBubbleRight, Vector3d.ZAxis, bubbleR) { LayerId = axisLayer };
+                btr.AppendEntity(cbRight); tr.AddNewlyCreatedDBObject(cbRight, true);
+
+                DBText txtRight = new DBText
+                {
+                    Position = ptBubbleRight,
+                    TextString = labelsY[j],
+                    Height = bubbleR * 1.1,
+                    HorizontalMode = TextHorizontalMode.TextCenter,
+                    VerticalMode = TextVerticalMode.TextVerticalMid,
+                    AlignmentPoint = ptBubbleRight,
+                    LayerId = textLayer,
+                    TextStyleId = textStyle
+                };
+                btr.AppendEntity(txtRight); tr.AddNewlyCreatedDBObject(txtRight, true);
+            }
+
+            // 3. Chuỗi ghi kích thước giữa các trục liên tiếp
+            double dimOffsetBottom = oy - overhang - bubbleR * 3.5;
+            for (int i = 0; i < spansX.Count; i++)
+            {
+                Point3d pt1 = new Point3d(ox + offsetsX[i], oy, 0);
+                Point3d pt2 = new Point3d(ox + offsetsX[i + 1], oy, 0);
+                Point3d ptDim = new Point3d((pt1.X + pt2.X) / 2.0, dimOffsetBottom, 0);
+
+                RotatedDimension rotDim = new RotatedDimension(0.0, pt1, pt2, ptDim, $"{spansX[i]:F0}", db.Dimstyle)
+                {
+                    LayerId = dimLayer
+                };
+                btr.AppendEntity(rotDim); tr.AddNewlyCreatedDBObject(rotDim, true);
+            }
+
+            // Kích thước tổng phủ bì phương X
+            if (spansX.Count > 1)
+            {
+                Point3d ptTot1 = new Point3d(ox, oy, 0);
+                Point3d ptTot2 = new Point3d(ox + totalX, oy, 0);
+                Point3d ptDimTot = new Point3d(ox + totalX / 2.0, dimOffsetBottom - bubbleR * 2.2, 0);
+                RotatedDimension rotDimTot = new RotatedDimension(0.0, ptTot1, ptTot2, ptDimTot, $"{totalX:F0}", db.Dimstyle)
+                {
+                    LayerId = dimLayer
+                };
+                btr.AppendEntity(rotDimTot); tr.AddNewlyCreatedDBObject(rotDimTot, true);
+            }
+
+            // Chuỗi kích thước phương Y bên trái
+            double dimOffsetLeft = ox - overhang - bubbleR * 3.5;
+            for (int j = 0; j < spansY.Count; j++)
+            {
+                Point3d pt1 = new Point3d(ox, oy + offsetsY[j], 0);
+                Point3d pt2 = new Point3d(ox, oy + offsetsY[j + 1], 0);
+                Point3d ptDim = new Point3d(dimOffsetLeft, (pt1.Y + pt2.Y) / 2.0, 0);
+
+                RotatedDimension rotDim = new RotatedDimension(Math.PI / 2.0, pt1, pt2, ptDim, $"{spansY[j]:F0}", db.Dimstyle)
+                {
+                    LayerId = dimLayer
+                };
+                btr.AppendEntity(rotDim); tr.AddNewlyCreatedDBObject(rotDim, true);
+            }
+
+            // Kích thước tổng phủ bì phương Y
+            if (spansY.Count > 1)
+            {
+                Point3d ptTot1 = new Point3d(ox, oy, 0);
+                Point3d ptTot2 = new Point3d(ox, oy + totalY, 0);
+                Point3d ptDimTot = new Point3d(dimOffsetLeft - bubbleR * 2.2, oy + totalY / 2.0, 0);
+                RotatedDimension rotDimTot = new RotatedDimension(Math.PI / 2.0, ptTot1, ptTot2, ptDimTot, $"{totalY:F0}", db.Dimstyle)
+                {
+                    LayerId = dimLayer
+                };
+                btr.AppendEntity(rotDimTot); tr.AddNewlyCreatedDBObject(rotDimTot, true);
+            }
         }
     }
 }
