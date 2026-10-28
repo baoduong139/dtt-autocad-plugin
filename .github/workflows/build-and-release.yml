@@ -1,0 +1,109 @@
+name: Build and Release
+
+on:
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - 'dist/**'
+      - 'README.md'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build & Package Release
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Setup NuGet
+        uses: nuget/setup-nuget@v2
+
+      - name: Restore NuGet Packages
+        run: nuget restore DTools.sln
+
+      - name: Build Solution (Release Any CPU)
+        run: msbuild DTools.sln /p:Configuration=Release /p:Platform="Any CPU" /p:UseSharedCompilation=false /verbosity:minimal
+
+      - name: Package Update Zip & Generate Manifest
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path dist | Out-Null
+          
+          # Create staging bundle
+          $staging = "dist/staging_bundle"
+          if (Test-Path $staging) { Remove-Item -Path $staging -Recurse -Force }
+          New-Item -ItemType Directory -Force -Path "$staging/Contents" | Out-Null
+          
+          # Copy binaries
+          Copy-Item "bin/Release/net48/*" "$staging/Contents/" -Recurse -Force -ErrorAction SilentlyContinue
+          Copy-Item "src/DTT.Manager/bin/Release/net48/DTT_Manager.exe" "$staging/Contents/" -Force -ErrorAction SilentlyContinue
+          Copy-Item "src/DTT.Updater/bin/Release/net48/DTT_Updater.exe" "$staging/Contents/" -Force -ErrorAction SilentlyContinue
+          Copy-Item "symbols_database.json" "$staging/Contents/" -Force -ErrorAction SilentlyContinue
+          if (Test-Path "DTT_Tools.bundle/PackageContents.xml") {
+            Copy-Item "DTT_Tools.bundle/PackageContents.xml" "$staging/" -Force
+          }
+          if (Test-Path "Blocks") {
+            Copy-Item "Blocks" "$staging/Contents/Blocks" -Recurse -Force
+          }
+          
+          # Create dist/update.zip
+          $zipPath = "dist/update.zip"
+          if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
+          Compress-Archive -Path "$staging/*" -DestinationPath $zipPath -CompressionLevel Optimal
+          
+          $zipHash = (Get-FileHash -Path $zipPath -Algorithm SHA256).Hash
+          $zipSize = (Get-Item $zipPath).Length
+          
+          $dllPath = "bin/Release/net48/DTT_AutoCAD_Plugin.dll"
+          $dllHash = ""
+          if (Test-Path $dllPath) {
+            $dllHash = (Get-FileHash -Path $dllPath -Algorithm SHA256).Hash
+          }
+          
+          # Generate dist/version.json trỏ đúng downloadUrl về dist/update.zip
+          $manifest = @{
+            schemaVersion = "1.0"
+            version = "2026.2.0"
+            channel = "stable"
+            publishedAt = (Get-Date -Format "yyyy-MM-ddTHH:mm:ssZ")
+            releaseNotesUrl = "https://raw.githubusercontent.com/baoduong139/dtt-autocad-plugin/main/dist/release/CHANGELOG.md"
+            releaseNotes = "DTT TOOLS Pro v2026.2.0 - Tự động cập nhật từ GitHub Actions"
+            minAutoCadVersion = "2020"
+            maxAutoCadVersion = "2026"
+            downloadUrl = "https://raw.githubusercontent.com/baoduong139/dtt-autocad-plugin/main/dist/update.zip"
+            sha256 = $zipHash
+            packageSize = $zipSize
+            pluginDllSha256 = $dllHash
+            publisher = "DTT CAD Software Corporation"
+            mandatory = $false
+          }
+          $manifest | ConvertTo-Json -Depth 4 | Set-Content -Path "dist/version.json" -Encoding UTF8
+          
+          # Clean staging directory
+          Remove-Item -Path $staging -Recurse -Force
+          Write-Host "Da tao thanh cong: dist/update.zip ($zipSize bytes, SHA-256: $zipHash)"
+          Write-Host "Da tao thanh cong: dist/version.json"
+
+      - name: Commit and Push dist/
+        shell: pwsh
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add dist/update.zip dist/version.json
+          $status = git status --porcelain dist/
+          if ($status) {
+            git commit -m "chore(release): auto-generate dist binaries [skip ci]"
+            git push origin main
+          } else {
+            Write-Host "No changes in dist/ to commit."
+          }

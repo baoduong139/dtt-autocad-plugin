@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <OutputType>WinExe</OutputType>
+    <AssemblyName>DTT_Manager</AssemblyName>
+    <RootNamespace>DTT.Manager</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Version>2026.2.0</Version>
+    <Company>DTT CAD Software Corporation</Company>
+    <Product>DTT Tools Manager</Product>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DTools.Core\DTools.Core.csproj" />
+    <ProjectReference Include="..\DTT.Updater\DTT.Updater.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+  </ItemGroup>
+
+</Project>
+

@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net48</TargetFrameworks>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <AssemblyName>DTools.Core</AssemblyName>
+    <RootNamespace>DTools.Core</RootNamespace>
+    <Version>2026.2.0</Version>
+    <Company>DTT CAD Software Corporation</Company>
+    <Product>DTools Pro Core Domain</Product>
+    <Description>Pure C# Domain Mathematics, Formulas, Models, and Bounded Caching (Zero AutoCAD/WPF Dependencies)</Description>
+  </PropertyGroup>
+
+</Project>

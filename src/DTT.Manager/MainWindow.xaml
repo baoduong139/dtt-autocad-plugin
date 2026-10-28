@@ -1,0 +1,284 @@
+<Window x:Class="DTT.Manager.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="DTT TOOLS Pro - Quản Lý, Cập Nhật &amp; Chẩn Đoán Hệ Thống (v2026.2.0)" 
+        Height="720" Width="1020"
+        WindowStartupLocation="CenterScreen"
+        Background="#0F172A"
+        Foreground="#F8FAFC"
+        FontFamily="Segoe UI, Tahoma, sans-serif"
+        FontSize="13">
+
+    <Window.Resources>
+        <!-- MODERN SLATE THEME COLORS -->
+        <SolidColorBrush x:Key="BgDark" Color="#0F172A"/>
+        <SolidColorBrush x:Key="BgCard" Color="#1E293B"/>
+        <SolidColorBrush x:Key="BorderCard" Color="#334155"/>
+        <SolidColorBrush x:Key="TextPrimary" Color="#F8FAFC"/>
+        <SolidColorBrush x:Key="TextSecondary" Color="#94A3B8"/>
+        <SolidColorBrush x:Key="AccentCyan" Color="#0EA5E9"/>
+        <SolidColorBrush x:Key="AccentGreen" Color="#10B981"/>
+        <SolidColorBrush x:Key="AccentYellow" Color="#F59E0B"/>
+        <SolidColorBrush x:Key="AccentRed" Color="#EF4444"/>
+
+        <!-- BUTTON STYLE -->
+        <Style x:Key="PrimaryButton" TargetType="Button">
+            <Setter Property="Background" Value="#0EA5E9"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="14,8"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SecondaryButton" TargetType="Button">
+            <Setter Property="Background" Value="#334155"/>
+            <Setter Property="Foreground" Value="#F8FAFC"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Padding" Value="12,6"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="75"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="35"/>
+        </Grid.RowDefinitions>
+
+        <!-- 1. HEADER -->
+        <Border Grid.Row="0" Background="#1E293B" BorderBrush="#334155" BorderThickness="0,0,0,1" Padding="25,12">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="⚡ DTT TOOLS PRO" FontSize="20" FontWeight="Bold" Foreground="#38BDF8"/>
+                        <Border Background="#0284C7" CornerRadius="4" Margin="12,2,0,2" Padding="6,2">
+                            <TextBlock Text="v2026.2.0" FontSize="11" FontWeight="Bold" Foreground="#FFFFFF"/>
+                        </Border>
+                    </StackPanel>
+                    <TextBlock Text="Trung Tâm Quản Trị, Cập Nhật Từ Xa &amp; Dọn Dẹp An Toàn Cho AutoCAD 2021" FontSize="12" Foreground="#94A3B8" Margin="0,3,0,0"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Content="🚀 Mở AutoCAD" Style="{StaticResource PrimaryButton}" Margin="0,0,10,0" Click="BtnLaunchCad_Click"/>
+                    <Button Content="🔄 Làm Mới" Style="{StaticResource SecondaryButton}" Click="BtnRefresh_Click"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- 2. MAIN CONTENT TABS -->
+        <TabControl Grid.Row="1" Background="Transparent" BorderThickness="0" Margin="15,10">
+            <!-- TAB 1: TỔNG QUAN HỆ THỐNG -->
+            <TabItem Header="  📋 Tổng Quan &amp; Quản Trị  " Foreground="#F8FAFC" FontSize="14" FontWeight="SemiBold">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,10,0,0">
+                    <StackPanel>
+                        <!-- CAD STATUS CARD -->
+                        <Border Background="#1E293B" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="18" Margin="0,0,0,15">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Grid.Row="0" Text="🔍 Trạng Thái Hệ Thống AutoCAD" FontSize="15" FontWeight="Bold" Foreground="#38BDF8" Margin="0,0,0,10"/>
+                                <StackPanel>
+                                    <TextBlock x:Name="TxtCadProduct" Text="Phiên bản phát hiện: Đang quét..." Foreground="#F8FAFC" Margin="0,0,0,6"/>
+                                    <TextBlock x:Name="TxtCadPath" Text="Đường dẫn cài đặt: ..." Foreground="#94A3B8" FontSize="12" Margin="0,0,0,6"/>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="Tiến trình AutoCAD: " Foreground="#94A3B8"/>
+                                        <TextBlock x:Name="TxtCadStatus" Text="Đang kiểm tra..." FontWeight="Bold" Foreground="#10B981"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <!-- BUNDLE STATUS CARD -->
+                        <Border Background="#1E293B" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="18" Margin="0,0,0,15">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Grid.Row="0" Text="📦 Trạng Thái Gói DTT TOOLS (Autodesk Autoloader)" FontSize="15" FontWeight="Bold" Foreground="#10B981" Margin="0,0,0,10"/>
+                                <StackPanel>
+                                    <TextBlock x:Name="TxtBundleInstalled" Text="Trạng thái: Đang kiểm tra..." Foreground="#F8FAFC" Margin="0,0,0,6"/>
+                                    <TextBlock x:Name="TxtBundleVersion" Text="Phiên bản cài đặt: ..." Foreground="#F8FAFC" Margin="0,0,0,6"/>
+                                    <TextBlock x:Name="TxtBundlePath" Text="Vị trí Bundle: ..." Foreground="#94A3B8" FontSize="12" Margin="0,0,0,6"/>
+                                    <TextBlock x:Name="TxtDllHash" Text="SHA-256 Core DLL: ..." Foreground="#94A3B8" FontSize="11" Margin="0,0,0,6"/>
+                                    <TextBlock x:Name="TxtConflictWarning" Text="" Foreground="#F59E0B" FontWeight="SemiBold" Visibility="Collapsed"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <!-- ACTIONS CARD -->
+                        <Border Background="#1E293B" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="18">
+                            <StackPanel>
+                                <TextBlock Text="⚙️ Thao Tác Quản Lý Plugin" FontSize="15" FontWeight="Bold" Foreground="#F59E0B" Margin="0,0,0,10"/>
+                                <WrapPanel Margin="0,5,0,0">
+                                    <Button Content="⚡ Cài DTT TOOLS Vào AutoCAD" Style="{StaticResource PrimaryButton}" Margin="0,0,10,10" Click="BtnInstallBundle_Click"/>
+                                    <Button Content="🔧 Sửa Chữa (Repair)" Style="{StaticResource SecondaryButton}" Margin="0,0,10,10" Click="BtnRepairBundle_Click"/>
+                                    <Button Content="💾 Sao Lưu Cấu Hình &amp; Bundle" Style="{StaticResource SecondaryButton}" Margin="0,0,10,10" Click="BtnBackup_Click"/>
+                                    <Button Content="↩️ Khôi Phục Sao Lưu" Style="{StaticResource SecondaryButton}" Margin="0,0,10,10" Click="BtnRestore_Click"/>
+                                    <Button Content="📋 Mở Thư Mục Logs" Style="{StaticResource SecondaryButton}" Margin="0,0,10,10" Click="BtnOpenLogs_Click"/>
+                                    <Button Content="🗑️ Gỡ Cài Đặt Khỏi AutoCAD" Style="{StaticResource SecondaryButton}" Background="#DC2626" Margin="0,0,10,10" Click="BtnUninstallBundle_Click"/>
+                                </WrapPanel>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- TAB 2: CẬP NHẬT TỪ XA -->
+            <TabItem Header="  🔄 Cập Nhật Từ Xa  " Foreground="#F8FAFC" FontSize="14" FontWeight="SemiBold">
+                <Grid Margin="0,10,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Border Grid.Row="0" Background="#1E293B" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="18" Margin="0,0,0,12">
+                        <StackPanel>
+                            <TextBlock Text="🌐 Cấu Hình Nguồn Phát Hành Cập Nhật (HTTPS Feed)" FontSize="15" FontWeight="Bold" Foreground="#38BDF8" Margin="0,0,0,10"/>
+                            <Grid Margin="0,0,0,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox x:Name="TxtFeedUrl" Grid.Column="0" Height="32" Padding="8,4" Background="#0F172A" Foreground="#F8FAFC" BorderBrush="#334155" Text="https://raw.githubusercontent.com/baoduong139/dtt-autocad-plugin/main/dist/version.json"/>
+                                <Button Grid.Column="1" Content="Kiểm Tra Ngay" Style="{StaticResource PrimaryButton}" Margin="10,0,0,0" Click="BtnCheckUpdate_Click"/>
+                            </Grid>
+                            <CheckBox x:Name="ChkAutoUpdate" Content="Tự động kiểm tra bản cập nhật mới khi mở ứng dụng" IsChecked="True" Foreground="#94A3B8"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Row="1" Background="#1E293B" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="18" Margin="0,0,0,12">
+                        <StackPanel>
+                            <TextBlock Text="📊 Thông Tin Phiên Bản Cập Nhật" FontSize="15" FontWeight="Bold" Foreground="#10B981" Margin="0,0,0,8"/>
+                            <TextBlock x:Name="TxtUpdateStatus" Text="Nhấn [Kiểm Tra Ngay] để kiểm tra phiên bản mới nhất." Foreground="#F8FAFC" Margin="0,0,0,6"/>
+                            <TextBlock x:Name="TxtUpdateVersion" Text="Phiên bản mới nhất: Chưa kiểm tra" Foreground="#94A3B8"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Row="2" Background="#1E293B" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="18">
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Top" Text="📝 Ghi Chú Phát Hành (Release Notes)" FontSize="14" FontWeight="Bold" Foreground="#F8FAFC" Margin="0,0,0,8"/>
+                            <TextBox x:Name="TxtReleaseNotes" Background="#0F172A" Foreground="#94A3B8" BorderBrush="#334155" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Text="Chưa có thông tin ghi chú."/>
+                        </DockPanel>
+                    </Border>
+
+                    <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+                        <Button x:Name="BtnApplyUpdate" Content="⚡ Tải &amp; Cài Đặt Bản Cập Nhật Mới" Style="{StaticResource PrimaryButton}" IsEnabled="False" Click="BtnApplyUpdate_Click"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+
+            <!-- TAB 3: BẢO TRÌ & DỌN DẸP AN TOÀN -->
+            <TabItem Header="  🧹 Bảo Trì &amp; Dọn Dẹp An Toàn  " Foreground="#F8FAFC" FontSize="14" FontWeight="SemiBold">
+                <Grid Margin="0,10,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- CONTROLS & WARNING BANNER -->
+                    <Border Grid.Row="0" Background="#1E293B" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="15" Margin="0,0,0,10">
+                        <StackPanel>
+                            <TextBlock Text="🛡️ Chế Độ Dọn Dẹp An Toàn (Safe Cleanup Mode)" FontSize="15" FontWeight="Bold" Foreground="#F59E0B" Margin="0,0,0,6"/>
+                            <TextBlock Text="Mặc định hoạt động ở chế độ CHỈ QUÉT (Dry-run). Mọi tệp dọn dẹp đều được chuyển vào thư mục cách ly (Quarantine) có ghi manifest, cho phép hoàn tác 100% nếu cần." Foreground="#94A3B8" TextWrapping="Wrap" Margin="0,0,0,8"/>
+                            <WrapPanel Margin="0,4,0,0">
+                                <Button Content="🔍 Quét File Tạm %TEMP%" Style="{StaticResource PrimaryButton}" Margin="0,0,10,0" Click="BtnScanTemp_Click"/>
+                                <Button Content="📦 Quét Thư Mục Build DTT" Style="{StaticResource SecondaryButton}" Margin="0,0,10,0" Click="BtnScanBuild_Click"/>
+                                <Button Content="↩️ Khôi Phục Phiên Bản Cách Ly" Style="{StaticResource SecondaryButton}" Margin="0,0,10,0" Click="BtnRestoreQuarantine_Click"/>
+                                <Button Content="📄 Xuất Báo Cáo" Style="{StaticResource SecondaryButton}" Click="BtnExportReport_Click"/>
+                            </WrapPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- SUMMARY BAR -->
+                    <Border Grid.Row="1" Background="#0F172A" BorderBrush="#334155" BorderThickness="1" CornerRadius="6" Padding="12,8" Margin="0,0,0,10">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="TxtCleanupSummary" Grid.Column="0" Text="Chưa thực hiện quét. Bấm [Quét File Tạm %TEMP%] để bắt đầu." Foreground="#F8FAFC" VerticalAlignment="Center"/>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                <Button Content="Chọn Tất Cả" Style="{StaticResource SecondaryButton}" Margin="0,0,8,0" Click="BtnSelectAll_Click"/>
+                                <Button Content="Bỏ Chọn" Style="{StaticResource SecondaryButton}" Click="BtnDeselectAll_Click"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- CLEANUP ITEMS LIST -->
+                    <Border Grid.Row="2" Background="#1E293B" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="5">
+                        <DataGrid x:Name="DgCleanupItems" AutoGenerateColumns="False" CanUserAddRows="False" Background="#0F172A" Foreground="#F8FAFC" BorderThickness="0" HeadersVisibility="Column" GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#334155">
+                            <DataGrid.Columns>
+                                <DataGridCheckBoxColumn Header="Chọn" Binding="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}" Width="50"/>
+                                <DataGridTextColumn Header="Tên Mục" Binding="{Binding Name}" Width="220" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="Dung Lượng" Binding="{Binding SizeFormatted}" Width="110" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="Mức Rủi Ro" Binding="{Binding RiskLevel}" Width="120" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="Lý Do &amp; Hệ Quả" Binding="{Binding Reason}" Width="300" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="Đường Dẫn" Binding="{Binding Path}" Width="*" IsReadOnly="True"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Border>
+
+                    <!-- EXECUTE ACTION BAR -->
+                    <Border Grid.Row="3" Background="#1E293B" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,10,0,0">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="TxtCleanResult" Grid.Column="0" Text="Sẵn sàng dọn dẹp các mục an toàn đã chọn." Foreground="#94A3B8" VerticalAlignment="Center"/>
+                            <Button Grid.Column="1" Content="🧹 Dọn Dẹp Các Mục Đã Chọn Vào Cách Ly" Style="{StaticResource PrimaryButton}" Background="#F59E0B" Click="BtnExecuteClean_Click"/>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </TabItem>
+        </TabControl>
+
+        <!-- 3. FOOTER STATUS BAR -->
+        <Border Grid.Row="2" Background="#0B1120" BorderBrush="#334155" BorderThickness="0,1,0,0" Padding="18,0">
+            <Grid VerticalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock x:Name="TxtFooterStatus" Grid.Column="0" Text="Sẵn sàng." FontSize="11" Foreground="#94A3B8"/>
+                <TextBlock Grid.Column="1" Text="DTT CAD Software Corporation © 2026" FontSize="11" Foreground="#64748B"/>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

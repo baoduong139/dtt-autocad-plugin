@@ -1,0 +1,102 @@
+*A1,A1 -- A1 -- A1 -- A1 --
+A,6,-0.508,["A1",STANDARD,S=2.54,R=0.0,X=0.0,Y=-1.27],-4.197
+*B1,B1 -- B1 -- B1 -- B1 --
+A,6,-0.508,["B1",STANDARD,S=2.54,R=0.0,X=0.0,Y=-1.27],-3.895
+*B2,B2 -- B2 -- B2 -- B2 --
+A,6,-0.508,["B2",STANDARD,S=2.54,R=0.0,X=0.0,Y=-1.27],-4.741
+*\U+2022,\U+2022 -- \U+2022 -- \U+2022 -- \U+2022 --
+A,0,-3,["\U+2022",STANDARD,S=2.54,R=0.0,X=0.0,Y=-1.27],-1
+*A2,A2 -- A2 -- A2 -- A2 --
+A,6,-0.508,["A2",STANDARD,S=2.54,R=0.0,X=0.0,Y=-1.27],-4.661
+*A3,A3 -- A3 -- A3 -- A3 --
+A,6,-0.508,["A3",STANDARD,S=2.54,R=0.0,X=0.0,Y=-1.27],-3.665
+*A8,A8 -- A8 -- A8 -- A8 --
+A,6,-0.508,["A8",STANDARD,S=2.54,R=0.0,X=0.0,Y=-1.27],-4.692
+*A9,A9 -- A9 -- A9 -- A9 --
+A,6,-0.508,["A9",STANDARD,S=2.54,R=0.0,X=0.0,Y=-1.27],-4.692
+*1,1 -- 1 -- 1 -- 1 --
+A,6,-0.508,["1",STANDARD,S=2.54,R=0.0,X=0.0,Y=-1.27],-1.83
+*2,2 -- 2 -- 2 -- 2 --
+A,6,-0.508,["2",STANDARD,S=2.54,R=0.0,X=0.0,Y=-1.27],-2.294
+*DOTE,____ . ____ . ____ . ____ . ____ . ____ . ____ . ____
+A,2.,-.2,.02,-.2
+*自然土壤,自然土壤
+A,0,-5,[tu2,yqshape.shx,s=10],-5
+*素土夯实1,素土夯实
+A,0,-5,[tu1,yqshape.shx,s=10],-5
+*素土夯实2,素土夯实///\\\///\\\
+A,.0001,-.0001,[TRACK1,ltypeshp.shx,y=-.14142,r=-45,s=.2],-.15,[TRACK1,ltypeshp.shx,y=-.14142,r=-45,s=.2],
+-.15,[TRACK1,ltypeshp.shx,y=-.14142,r=-45,s=.2], -.0001,[TRACK1,ltypeshp.shx,r=45,y=-.24142,s=.06],-.115,
+[TRACK1,ltypeshp.shx,r=45,y=-.19642,s=.1],-.085,[TRACK1,ltypeshp.shx,r=45,y=-.10642,s=.1],-.12
+*小草,小草\|/ \|/
+A,.00001,[TRACK1,ltypeshp.shx,r=15,y=.45,s=0.4],-.3,
+[TRACK1,ltypeshp.shx,r=10,y=.45,s=0.45],-.3,
+[TRACK1,ltypeshp.shx,r=-5,y=.45,s=0.5],-.3,
+[TRACK1,ltypeshp.shx,r=1,y=.45,s=0.5],-.3,
+[TRACK1,ltypeshp.shx,r=5,y=.45,s=0.45],-.3,
+[TRACK1,ltypeshp.shx,r=-12,y=.45,s=0.45],-.5
+*地毯,地毯\\\\////\\\\////
+A,.00001,[TRACK1,ltypeshp.shx,r=12,y=.5,s=0.5],-.3,
+[TRACK1,ltypeshp.shx,r=10,y=.5,s=0.5],-.3,
+[TRACK1,ltypeshp.shx,r=-5,y=.5,s=0.5],-.3,
+[TRACK1,ltypeshp.shx,r=1,y=.5,s=0.5],-.3,
+[TRACK1,ltypeshp.shx,r=5,y=.5,s=0.5],-.3,
+[TRACK1,ltypeshp.shx,r=-12,y=.5,s=0.5],-.3,
+[TRACK1,ltypeshp.shx,r=1,y=.5,s=0.5],-.3
+*鹅卵石,鹅卵石O.oO.oOO.o
+A,.0001,[CIRC1,ltypeshp.shx,X=0.1100,Y=0.3216,s=.11],-.00001,[CIRC1,ltypeshp.shx,X=0.1507,Y=0.0456,s=.12],-.00001,
+[CIRC1,ltypeshp.shx,X=0.0946,Y=-0.4160,s=.07],-.00001,[CIRC1,ltypeshp.shx,X=0.20,Y=-0.2380,s=.14],-.00001,
+[CIRC1,ltypeshp.shx,X=0.3234,Y=0.4202,s=.07],-.00001,[CIRC1,ltypeshp.shx,X=0.43,Y=0.1106,s=.15],-.00001,
+[CIRC1,ltypeshp.shx,X=0.5082,Y=0.3919,s=.08],-.00001,[CIRC1,ltypeshp.shx,X=0.460,Y=-0.3852,s=.11],-.00001,
+[CIRC1,ltypeshp.shx,X=0.6,Y=-0.1640,s=.1],-.6
+*斜线,斜线/////
+A,.0001,[TRACK1,ltypeshp.shx,r=-45,s=0.7071],-.5
+*行道树1,行道树0A _o_o_o_o_o_
+A,1,[CIRC1,ltypeshp.shx,X=-.5,Y=.65,s=.5], .00001,[TRACK1,ltypeshp.shx,Y=.65,s=.05],.00001,[TRACK1,ltypeshp.shx,r=90,Y=.65,s=.05],.2
+*行道树2,行道树0B -o-o-o-o-o-
+A,1,[CIRC1,ltypeshp.shx,X=-.5,Y=-.65,s=.5], .00001,[TRACK1,ltypeshp.shx,Y=-.65,s=.05],.00001,[TRACK1,ltypeshp.shx,r=90,Y=-.65,s=.05],.2
+A,6.35,-2.54,[CIRC1,ltypeshp.shx,x=-2.54,s=2.54],-2.54,25.4
+*GIVE_LINE,Give line ---- J ---- J ---- J ---- J ---- J --
+A,30.0,-3.0,["J",STANDARD,S=2.54,R=0.0,X=-0.85,Y=-1.27],-3.0
+*DRAIN_LINE,Drain line ---- W ---- W ---- W ---- W ---- W --
+A,30.0,-3.0,["W",STANDARD,S=2.54,R=0.0,X=-0.85,Y=-1.27],-3.0
+*RAIN_LINE,Rain line ---- Y ---- Y ---- Y ---- Y ---- Y --
+A,30.0,-3.0,["Y",STANDARD,S=2.54,R=0.0,X=-0.85,Y=-1.27],-3.0
+*AIR_LINE,Air line ---- T ---- T ---- T ---- T ---- T --
+A,30.0,-3.0,["T",STANDARD,S=2.54,R=0.0,X=-0.85,Y=-1.27],-3.0
+*PREVENT_LINE,Prevent line ---- X ---- X ---- X ---- X --
+A,30.0,-3.0,["X",STANDARD,S=2.54,R=0.0,X=-0.85,Y=-1.27],-3.0
+*STEAM_LINE,Steam line ---- Z ---- Z ---- Z ---- Z ---- Z --
+A,30.0,-3.0,["Z",STANDARD,S=2.54,R=0.0,X=-0.85,Y=-1.27],-3.0
+*WASTE_LINE,Waste line ---- F ---- F ---- F ---- F ---- F --
+A,30.0,-3.0,["F",STANDARD,S=2.54,R=0.0,X=-0.85,Y=-1.27],-3.0
+*HOT_WATER,Hot water ---- RJ ---- RJ ---- RJ ---- RJ --
+A,30.0,-3.0,["RJ",STANDARD,S=2.54,R=0.0,X=-2.1,Y=-1.27],-3.0
+*CIRCLE_WATER,Circle water ---- XJ ---- XJ ---- XJ ---- XJ --
+A,30.0,-3.0,["XJ",STANDARD,S=2.54,R=0.0,X=-2.1,Y=-1.27],-3.0
+*CIRCLE_RETURN,Circle return ---- XH ---- XH ---- XH --
+A,30.0,-3.0,["XH",STANDARD,S=2.54,R=0.0,X=-2.1,Y=-1.27],-3.0
+*HOT_RETURN,Hot return ---- RH ---- RH ---- RH ---- RH --
+A,30.0,-3.0,["RH",STANDARD,S=2.54,R=0.0,X=-2.1,Y=-1.27],-3.0
+*MID_WATER,Mid water ---- ZJ ---- ZJ ---- ZJ ---- ZJ --
+A,30.0,-3.0,["ZJ",STANDARD,S=2.54,R=0.0,X=-2.1,Y=-1.27],-3.0
+*AUTO_SPRAY,Auto Spray ---- ZP ---- ZP ---- ZP ---- ZP --
+A,30.0,-3.0,["ZP",STANDARD,S=2.54,R=0.0,X=-2.1,Y=-1.27],-3.0
+*RAIN_POUR,Rain Pour ---- YL ---- YL ---- YL ---- YL --
+A,30.0,-3.0,["YL",STANDARD,S=2.54,R=0.0,X=-2.1,Y=-1.27],-3.0
+*WATER_CURTAIN,Water Curtain ---- SM ---- SM ---- SM ---- SM --
+A,30.0,-3.0,["SM",STANDARD,S=2.54,R=0.0,X=-2.1,Y=-1.27],-3.0
+*WATER_CANNON,Water CANNON ---- SP ---- SP ---- SP ---- SP --
+A,30.0,-3.0,["SP",STANDARD,S=2.54,R=0.0,X=-2.1,Y=-1.27],-3.0
+*AIR_CONDITIONER,Air conditioner ---- KN ---- KN ---- KN --
+A,30.0,-3.0,["KN",STANDARD,S=2.54,R=0.0,X=-2.1,Y=-1.27],-3.0
+*HOT_WATER_SUPPLY,Hot water supply ---- HW ---- HW ---- HW ----
+A,12.7,-5.08,["HW",STANDARD,S=2.54,R=0.0,X=-2.54,Y=-1.27],-5.08
+*GAS_LINE,Gas line ----GAS----GAS----GAS----GAS----GAS----GAS--
+A,12.7,-5.08,["GAS",STANDARD,S=2.54,R=0.0,X=-2.54,Y=-1.27],-6.35
+*LED,LED -- LED -- LED -- LED --
+A,6,-3.5,["LED",STANDARD,S=2.54,R=0.0,X=-2.54,Y=-1.27],-4.8
+*T5,T5 -- T5 -- T5 -- T5 --
+A,6,-3,["T5",STANDARD,S=2.54,R=0.0,X=-2.54,Y=-1.27],-2
+*T8,T8 -- T8 -- T8 -- T8 --
+A,6,-3,["T8",STANDARD,S=2.54,R=0.0,X=-2.54,Y=-1.27],-2

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ApplicationPackage 
+    SchemaVersion="1.0" 
+    AutodeskProduct="AutoCAD" 
+    ProductType="Application" 
+    Name="DTT Tools 2027 Electrical Pro" 
+    AppVersion="2027.1.0" 
+    Author="DTT CAD Software Corporation" 
+    ProductCode="{D77A2027-ELEC-4NET8-AUTO-UPDATER-BUNDLE}" 
+    UpgradeCode="{D77A2027-UPGR-4NET8-AUTO-UPDATER-BUNDLE}" 
+    Description="DTT Tools 2027 - Bộ công cụ vẽ điện thông minh cho AutoCAD Electrical 2027 (.NET 8 Native, In-Memory RAM Loader &amp; GitHub Auto-Updater)"
+    Icon="./Contents/icon.ico">
+
+  <CompanyDetails 
+      Name="DTT CAD Software Corporation" 
+      Url="https://github.com/dtt-cad" 
+      Email="support@dtt-cad.com" />
+
+  <Components Description="AutoCAD Electrical 2025-2027 (.NET 8 Runtime Profile)">
+    <RuntimeRequirements 
+        OS="Win64" 
+        Platform="AutoCAD*" 
+        SeriesMin="R25.0" 
+        SeriesMax="R26.0" />
+
+    <!-- Tự động nạp Plugin chính khi AutoCAD 2027 khởi động -->
+    <ComponentEntry 
+        AppName="DTT_AutoCAD_Plugin_2027" 
+        ModuleName="./Contents/DTT_AutoCAD_Plugin_2027.dll" 
+        AppDescription="DTT Tools 2027 Native Plugin Module" 
+        LoadOnAutoCADStartup="True" 
+        LoadOnCommandInvocation="True">
+      <Commands GroupName="DTT_2027_COMMANDS">
+        <!-- LỆNH MENU CHÍNH -->
+        <Command Local="DTT" Global="DTT" />
+        <Command Local="DTOOLS" Global="DTOOLS" />
+        <Command Local="DTT_MENU" Global="DTT_MENU" />
+        <Command Local="DT_MENU" Global="DT_MENU" />
+        <Command Local="DTT_PALETTE" Global="DTT_PALETTE" />
+        <!-- THIẾT KẾ ĐIỆN THÔNG MINH -->
+        <Command Local="DTT_ELECTRICAL" Global="DTT_ELECTRICAL" />
+        <Command Local="DTT_E_LIGHTING" Global="DTT_E_LIGHTING" />
+        <Command Local="DTT_E_DOL" Global="DTT_E_DOL" />
+        <Command Local="DTT_E_STARDELTA" Global="DTT_E_STARDELTA" />
+        <Command Local="DTT_E_AUDIT" Global="DTT_E_AUDIT" />
+        <Command Local="DTT_DIAG" Global="DTT_DIAG" />
+        <Command Local="DTT_PLACE_SYMBOL" Global="DTT_PLACE_SYMBOL" />
+        <!-- MENU POPUP VÀ TIỆN ÍCH -->
+        <Command Local="DT_MODAL" Global="DT_MODAL" />
+        <Command Local="DTT_MODAL" Global="DTT_MODAL" />
+        <Command Local="DTT_FIXFONT" Global="DTT_FIXFONT" />
+        <Command Local="DTT_FLATTEN" Global="DTT_FLATTEN" />
+        <!-- AUTO UPDATER -->
+        <Command Local="DTT2027_UPDATE" Global="DTT2027_UPDATE" />
+        <Command Local="DTT2027_INFO" Global="DTT2027_INFO" />
+        <Command Local="DTT2027_RELOAD" Global="DTT2027_RELOAD" />
+      </Commands>
+    </ComponentEntry>
+
+    <!-- Nạp kèm Loader RAM & Auto-Updater ngầm -->
+    <ComponentEntry 
+        AppName="DTT_Loader_2027" 
+        ModuleName="./Contents/DTT_Loader_2027.dll" 
+        AppDescription="DTT Tools 2027 In-Memory Dynamic Loader &amp; Auto-Updater" 
+        LoadOnAutoCADStartup="True" />
+  </Components>
+</ApplicationPackage>

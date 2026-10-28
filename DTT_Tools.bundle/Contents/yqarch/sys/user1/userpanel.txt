@@ -1,0 +1,176 @@
+﻿;;; [YQArch Tieng Viet] - File Dinh Nghia Menu Nhanh AutoCAD (DTools Pro)
+;;; Tu dong viet hoa boi DTools CAD Engineering 2026
+
+;;; [源泉设计]-[用户组合命令面板]定义文件，最多可以定义20个面板
+;;;   源泉设计的命令完整名称，可参阅sys\yqshortcut.txt
+;;;
+;;;   标题行格式: ******中文标题,英文标题,每列n个按钮(小于等于28个),面板快捷键
+;;;   类别行格式: ****中文标题,英文标题
+;;;   命令行格式: 命令中文名,命令英文名,原始命令(或lisp程序),快捷键(可空置)
+;;;               注：命令行第4项为快捷键,可空置。如果设置,优先级强于总览命令的快捷键
+;;;                   此文件由用户自己设置，源泉不再更新
+
+
+;;;
+******[BẢNG TÙY BIẾN U1],[BANG TUY BIEN U1],26,u1
+;;;   --主要用于设置Q5/Q6/Q7面板的快捷键, 可自己按需要添加--
+
+
+****【THIẾT LẬP MỞ RỘNG】,[THIET LAP MO RONG]
+Date String (DAY            ; ----->这是快捷键例子: 加上"),Date String (DAY            ; ----->这是快捷键例子: 加上"),yq_date,day            ; ----->这是快捷键例子: 加上"
+Excel Import (E2T),Excel Import (E2T),yq_excel2table,e2t
+,,
+Save/Restore OSmode (OOS),Save/Restore OSmode (OOS),yq_osmode,oos
+
+****【SAO CHÉP & HIỆU CHỈNH】,[SAO CHEP HIEU CHINH]
+Copy & Array (CN),Copy & Array (CN),yq_cm,cn
+Copy & Divide Insided (CDF),Copy & Divide Insided (CDF),yq_copydivide,cdf
+,,
+Copy and Rotate (XZC),Copy and Rotate (XZC),yq_copyandrotate,xzc
+Copy and Mirror (YC),Copy and Mirror (YC),yq_xcopy,yc
+Divide Angle (DFA),Divide Angle (DFA),yq_angledivide,dfa
+,,
+Dynamic Trim (TV),Dynamic Trim (TV),yq_dynamictrim,tv
+Dynamic Extend (EXV),Dynamic Extend (EXV),yq_dynamicextend,exv
+Lengthen Object (LENX),Lengthen Object (LENX),yq_len,lenx
+,,
+Hatch Strecth (HHS),Hatch Strecth (HHS),yq_hhs,hhs
+
+****【ĐƯỜNG NÉT & ĐỐI TƯỢNG】,[DUONG NET DOI TUONG]
+Extrude a pline (JC),Extrude a pline (JC),yq_plineextrude,jc
+Copy a Pline Segment (XXCC),Copy a Pline Segment (XXCC),yq_copysegment,xxcc
+Divide a Pline Segment (XXDF),Divide a Pline Segment (XXDF),yq_dividesegment,xxdf
+Interval Break (BJX),Interval Break (BJX),yq_break_interval,bjx
+,,
+Spline/Ellipse to Arc Pline (S2A),Spline/Ellipse to Arc Pline (S2A),yq_s2a,s2a
+Spline/Ellipse to line Pline (S2X),Spline/Ellipse to line Pline (S2X),yq_s2x,s2x
+,,
+Integer Rectangle (RECZ),Integer Rectangle (RECZ),yq_irectangle,recz
+3 Point Rectangle (REC3),3 Point Rectangle (REC3),yq_rect3pt,rec3
+Quads to Diagonals (DJX),Quads to Diagonals (DJX),yq_diagonal,djx
+Draw Inside Line (RX            ; ----->这是快捷键例子: 加上"),Draw Inside Line (RX            ; ----->这是快捷键例子: 加上"),yq_insideline,rx            ; ----->这是快捷键例子: 加上"
+Angle Xline (GZX),Angle Xline (GZX),yq_anglexline,gzx
+Append Arc (AJ),Append Arc (AJ),yq_appendarc,aj
+,,
+Chữ Theo Đường Cong (TT2C),Chu Theo Duong Cong (TT2C),yq_text2curve,tt2c
+
+****【DIM & BLOCK】,[DIM & BLOCK]
+Switch PS Dimscale (DDPS),Switch PS Dimscale (DDPS),yq_fixpsdimscale,ddps
+Auto DIM (DDC),Auto DIM (DDC),yq_dim_auto,ddc
+DIM Polygon Angles (DDANS),DIM Polygon Angles (DDANS),yq_dim_polygonangles,ddans
+DIM Arcs Length (DDARS),DIM Arcs Length (DDARS),yq_dim_arcs,ddars
+Erase 0 Length DIM (DDE0),Erase 0 Length DIM (DDE0),yq_dim_del0,dde0
+DIM Slope (DDO),DIM Slope (DDO),yq_dim_slope,ddo
+Strech by Dimension (SDD),Strech by Dimension (SDD),yq_dimstretch,sdd
+Dimensions to Lines (DD2X),Dimensions to Lines (DD2X),yq_dim2lines,dd2x
+,,
+Exp. Att Blk (BBXT),Exp. Att Blk (BBXT),yq_expattblk,bbxt
+Replace color in block (BBCC),Replace color in block (BBCC),yq_blockchcolor,bbcc
+,,
+Explode Reference Block (REFX),Explode Reference Block (REFX),yq_refx,refx
+Xref to Relative (XF2R),Xref to Relative (XF2R),yq_xref2rel,xf2r
+Xref to Absolute (XF2A),Xref to Absolute (XF2A),yq_xref2abs,xf2a
+
+****【TÍNH NĂNG ĐẶC BIỆT】,[TINH NANG DAC BIET]
+Relations Switches (GL),Relations Switches (GL),yq_relswitch,gl
+,,
+Clip Image (QGTX),Clip Image (QGTX),yq_qgtx,qgtx
+Image Splitting (CFTX),Image Splitting (CFTX),yq_imagesplit,cftx
+Board Splitting (CFB),Board Splitting (CFB),yq_boardsplit,cfb
+,,
+Heel Block (DK),Heel Block (DK),yq_heelblock,dk
+Beveled Plate Glass (CBJ),Beveled Plate Glass (CBJ),yq_cbj,cbj
+Curtainwall Scissor (TQ),Curtainwall Scissor (TQ),yq_trimcurtainwall,tq
+Blocks Connection (LB),Blocks Connection (LB),yq_linkblocks,lb
+Get Linked Selection Sets (LSXQ),Get Linked Selection Sets (LSXQ),yq_lsxq,lsxq
+,,
+Hidden in frames (BXX),Hidden in frames (BXX),yq_breakandhidden,bxx
+,,
+All to A Layer (ER0),All to A Layer (ER0),yq_all2layer,er0
+Recover Color/Ltype/LW (00),Recover Color/Ltype/LW (00),yq_00,00
+Check If Closed (BFB),Check If Closed (BFB),yq_chkclosed,bfb
+
+
+
+
+******[杂项面板快捷键u2],[Misc Panel u2],26,u2
+
+****【CHỮ NÂNG CAO】,[CHU NANG CAO]
+Match Text Mode1 (SST1),Match Text Mode1 (SST1),(yq_match_content0 1),sst1
+Match Text Mode2 (SST2),Match Text Mode2 (SST2),(yq_match_content0 2),sst2
+Match Text Mode3 (SST3),Match Text Mode3 (SST3),(yq_match_content0 3),sst3
+
+Copy & translate (XFY),Copy & translate (XFY),yq_copytranslate,xfy
+,,
+;;; 对正方式:  "L" = acAlignmentLeft
+;;;            "C" = acAlignmentCenter
+;;;            "R" = acAlignmentRight
+;;;            "A" = acAlignmentAligned
+;;;            "M" = acAlignmentMiddle
+;;;            "F" = acAlignmentFit
+;;;            "TL" = acAlignmentTopLeft
+;;;            "TC" = acAlignmentTopCenter
+;;;            "TR" = acAlignmentTopRight
+;;;            "ML" = acAlignmentMiddleLeft
+;;;            "MC" = acAlignmentMiddleCenter
+;;;            "MR" = acAlignmentMiddleRight
+;;;            "BL" = acAlignmentBottomLeft
+;;;            "BC" = acAlignmentBottomCenter
+;;;            "BR" = acAlignmentBottomRight
+Alignment Left (TT1),Alignment Left (TT1),(yq_text_alignment "L"),tt1
+Alignment Center (TT2),Alignment Center (TT2),(yq_text_alignment "C"),tt2
+Alignment Right (TT3),Alignment Right (TT3),(yq_text_alignment "R"),tt3
+Alignment MiddleCenter (TT4),Alignment MiddleCenter (TT4),(yq_text_alignment "MC"),tt4
+
+****【TÍNH TOÁN KHỐI LƯỢNG】,[TINH TOAN KHOI LUONG]
+Text to Clipboard (WZ                       ;------> 这是快捷键例子: 加上"),Text to Clipboard (WZ                       ;------> 这是快捷键例子: 加上"),yq_text2clipboard,wz                       ;------> 这是快捷键例子: 加上"
+Text to Excel (TCE),Text to Excel (TCE),yq_appendtext2cell,tce
+Number to Excel (NCE),Number to Excel (NCE),yq_appendnum2cell,nce
+Dim to Excel (DDCE),Dim to Excel (DDCE),yq_appenddim2cell,ddce
+,,
+Get Area/Perimeter (WMJ),Get Area/Perimeter (WMJ),yq_areawall,wmj
+,,
+Pickup Area to Excel (DMJ),Pickup Area to Excel (DMJ),yq_pickArea2excel,dmj
+Rectangle Area to Excel (KMJ),Rectangle Area to Excel (KMJ),yq_RectangleArea,kmj
+Select Area to Excel (SMJ),Select Area to Excel (SMJ),yq_plineArea,smj
+Cell Area to Excel (ZMJ),Cell Area to Excel (ZMJ),yq_textCellArea,zmj
+Select harching to Excel (HMJ),Select harching to Excel (HMJ),yq_hatchArea,hmj
+,,
+Select Perimeter to Excel (SZC),Select Perimeter to Excel (SZC),yq_plinePerimeter,szc
+Rectangle Midline to Excel (KZC),Rectangle Midline to Excel (KZC),yq_RectangleMidline,kzc
+
+****【BỘ LỌC CHỌN NHANH】,[BO LOC CHON NHANH]
+Ename Filter (XEE),Ename Filter (XEE),yq_enamefilter,xee
+Layer Filter (XER),Layer Filter (XER),yq_layerfilter,xer
+Color Filter (XCR),Color Filter (XCR),yq_colorfilter,xcr
+
+****【XÓA CHUYÊN DỤNG】,[XOA CHUYEN DUNG]
+Filter Erase (DEE),Filter Erase (DEE),yq_filterErase,dee
+
+
+
+
+******[用户面板快捷键u3],[User Panel u3],26,u3
+
+****【FILTER ERASE】,[FILTER ERASE]
+Crack Tch Protect (TZX),Crack Tch Protect (TZX),yq_tzcracker,tzx
+
+****【MISC OTHERS】,[MISC OTHERS]
+Cấu hình YQSys (PZ                          ; ----->这是快捷键例子: 加上"),Cau Hinh YQSys (PZ                          ; ----->这是快捷键例子: 加上"),yqsys,pz                          ; ----->这是快捷键例子: 加上"
+Horizontal xline (XH         ; ----->这是添加LISP程序的例子),Horizontal xline (XH         ; ----->这是添加LISP程序的例子),(command "xline" "h"),xh         ; ----->这是添加lisp程序的例子
+Vertical xline (XV),Vertical xline (XV),(command "xline" "v"),xv
+Cross xline (X2),Cross xline (X2),yq_Crossxline,x2
+,,
+Text List-DN (DN),Text List-DN (DN),(yq_mlstbox "标题" (list "DN15 DN20 DN32 DN40 DN50 DN60 DN65 DN80 DN100 DN110 DN150 DN200 DN300" "Φ100 Φ200" "DE100 DE200" "D100 D200" "d100 d200")),dn
+Text List-Material (CLMC),Text List-Material (CLMC),(yq_mlstbox "标题" (list "夹丝玻璃 钢化玻璃 茶镜 清镜 超白玻 中空玻璃" "大理石 花岗石 墙面砖 防滑砖" "镜面不锈钢 发丝不锈钢 黑钛不锈钢")),clmc
+,,
+Top Aligning (DQT),Top Aligning (DQT),(yq_setdq 2)(c:yq_alignment),dqt
+Left Aligning (DQL),Left Aligning (DQL),(yq_setdq 3)(c:yq_alignment),dql
+Right Aligning (DQR),Right Aligning (DQR),(yq_setdq 5)(c:yq_alignment),dqr
+Bottom Aligning (DQB),Bottom Aligning (DQB),(yq_setdq 6)(c:yq_alignment),dqb
+
+****【AUTOCAD COMMANDS】,[AUTOCAD COMMANDS]
+Draw a Line,Draw a Line,line
+3 Points Arc,3 Points Arc,arc
+Copy,Copy,copy
+Erase,Erase,erase

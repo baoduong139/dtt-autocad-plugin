@@ -1,0 +1,7 @@
+NETLOAD "C:/Users/Duong/.gemini/antigravity-ide/scratch/DTT_AutoCAD_Plugin/bin/Release/net48/DTT_AutoCAD_Plugin.dll"
+DT_INSERTBLOCK
+Door
+0,0,0
+Done
+QUIT
+Y

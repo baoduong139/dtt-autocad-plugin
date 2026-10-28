@@ -1,0 +1,10 @@
+NETLOAD "C:/Users/Duong/AppData/Roaming/Autodesk/ApplicationPlugins/DTT_Tools.bundle/Contents/DTT_AutoCAD_Plugin.dll"
+(princ "\n>>> 1. NETLOAD DONE <<<\n")
+DTT_FIXFONT
+(princ "\n>>> 2. DTT_FIXFONT DONE <<<\n")
+DTT_FLATTEN
+(princ "\n>>> 3. DTT_FLATTEN DONE <<<\n")
+DTOOLS_CLEAN
+(princ "\n>>> 4. DTOOLS_CLEAN DONE <<<\n")
+QUIT
+Y

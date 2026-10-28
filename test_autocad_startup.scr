@@ -1,0 +1,8 @@
+NETLOAD "C:/Users/Duong/AppData/Roaming/Autodesk/ApplicationPlugins/DTT_Tools.bundle/Contents/DTT_AutoCAD_Plugin.dll"
+(princ "\n*** TEST 1: NETLOAD SUCCESSFUL ***\n")
+DTOOLS_CLEAN
+(princ "\n*** TEST 2: DTOOLS_CLEAN SUCCESSFUL ***\n")
+DT_DOOR 0,0,0
+(princ "\n*** TEST 3: DT_DOOR SUCCESSFUL ***\n")
+QUIT
+Y

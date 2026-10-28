@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ApplicationPackage 
+    SchemaVersion="1.0" 
+    AutodeskProduct="AutoCAD" 
+    ProductType="Application" 
+    AppVersion="2026.2.0" 
+    Name="DTools Pro" 
+    Description="DTools Pro v2026.2.0 - Hệ Thống Tiện Ích AutoCAD Chuyên Nghiệp Cho Kiến Trúc, Kết Cấu và Cơ Điện" 
+    Author="DTools CAD Software Corporation"
+    ProductCode="{9F3A5812-78E2-4C9D-9F01-7F23E4B8C0D1}" 
+    UpgradeCode="{7B19C52E-3198-4D2A-98C3-890DE1B73C44}">
+
+  <CompanyDetails 
+      Name="DTools CAD Software Corporation" 
+      Url="https://dtools-cad.vn" 
+      Email="support@dtools-cad.vn" />
+
+  <Components Description="AutoCAD 2020-2026 .NET Components">
+    <RuntimeRequirements 
+        OS="Win64" 
+        Platform="AutoCAD*" 
+        SeriesMin="R24.0" 
+        SeriesMax="R26.0" />
+    <ComponentEntry 
+        AppName="DTools_Pro" 
+        Version="2026.2.0" 
+        ModuleName="./Contents/DTT_AutoCAD_Plugin.dll" 
+        AppDescription="Native WPF 3D PaletteSet for AutoCAD - DTools Pro v2026.2.0" 
+        LoadOnAutoCADStartup="True" 
+        LoadOnCommandInvocation="True">
+      <Commands GroupName="DTOOLS_COMMANDS">
+        <!-- CORE -->
+        <Command Global="DTT" Local="DTT" />
+        <Command Global="DTOOLS" Local="DTOOLS" />
+        <Command Global="DTT_PALETTE" Local="DTT_PALETTE" />
+        <Command Global="DTT_FIXFONT" Local="DTT_FIXFONT" />
+        <Command Global="DTT_FLATTEN" Local="DTT_FLATTEN" />
+        <Command Global="DTT_YQ" Local="DTT_YQ" />
+        <Command Global="DTT_QUICK" Local="DTT_QUICK" />
+        <Command Global="YQ_QUICK" Local="YQ_QUICK" />
+        <Command Global="DTT_LOAD_YQ" Local="DTT_LOAD_YQ" />
+        <Command Global="DTT_LOAD_YQ_MENU" Local="DTT_LOAD_YQ_MENU" />
+        <Command Global="YQ_RELOAD" Local="YQ_RELOAD" />
+        <!-- KIẾN TRÚC & AI VISION -->
+        <Command Global="DTT_SCAN_TO_CAD" Local="DTT_SCAN_TO_CAD" />
+        <Command Global="DTT_RASTER_TO_CAD" Local="DTT_RASTER_TO_CAD" />
+        <Command Global="DTT_AI_VECTORIZER" Local="DTT_AI_VECTORIZER" />
+        <Command Global="DTOOLS_AI_CAD" Local="DTOOLS_AI_CAD" />
+        <Command Global="DTT_STANDARD_FLOOR_PLAN" Local="DTT_STANDARD_FLOOR_PLAN" />
+        <Command Global="DTT_HOUSE_PLAN" Local="DTT_HOUSE_PLAN" />
+        <Command Global="DTT_ARCH_PLAN" Local="DTT_ARCH_PLAN" />
+        <Command Global="DTT_HOUSEPLAN" Local="DTT_HOUSEPLAN" />
+        <Command Global="DTT_WALLSEC" Local="DTT_WALLSEC" />
+        <Command Global="DTT_WALL_MENU" Local="DTT_WALL_MENU" />
+        <Command Global="DTT_WALL220" Local="DTT_WALL220" />
+        <Command Global="DTT_WALL110" Local="DTT_WALL110" />
+        <Command Global="DTT_WALL100" Local="DTT_WALL100" />
+        <Command Global="DTT_WALL75" Local="DTT_WALL75" />
+        <Command Global="DTT_WALL_CONT" Local="DTT_WALL_CONT" />
+        <Command Global="DTT_DOOR_MENU" Local="DTT_DOOR_MENU" />
+        <Command Global="DTT_DOOR800" Local="DTT_DOOR800" />
+        <Command Global="DTT_DOOR900" Local="DTT_DOOR900" />
+        <Command Global="DTT_DOOR1" Local="DTT_DOOR1" />
+        <Command Global="DTT_DOOR1200" Local="DTT_DOOR1200" />
+        <Command Global="DTT_DOOR_SLIDE" Local="DTT_DOOR_SLIDE" />
+        <Command Global="DTT_DOOR_FOLDING" Local="DTT_DOOR_FOLDING" />
+        <Command Global="DTT_WIN_MENU" Local="DTT_WIN_MENU" />
+        <Command Global="DTT_WIN600" Local="DTT_WIN600" />
+        <Command Global="DTT_WIN1200" Local="DTT_WIN1200" />
+        <Command Global="DTT_WIN2" Local="DTT_WIN2" />
+        <Command Global="DTT_WIN1500" Local="DTT_WIN1500" />
+        <Command Global="DTT_WIN1800" Local="DTT_WIN1800" />
+        <Command Global="DTT_LOUVER" Local="DTT_LOUVER" />
+        <Command Global="DTT_ROOMTAG" Local="DTT_ROOMTAG" />
+        <Command Global="DTT_GRID" Local="DTT_GRID" />
+        <!-- KẾT CẤU -->
+        <Command Global="DTT_STRUCT_MENU" Local="DTT_STRUCT_MENU" />
+        <Command Global="DTT_REBAR135" Local="DTT_REBAR135" />
+        <Command Global="DTT_REBAR90" Local="DTT_REBAR90" />
+        <Command Global="DTT_STIRRUP" Local="DTT_STIRRUP" />
+        <Command Global="DTT_BEAMSEC" Local="DTT_BEAMSEC" />
+        <Command Global="DTT_REBARTABLE" Local="DTT_REBARTABLE" />
+        <!-- MEP & PCCC -->
+        <Command Global="DTT_MEP_MENU" Local="DTT_MEP_MENU" />
+        <Command Global="DTT_DRAINPIPE" Local="DTT_DRAINPIPE" />
+        <Command Global="DTT_SPRINKLER" Local="DTT_SPRINKLER" />
+        <Command Global="DTT_DUCT" Local="DTT_DUCT" />
+        <!-- ĐIỆN -->
+        <Command Global="DTT_CABINET_BUILDER" Local="DTT_CABINET_BUILDER" />
+        <Command Global="DTT_CABINET" Local="DTT_CABINET" />
+        <Command Global="DTOOLS_CABINET" Local="DTOOLS_CABINET" />
+        <Command Global="DTT_CABINET_3D" Local="DTT_CABINET_3D" />
+        <Command Global="DTT_3D_VIEW" Local="DTT_3D_VIEW" />
+        <Command Global="DTT_2D_VIEW" Local="DTT_2D_VIEW" />
+        <Command Global="DTT_EXPORT_BOM" Local="DTT_EXPORT_BOM" />
+        <Command Global="DTT_BOM" Local="DTT_BOM" />
+        <Command Global="DTT_SYMBOLS" Local="DTT_SYMBOLS" />
+        <Command Global="DTT_INSERT_SYMBOL" Local="DTT_INSERT_SYMBOL" />
+        <Command Global="DTT_ELEC_3PHASE" Local="DTT_ELEC_3PHASE" />
+        <Command Global="DTT_ELEC_WIRE" Local="DTT_ELEC_WIRE" />
+        <Command Global="DTT_ELEC_WIRENUM" Local="DTT_ELEC_WIRENUM" />
+        <Command Global="DTT_ELEC_GAP" Local="DTT_ELEC_GAP" />
+        <Command Global="DTT_ELEC_MENU" Local="DTT_ELEC_MENU" />
+        <Command Global="DTT_ELEC_DB" Local="DTT_ELEC_DB" />
+        <Command Global="DTT_ELEC_MDB" Local="DTT_ELEC_MDB" />
+        <Command Global="DTT_ELEC_SINGLELINE" Local="DTT_ELEC_SINGLELINE" />
+        <Command Global="DTT_ELEC_FLOORPLAN" Local="DTT_ELEC_FLOORPLAN" />
+        <Command Global="DTT_FLOORPLAN" Local="DTT_FLOORPLAN" />
+        <Command Global="DTT_PLC_BUILDER" Local="DTT_PLC_BUILDER" />
+        <Command Global="DTT_PLC" Local="DTT_PLC" />
+        <Command Global="DTT_SMART_SYNC" Local="DTT_SMART_SYNC" />
+        <Command Global="DTT_SYNC_PANEL" Local="DTT_SYNC_PANEL" />
+        <!-- 5 TÍNH NĂNG CHUYÊN SÂU NGHÀNH ĐIỆN -->
+        <Command Global="DTT_TERMINAL_STRIP" Local="DTT_TERMINAL_STRIP" />
+        <Command Global="DTT_TERMINAL" Local="DTT_TERMINAL" />
+        <Command Global="DTT_SMART_WIRENUM" Local="DTT_SMART_WIRENUM" />
+        <Command Global="DTT_CROSS_REF" Local="DTT_CROSS_REF" />
+        <Command Global="DTT_RELAY_XREF" Local="DTT_RELAY_XREF" />
+        <Command Global="DTT_MOTOR_STARTER" Local="DTT_MOTOR_STARTER" />
+        <Command Global="DTT_STARTER" Local="DTT_STARTER" />
+        <Command Global="DTT_ELEC_DRC" Local="DTT_ELEC_DRC" />
+        <Command Global="DTT_DRC" Local="DTT_DRC" />
+        <!-- TIỆN ÍCH -->
+        <Command Global="DTT_TLEN" Local="DTT_TLEN" />
+        <Command Global="DTT_TAREA" Local="DTT_TAREA" />
+        <Command Global="DTT_TCOUNT" Local="DTT_TCOUNT" />
+        <Command Global="DTT_TOGGLEBG" Local="DTT_TOGGLEBG" />
+        <!-- MENU POPUP TRUNG TÂM & 3D PREVIEW -->
+        <Command Global="DT_MODAL" Local="DT_MODAL" />
+        <Command Global="DTT_MODAL" Local="DTT_MODAL" />
+        <Command Global="DT_CENTER_MODAL" Local="DT_CENTER_MODAL" />
+        <Command Global="DT_POPUP" Local="DT_POPUP" />
+        <Command Global="DT_MENU3D" Local="DT_MENU3D" />
+        <!-- THƯ VIỆN DYNAMIC BLOCKS NỘI BỘ DTOOLS -->
+        <Command Global="DTT_PLACE_SYMBOL" Local="DTT_PLACE_SYMBOL" />
+        <Command Global="DT_PLACE_SYMBOL" Local="DT_PLACE_SYMBOL" />
+        <Command Global="DT_FAST_PLACE" Local="DT_FAST_PLACE" />
+        <Command Global="DTT_FAST_PLACE" Local="DTT_FAST_PLACE" />
+        <Command Global="=T_FAST_PLACE" Local="=T_FAST_PLACE" />
+        <Command Global="T_FAST_PLACE" Local="T_FAST_PLACE" />
+        <Command Global="=T_DOOR" Local="=T_DOOR" />
+        <Command Global="T_DOOR" Local="T_DOOR" />
+        <Command Global="=T_COLUMN" Local="=T_COLUMN" />
+        <Command Global="T_COLUMN" Local="T_COLUMN" />
+        <Command Global="=T_ELEVATION" Local="=T_ELEVATION" />
+        <Command Global="T_ELEVATION" Local="T_ELEVATION" />
+        <Command Global="=T_INSERTBLOCK" Local="=T_INSERTBLOCK" />
+        <Command Global="T_INSERTBLOCK" Local="T_INSERTBLOCK" />
+        <Command Global="DT_INSERTBLOCK" Local="DT_INSERTBLOCK" />
+        <Command Global="DTT_INSERTBLOCK" Local="DTT_INSERTBLOCK" />
+        <Command Global="DT_BLOCK" Local="DT_BLOCK" />
+        <Command Global="DTT_BLOCK" Local="DTT_BLOCK" />
+        <Command Global="DT_DOOR" Local="DT_DOOR" />
+        <Command Global="DTT_DOOR" Local="DTT_DOOR" />
+        <Command Global="DT_COLUMN" Local="DT_COLUMN" />
+        <Command Global="DTT_COLUMN" Local="DTT_COLUMN" />
+        <Command Global="DT_ELEVATION" Local="DT_ELEVATION" />
+        <Command Global="DTT_ELEVATION" Local="DTT_ELEVATION" />
+        <Command Global="DT_DYNAMIC_PROPS" Local="DT_DYNAMIC_PROPS" />
+        <Command Global="DT_PROPS" Local="DT_PROPS" />
+        <Command Global="DTT_PROPS" Local="DTT_PROPS" />
+        <Command Global="DT_OPENBLOCKS" Local="DT_OPENBLOCKS" />
+        <Command Global="DTT_OPENBLOCKS" Local="DTT_OPENBLOCKS" />
+        <!-- BẢO TRÌ & NÂNG CẤP HỆ THỐNG MỚI (PHẦN 3) -->
+        <Command Global="DT_CLEAN" Local="DT_CLEAN" />
+        <Command Global="DTT_CLEAN" Local="DTT_CLEAN" />
+        <Command Global="DTOOLS_CLEAN" Local="DTOOLS_CLEAN" />
+        <Command Global="DT_QUICKLAYER" Local="DT_QUICKLAYER" />
+        <Command Global="DTT_QUICKLAYER" Local="DTT_QUICKLAYER" />
+        <Command Global="DTT_AUTOLAYER" Local="DTT_AUTOLAYER" />
+        <Command Global="DT_YQREFIX" Local="DT_YQREFIX" />
+        <Command Global="DTT_YQREFIX" Local="DTT_YQREFIX" />
+        <Command Global="YQ_FIX" Local="YQ_FIX" />
+        <Command Global="DT_MENU" Local="DT_MENU" />
+        <Command Global="DTT_MENU" Local="DTT_MENU" />
+        <!-- MỞ RỘNG PRO EXPANSION -->
+        <Command Global="DTT_BATCH_PLOT" Local="DTT_BATCH_PLOT" />
+        <Command Global="DTT_BOQ_EXPORT" Local="DTT_BOQ_EXPORT" />
+        <Command Global="DTT_BOQ_FULL_EXPORT" Local="DTT_BOQ_FULL_EXPORT" />
+        <Command Global="DTT_CABLE_CALC" Local="DTT_CABLE_CALC" />
+        <Command Global="DTT_FURNITURE" Local="DTT_FURNITURE" />
+        <Command Global="DTT_HVAC_DIFFUSER" Local="DTT_HVAC_DIFFUSER" />
+        <Command Global="DTT_HVAC_DUCT" Local="DTT_HVAC_DUCT" />
+        <Command Global="DTT_PLUMBING" Local="DTT_PLUMBING" />
+        <Command Global="DTT_RENUMBER_SHEETS" Local="DTT_RENUMBER_SHEETS" />
+        <Command Global="DTT_SLD_BUILDER" Local="DTT_SLD_BUILDER" />
+        <Command Global="DTT_STAIRCASE" Local="DTT_STAIRCASE" />
+        <!-- AUTOCAD ELECTRICAL NATIVE-FIRST COMMANDS -->
+        <Command Global="DTT_ELECTRICAL" Local="DTT_ELECTRICAL" />
+        <Command Global="DTT_E_LIGHTING" Local="DTT_E_LIGHTING" />
+        <Command Global="DTT_E_DOL" Local="DTT_E_DOL" />
+        <Command Global="DTT_E_STARDELTA" Local="DTT_E_STARDELTA" />
+        <Command Global="DTT_E_AUDIT" Local="DTT_E_AUDIT" />
+        <Command Global="DTT_DIAG" Local="DTT_DIAG" />
+        <!-- BỔ SUNG CÁC ALIAS ĐÃ KHAI BÁO TRONG C# -->
+        <Command Global="DTOOLS_3D_VIEW" Local="DTOOLS_3D_VIEW" />
+        <Command Global="DTOOLS_BOM" Local="DTOOLS_BOM" />
+        <Command Global="DTOOLS_CABINET_3D" Local="DTOOLS_CABINET_3D" />
+        <Command Global="DTOOLS_FLOORPLAN" Local="DTOOLS_FLOORPLAN" />
+        <Command Global="DTOOLS_PLC" Local="DTOOLS_PLC" />
+        <Command Global="DTT_SFP" Local="DTT_SFP" />
+        <Command Global="DTT_TEST_DYN" Local="DTT_TEST_DYN" />
+        <Command Global="DTT_WIRENUM_AUTO" Local="DTT_WIRENUM_AUTO" />
+        <Command Global="DT_PLACE" Local="DT_PLACE" />
+        <Command Global="DT_TEST_DYN" Local="DT_TEST_DYN" />
+        <Command Global="FAST_PLACE" Local="FAST_PLACE" />
+        <Command Global="PLACE_SYMBOL" Local="PLACE_SYMBOL" />
+      </Commands>
+    </ComponentEntry>
+  </Components>
+
+  <Components Description="DTools YQArch Menu &amp; Engine Autoloader">
+    <RuntimeRequirements OS="Win64" Platform="AutoCAD*|ACADLT" SeriesMin="R20.0" />
+    <ComponentEntry AppName="DTT_YQ_Menu_Autoloader" ModuleName="./Contents/DTT_YQ_Autoload.lsp" LoadOnAutoCADStartup="True" />
+  </Components>
+</ApplicationPackage>

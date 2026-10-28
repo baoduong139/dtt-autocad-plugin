@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <AssemblyName>DTT_Loader_2027</AssemblyName>
+    <RootNamespace>DTT_AutoCAD_Plugin_2027</RootNamespace>
+    <OutputType>Library</OutputType>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <Version>2027.1.0</Version>
+    <Company>DTT CAD Software Corporation</Company>
+    <Product>DTT Tools 2027 In-Memory Dynamic Loader</Product>
+    <Description>Bộ Khởi Tạo Nạp Động RAM &amp; Auto-Updater Cho AutoCAD Electrical 2027 (.NET 8)</Description>
+    <OutputPath>..\dist_2027\bin\Release\net8.0-windows\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+
+  <!-- Tham chiếu API AutoCAD 2025/2026/2027 (.NET 8) -->
+  <ItemGroup>
+    <PackageReference Include="AutoCAD.NET" Version="25.1.0">
+      <PrivateAssets>all</PrivateAssets>
+      <ExcludeAssets>runtime</ExcludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <!-- Chỉ biên dịch 2 file: Loader và Updater -->
+  <ItemGroup>
+    <Compile Include="DTT_Loader_2027.cs" />
+    <Compile Include="GitHubUpdateService2027.cs" />
+  </ItemGroup>
+
+  <!-- Loại bỏ toàn bộ các file khác nếu SDK quét mặc định -->
+  <ItemGroup>
+    <Compile Remove="..\**" />
+  </ItemGroup>
+
+</Project>

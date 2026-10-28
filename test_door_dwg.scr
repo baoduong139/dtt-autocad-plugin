@@ -1,0 +1,8 @@
+(setq blk (tblnext "BLOCK" T))
+(while blk
+  (princ (strcat "\nBLOCK_IN_DOOR_DWG: " (cdr (assoc 2 blk))))
+  (setq blk (tblnext "BLOCK"))
+)
+(princ)
+QUIT
+Y

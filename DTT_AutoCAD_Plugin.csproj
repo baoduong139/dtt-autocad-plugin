@@ -1,0 +1,94 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <AssemblyName>DTT_AutoCAD_Plugin</AssemblyName>
+    <RootNamespace>DTT_AutoCAD_Plugin</RootNamespace>
+    <OutputType>Library</OutputType>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <Version>2026.2.0</Version>
+    <Company>DTT CAD Software Corporation</Company>
+    <Product>DTools Pro</Product>
+    <Description>DTools Pro - Hệ Thống Tiện Ích AutoCAD Chuyên Nghiệp Cho Kiến Trúc, Kết Cấu và Cơ Điện</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="src\**" />
+    <Compile Remove="tests\**" />
+    <Compile Remove="Build\**" />
+    <Compile Remove="DTT_AutoCAD_Plugin_2027\**" />
+    <Compile Remove="dist_2027\**" />
+    <Page Remove="src\**" />
+    <Page Remove="tests\**" />
+    <Page Remove="Build\**" />
+    <Page Remove="DTT_AutoCAD_Plugin_2027\**" />
+    <Page Remove="dist_2027\**" />
+    <ApplicationDefinition Remove="src\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="src\DTools.Core\DTools.Core.csproj" />
+    <ProjectReference Include="src\DTools.Application\DTools.Application.csproj" />
+  </ItemGroup>
+
+  <!-- ========================================================================= -->
+  <!-- PHẦN 1: THAM CHIẾU AUTOCAD 2021 .NET API TỪ THƯ MỤC LIBS                   -->
+  <!-- ========================================================================= -->
+  <ItemGroup>
+    <Reference Include="accoremgd">
+      <HintPath>libs\accoremgd.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="acdbmgd">
+      <HintPath>libs\acdbmgd.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="acmgd">
+      <HintPath>libs\acmgd.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+
+  <!-- Các thư viện WPF và Windows Forms Integration -->
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="WindowsFormsIntegration" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+  </ItemGroup>
+
+  <!-- ========================================================================= -->
+  <!-- PHẦN 2: MSBUILD TỰ ĐỘNG ĐÓNG GÓI TRỌN BỘ YQARCH VÀO TARGETDIR (RELATIVE)   -->
+  <!-- ========================================================================= -->
+  <Target Name="CopyYQArchToOutput" AfterTargets="Build">
+    <ItemGroup>
+      <YQArchFiles Include="$(MSBuildProjectDirectory)\DTT_Tools.bundle\Contents\yqarch\**\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(YQArchFiles)" 
+          DestinationFiles="@(YQArchFiles->'$(TargetDir)YQArch\%(RecursiveDir)%(Filename)%(Extension)')" 
+          SkipUnchangedFiles="true" />
+  </Target>
+
+  <!-- ========================================================================= -->
+  <!-- PHẦN 3: MSBUILD TỰ ĐỘNG ĐÓNG GÓI THƯ VIỆN DYNAMIC BLOCKS VÀO TARGETDIR    -->
+  <!-- ========================================================================= -->
+  <Target Name="CopyBlocksToOutput" AfterTargets="Build">
+    <ItemGroup>
+      <BlockFiles Include="$(MSBuildProjectDirectory)\Blocks\**\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(BlockFiles)" 
+          DestinationFiles="@(BlockFiles->'$(TargetDir)Blocks\%(RecursiveDir)%(Filename)%(Extension)')" 
+          SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>

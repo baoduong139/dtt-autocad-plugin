@@ -1,0 +1,386 @@
+<Window x:Class="DTT_AutoCAD_Plugin.UI.DTools_HousePlanArchDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Vẽ Mặt Bằng Nhà Kiến Trúc &amp; Preview 2D/3D - DTools Pro" 
+        Height="720" Width="1040"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        Topmost="True"
+        FontFamily="Segoe UI, Tahoma, sans-serif"
+        TextOptions.TextFormattingMode="Display"
+        TextOptions.TextRenderingMode="ClearType"
+        RenderOptions.ClearTypeHint="Enabled"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True"
+        PreviewKeyDown="Window_PreviewKeyDown"
+        Loaded="Window_Loaded">
+
+    <Window.Resources>
+        <!-- MODERN SHADOWS -->
+        <DropShadowEffect x:Key="WindowShadow" BlurRadius="24" ShadowDepth="6" Direction="270" Color="#64748B" Opacity="0.25"/>
+        <DropShadowEffect x:Key="CardShadow" BlurRadius="8" ShadowDepth="2" Direction="270" Color="#64748B" Opacity="0.12"/>
+        <DropShadowEffect x:Key="GlowCyan" BlurRadius="10" ShadowDepth="0" Color="#0284C7" Opacity="0.4"/>
+
+        <!-- STYLE INPUT TEXTBOX -->
+        <Style x:Key="StyleInputBox" TargetType="TextBox">
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Background" Value="#FFFFFF"/>
+            <Setter Property="BorderBrush" Value="#CBD5E1"/>
+            <Setter Property="BorderThickness" Value="1.2"/>
+            <Setter Property="Foreground" Value="#0F172A"/>
+            <Setter Property="FontSize" Value="11.5"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="8,2"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+
+        <!-- STYLE COMBOBOX -->
+        <Style x:Key="StyleComboBox" TargetType="ComboBox">
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Background" Value="#FFFFFF"/>
+            <Setter Property="BorderBrush" Value="#CBD5E1"/>
+            <Setter Property="BorderThickness" Value="1.2"/>
+            <Setter Property="Foreground" Value="#0F172A"/>
+            <Setter Property="FontSize" Value="11.5"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+
+        <!-- STYLE CHECKBOX -->
+        <Style x:Key="StyleCheckBox" TargetType="CheckBox">
+            <Setter Property="Foreground" Value="#0F172A"/>
+            <Setter Property="FontSize" Value="11.5"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Margin" Value="0,3,0,3"/>
+        </Style>
+    </Window.Resources>
+
+    <!-- WINDOW CONTAINER WITH CLEAN WHITE STUDIO LIGHT THEME -->
+    <Border CornerRadius="12" Background="#F8FAFC" BorderBrush="#0284C7" BorderThickness="1.5" Effect="{StaticResource WindowShadow}" Margin="12">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="52"/> <!-- HEADER -->
+                <RowDefinition Height="*"/>  <!-- BODY (CỘT THIẾT LẬP + CỘT PREVIEW 2D/3D) -->
+                <RowDefinition Height="58"/> <!-- FOOTER -->
+            </Grid.RowDefinitions>
+
+            <!-- 1. HEADER (DRAGGABLE HANDLE) -->
+            <Border Grid.Row="0" Background="#FFFFFF" BorderBrush="#E2E8F0" BorderThickness="0,0,0,1.2" CornerRadius="11,11,0,0" MouseLeftButtonDown="Header_MouseDown" Cursor="SizeAll">
+                <Grid Margin="16,0,14,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="🏛️ " FontSize="19"/>
+                        <TextBlock Text="VẼ MẶT BẰNG NHÀ KIẾN TRÚC &amp; PREVIEW 2D/3D TƯƠNG TÁC" FontSize="13.5" FontWeight="Bold" Foreground="#0F172A" VerticalAlignment="Center"/>
+                        <Border Background="#E0F2FE" CornerRadius="4" Padding="6,2" Margin="10,0,0,0" VerticalAlignment="Center">
+                            <TextBlock Text="ARCHITECTURAL STUDIO PRO v5.0" FontSize="9.5" FontWeight="Bold" Foreground="#0284C7"/>
+                        </Border>
+                    </StackPanel>
+
+                    <Button Grid.Column="1" Click="BtnClose_Click" Width="30" Height="30" Background="Transparent" BorderThickness="0" Cursor="Hand" ToolTip="Đóng (Esc)">
+                        <TextBlock Text="✕" FontSize="14" Foreground="#64748B" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Button>
+                </Grid>
+            </Border>
+
+            <!-- 2. BODY CHÍNH (2 CỘT: CỘT TRÁI INPUTS / CỘT PHẢI PREVIEW 2D/3D) -->
+            <Grid Grid.Row="1" Margin="14,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="380"/> <!-- CỘT THIẾT LẬP KIẾN TRÚC -->
+                    <ColumnDefinition Width="12"/>
+                    <ColumnDefinition Width="*"/>   <!-- CỘT PREVIEW 2D/3D TƯƠNG TÁC -->
+                </Grid.ColumnDefinitions>
+
+                <!-- CỘT TRÁI: FORM ĐIỀU KHIỂN & NHẬP THÔNG SỐ (SCROLLABLE) -->
+                <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Margin="0,0,4,0">
+
+                        <!-- NHÓM 1: DẠNG PHÒNG & KÍCH THƯỚC -->
+                        <Border Background="#FFFFFF" CornerRadius="8" BorderBrush="#E2E8F0" BorderThickness="1.2" Padding="12" Margin="0,0,0,8" Effect="{StaticResource CardShadow}">
+                            <StackPanel>
+                                <TextBlock Text="📐 1. DẠNG PHÒNG &amp; KÍCH THƯỚC NHÀ" FontSize="11" FontWeight="Bold" Foreground="#0284C7" Margin="0,0,0,8"/>
+
+                                <Grid Margin="0,0,0,6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="120"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Dạng kiến trúc:" VerticalAlignment="Center" FontSize="11" Foreground="#64748B"/>
+                                    <ComboBox x:Name="CboShape" Grid.Column="1" Style="{StaticResource StyleComboBox}" SelectionChanged="Parameter_Changed">
+                                        <ComboBoxItem Content="Chữ Nhật (L x W)" IsSelected="True"/>
+                                        <ComboBoxItem Content="Chữ L (L1, L2, W1, W2)"/>
+                                        <ComboBoxItem Content="Chữ T (Đối xứng)"/>
+                                        <ComboBoxItem Content="Pick Polyline Ranh Giới CAD"/>
+                                    </ComboBox>
+                                </Grid>
+
+                                <Grid Margin="0,0,0,6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="120"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Tên không gian:" VerticalAlignment="Center" FontSize="11" Foreground="#64748B"/>
+                                    <TextBox x:Name="TxtRoomName" Grid.Column="1" Text="PHÒNG KHÁCH &amp; SINH HOẠT" Style="{StaticResource StyleInputBox}" TextChanged="Parameter_Changed"/>
+                                </Grid>
+
+                                <Grid Margin="0,0,0,6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="6"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Chiều Dài L (mm):" FontSize="10.5" Foreground="#64748B" Margin="0,0,0,2"/>
+                                        <TextBox x:Name="TxtL" Text="8000" Style="{StaticResource StyleInputBox}" TextChanged="Parameter_Changed"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Chiều Rộng W (mm):" FontSize="10.5" Foreground="#64748B" Margin="0,0,0,2"/>
+                                        <TextBox x:Name="TxtW" Text="5000" Style="{StaticResource StyleInputBox}" TextChanged="Parameter_Changed"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <Grid Margin="0,0,0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="6"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Chiều cao phòng H:" FontSize="10.5" Foreground="#64748B" Margin="0,0,0,2"/>
+                                        <TextBox x:Name="TxtH" Text="3300" Style="{StaticResource StyleInputBox}" TextChanged="Parameter_Changed"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Diện tích tính toán:" FontSize="10.5" Foreground="#64748B" Margin="0,0,0,2"/>
+                                        <Border Background="#F1F5F9" CornerRadius="4" Height="30" BorderBrush="#CBD5E1" BorderThickness="1">
+                                            <TextBlock x:Name="TxtAreaCalc" Text="40.0 m²" FontSize="11.5" FontWeight="Bold" Foreground="#10B981" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </StackPanel>
+                                </Grid>
+
+                                <!-- NHÓM PHỤ: Kích thước nhánh L/T (hiện khi chọn Chữ L hoặc Chữ T) -->
+                                <Border x:Name="BorderBranch" Background="#FFF7ED" CornerRadius="6" BorderBrush="#FED7AA" BorderThickness="1" Padding="8" Margin="0,4,0,0" Visibility="Collapsed">
+                                    <StackPanel>
+                                        <TextBlock Text="🔧 Kích thước nhánh cắt (Chữ L / Chữ T):" FontSize="10.5" FontWeight="Bold" Foreground="#EA580C" Margin="0,0,0,6"/>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="6"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0">
+                                                <TextBlock Text="Nhánh dài bL (mm):" FontSize="10.5" Foreground="#64748B" Margin="0,0,0,2"/>
+                                                <TextBox x:Name="TxtBranchL" Text="4000" Style="{StaticResource StyleInputBox}" TextChanged="Parameter_Changed"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="2">
+                                                <TextBlock Text="Nhánh rộng bW (mm):" FontSize="10.5" Foreground="#64748B" Margin="0,0,0,2"/>
+                                                <TextBox x:Name="TxtBranchW" Text="2500" Style="{StaticResource StyleInputBox}" TextChanged="Parameter_Changed"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- NHÓM 2: KẾT CẤU TƯỜNG & CỘT BÊ TÔNG -->
+                        <Border Background="#FFFFFF" CornerRadius="8" BorderBrush="#E2E8F0" BorderThickness="1.2" Padding="12" Margin="0,0,0,8" Effect="{StaticResource CardShadow}">
+                            <StackPanel>
+                                <TextBlock Text="🧱 2. KẾT CẤU TƯỜNG BAO &amp; CỘT BTCT" FontSize="11" FontWeight="Bold" Foreground="#0284C7" Margin="0,0,0,8"/>
+
+                                <Grid Margin="0,0,0,6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="6"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Tường bao ngoài:" FontSize="10.5" Foreground="#64748B" Margin="0,0,0,2"/>
+                                        <ComboBox x:Name="CboWallT" Style="{StaticResource StyleComboBox}" SelectionChanged="Parameter_Changed">
+                                            <ComboBoxItem Content="220 mm (Tường đôi)" IsSelected="True"/>
+                                            <ComboBoxItem Content="300 mm (Cách âm/Nhiệt)"/>
+                                            <ComboBoxItem Content="110 mm (Tường đơn)"/>
+                                        </ComboBox>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Tường ngăn trong:" FontSize="10.5" Foreground="#64748B" Margin="0,0,0,2"/>
+                                        <ComboBox x:Name="CboWallInnerT" Style="{StaticResource StyleComboBox}" SelectionChanged="Parameter_Changed">
+                                            <ComboBoxItem Content="110 mm (Tiêu chuẩn)" IsSelected="True"/>
+                                            <ComboBoxItem Content="75 mm (Vách nhẹ)"/>
+                                        </ComboBox>
+                                    </StackPanel>
+                                </Grid>
+
+                                <CheckBox x:Name="ChkColumns" Content="Bố trí Cột Bê Tông (220x220mm) tại góc/trục" Style="{StaticResource StyleCheckBox}" IsChecked="True" Checked="Parameter_Changed" Unchecked="Parameter_Changed"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- NHÓM 3: CỬA ĐI, CỬA SỔ & NỘI THẤT -->
+                        <Border Background="#FFFFFF" CornerRadius="8" BorderBrush="#E2E8F0" BorderThickness="1.2" Padding="12" Margin="0,0,0,8" Effect="{StaticResource CardShadow}">
+                            <StackPanel>
+                                <TextBlock Text="🚪 3. CẤU HÌNH CỬA ĐI &amp; CỬA SỔ" FontSize="11" FontWeight="Bold" Foreground="#0284C7" Margin="0,0,0,8"/>
+
+                                <CheckBox x:Name="ChkDoor" Content="Trổ Cửa Đi Chính Vào Phòng" Style="{StaticResource StyleCheckBox}" IsChecked="True" Checked="Parameter_Changed" Unchecked="Parameter_Changed"/>
+                                <Grid Margin="0,0,0,6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Kiểu cửa đi:" VerticalAlignment="Center" FontSize="10.5" Foreground="#64748B"/>
+                                    <ComboBox x:Name="CboDoorKind" Grid.Column="1" Style="{StaticResource StyleComboBox}" SelectionChanged="Parameter_Changed">
+                                        <ComboBoxItem Content="Cửa 1 Cánh Mở 90° (D900)" IsSelected="True"/>
+                                        <ComboBoxItem Content="Cửa 2 Cánh Mở 90° (D1400)"/>
+                                        <ComboBoxItem Content="Cửa Lùa Trượt Ray (D1200)"/>
+                                    </ComboBox>
+                                </Grid>
+
+                                <CheckBox x:Name="ChkWindow" Content="Trổ Cửa Sổ Lấy Sáng &amp; Thông Gió" Style="{StaticResource StyleCheckBox}" IsChecked="True" Checked="Parameter_Changed" Unchecked="Parameter_Changed"/>
+                                <Grid Margin="0,0,0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Rộng cửa sổ W:" VerticalAlignment="Center" FontSize="10.5" Foreground="#64748B"/>
+                                    <ComboBox x:Name="CboWinW" Grid.Column="1" Style="{StaticResource StyleComboBox}" SelectionChanged="Parameter_Changed">
+                                        <ComboBoxItem Content="1600 mm (Cửa 2 cánh)" IsSelected="True"/>
+                                        <ComboBoxItem Content="1200 mm"/>
+                                        <ComboBoxItem Content="2000 mm (Cửa 4 cánh)"/>
+                                    </ComboBox>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- NHÓM 4: HỆ TRỤC & 3 LỚP KÍCH THƯỚC (DIMENSIONS) -->
+                        <Border Background="#FFFFFF" CornerRadius="8" BorderBrush="#E2E8F0" BorderThickness="1.2" Padding="12" Margin="0,0,0,8" Effect="{StaticResource CardShadow}">
+                            <StackPanel>
+                                <TextBlock Text="📏 4. HỆ TRỤC &amp; 3 LỚP ĐƯỜNG KÍCH THƯỚC (DIM)" FontSize="11" FontWeight="Bold" Foreground="#0284C7" Margin="0,0,0,8"/>
+
+                                <CheckBox x:Name="ChkGrids" Content="Tạo Hệ Trục Tim Cột (1-2-3... / A-B-C...)" Style="{StaticResource StyleCheckBox}" IsChecked="True" Checked="Parameter_Changed" Unchecked="Parameter_Changed"/>
+                                <CheckBox x:Name="Chk3Dims" Content="Tạo 3 Lớp Kích Thước (Tổng/Trục/Chi Tiết)" Style="{StaticResource StyleCheckBox}" IsChecked="True" Checked="Parameter_Changed" Unchecked="Parameter_Changed"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- NHÓM 5: PHỦ HỆ THỐNG ĐIỆN MEP OVERLAY -->
+                        <Border Background="#F0F9FF" CornerRadius="8" BorderBrush="#BAE6FD" BorderThickness="1.2" Padding="12" Effect="{StaticResource CardShadow}">
+                            <StackPanel>
+                                <TextBlock Text="⚡ 5. PHỦ HỆ THỐNG ĐIỆN MEP OVERLAY" FontSize="11" FontWeight="Bold" Foreground="#0284C7" Margin="0,0,0,8"/>
+
+                                <CheckBox x:Name="ChkElecOverlay" Content="Phủ Hệ Thống Điện (Đèn, Công Tắc, Dây, DB)" Style="{StaticResource StyleCheckBox}" IsChecked="True" Checked="Parameter_Changed" Unchecked="Parameter_Changed"/>
+                                <Grid Margin="0,4,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Số đèn rải đều:" VerticalAlignment="Center" FontSize="10.5" Foreground="#64748B"/>
+                                    <ComboBox x:Name="CboLightCount" Grid.Column="1" Style="{StaticResource StyleComboBox}" SelectionChanged="Parameter_Changed">
+                                        <ComboBoxItem Content="4 Bộ Đèn"/>
+                                        <ComboBoxItem Content="6 Bộ Đèn" IsSelected="True"/>
+                                        <ComboBoxItem Content="8 Bộ Đèn"/>
+                                        <ComboBoxItem Content="12 Bộ Đèn"/>
+                                    </ComboBox>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- CỘT PHẢI: BỘ PREVIEW 2D / 3D TƯƠNG TÁC ĐỘC LẬP -->
+                <Border Grid.Column="2" Background="#0F172A" CornerRadius="10" BorderBrush="#1E293B" BorderThickness="1.5" ClipToBounds="True">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="46"/> <!-- TOOLBAR ĐIỀU KHIỂN PREVIEW -->
+                            <RowDefinition Height="*"/>  <!-- CANVAS HIỂN THỊ 2D/3D -->
+                            <RowDefinition Height="34"/> <!-- THANH XOAY 3D / TỌA ĐỘ -->
+                        </Grid.RowDefinitions>
+
+                        <!-- TOOLBAR TRÊN CÙNG PREVIEW -->
+                        <Border Grid.Row="0" Background="#1E293B" BorderBrush="#334155" BorderThickness="0,0,0,1" Padding="10,0">
+                            <Grid VerticalAlignment="Center">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Nút chuyển 2D / 3D -->
+                                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                    <RadioButton x:Name="Rad2D" Content="📐 2D TOP VIEW" Height="28" Padding="10,4" Margin="0,0,4,0" IsChecked="True" Checked="ViewMode_Changed"
+                                                 Foreground="#F8FAFC" FontSize="11" FontWeight="Bold" Cursor="Hand"/>
+                                    <RadioButton x:Name="Rad3D" Content="🧊 3D ISOMETRIC" Height="28" Padding="10,4" Checked="ViewMode_Changed"
+                                                 Foreground="#F8FAFC" FontSize="11" FontWeight="Bold" Cursor="Hand"/>
+                                </StackPanel>
+
+                                <!-- Bộ công cụ Zoom -->
+                                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                                    <Button Content="[−] Thu Nhỏ" Width="76" Height="26" Margin="0,0,4,0" Background="#334155" Foreground="#F8FAFC" BorderThickness="0" FontSize="10.5" Cursor="Hand" Click="BtnZoomOut_Click"/>
+                                    <Button Content="[+] Phóng To" Width="76" Height="26" Margin="0,0,4,0" Background="#334155" Foreground="#F8FAFC" BorderThickness="0" FontSize="10.5" Cursor="Hand" Click="BtnZoomIn_Click"/>
+                                    <Button Content="[⟲ Fit]" Width="52" Height="26" Background="#0284C7" Foreground="#FFFFFF" BorderThickness="0" FontWeight="Bold" FontSize="10.5" Cursor="Hand" Click="BtnFit_Click" ToolTip="Căn vừa toàn màn hình"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <!-- CANVAS PREVIEW TƯƠNG TÁC (HỖ TRỢ LĂN CHUỘT, DRAG PAN, DRAG ROTATE) -->
+                        <Border Grid.Row="1" Background="#090D16" ClipToBounds="True">
+                            <Canvas x:Name="PreviewCanvas" Background="Transparent"
+                                    MouseWheel="Canvas_MouseWheel"
+                                    MouseDown="Canvas_MouseDown"
+                                    MouseMove="Canvas_MouseMove"
+                                    MouseUp="Canvas_MouseUp"
+                                    Cursor="Cross"/>
+                        </Border>
+
+                        <!-- THANH ĐIỀU KHIỂN XOAY 3D DƯỚI ĐÁY -->
+                        <Border Grid.Row="2" Background="#1E293B" BorderBrush="#334155" BorderThickness="0,1,0,0" Padding="12,0">
+                            <Grid VerticalAlignment="Center">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="130"/>
+                                    <ColumnDefinition Width="16"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="130"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Column="5" Text="💡 Kéo chuột phải để Xoay 3D • Cuộn chuột để Phóng to" FontSize="10" Foreground="#94A3B8" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+                                <TextBlock Grid.Column="0" Text="Xoay Ngang (Yaw):" FontSize="10" Foreground="#94A3B8" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                <Slider x:Name="SliderYaw" Grid.Column="1" Minimum="0" Maximum="360" Value="45" VerticalAlignment="Center" ValueChanged="Rotation_Changed"/>
+
+                                <TextBlock Grid.Column="3" Text="Xoay Đứng (Pitch):" FontSize="10" Foreground="#94A3B8" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                <Slider x:Name="SliderPitch" Grid.Column="4" Minimum="10" Maximum="85" Value="35" VerticalAlignment="Center" ValueChanged="Rotation_Changed"/>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <!-- 3. FOOTER NÚT BẤM -->
+            <Border Grid.Row="2" Background="#FFFFFF" BorderBrush="#E2E8F0" BorderThickness="0,1.2,0,0" CornerRadius="0,0,11,11" Padding="16,0">
+                <Grid VerticalAlignment="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="⚡ Tự động tính m² diện tích • Tự động sinh hệ trục &amp; 3 lớp đường Dim" FontSize="11" Foreground="#64748B"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <Button Content="Hủy (Esc)" Width="85" Height="34" Margin="0,0,10,0" Background="#F1F5F9" Foreground="#64748B" BorderThickness="1" BorderBrush="#CBD5E1" Cursor="Hand" Click="BtnCancel_Click"/>
+                        <Button Content="🚀 VẼ MẶT BẰNG RA AUTOCAD" Width="230" Height="34" FontWeight="Bold" FontSize="12" Background="#0284C7" Foreground="#FFFFFF" BorderThickness="0" Cursor="Hand" Click="BtnDrawCad_Click">
+                            <Button.Effect>
+                                <DropShadowEffect BlurRadius="10" ShadowDepth="2" Color="#0284C7" Opacity="0.35"/>
+                            </Button.Effect>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</Window>

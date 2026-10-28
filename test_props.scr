@@ -1,0 +1,17 @@
+(vl-load-com)
+(setq ms (vla-get-modelspace (vla-get-activedocument (vlax-get-acad-object))))
+(vlax-for obj ms
+  (if (and (= (vla-get-objectname obj) "AcDbBlockReference")
+           (= :vlax-true (vla-get-isdynamicblock obj)))
+    (progn
+      (princ (strcat "\nDYNAMIC_REF: " (vla-get-effectivename obj)))
+      (setq props (vlax-invoke obj 'getdynamicblockproperties))
+      (foreach p props
+        (princ (strcat "\n  PROP: " (vla-get-propertyname p) " = " (vl-prin1-to-string (vlax-get p 'value)) " (Type: " (itoa (vlax-get p 'propertytypecode)) ")"))
+      )
+    )
+  )
+)
+(princ)
+QUIT
+Y

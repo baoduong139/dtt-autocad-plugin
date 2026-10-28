@@ -1,0 +1,633 @@
+;;; [源泉设计]-[用户快捷键]定义文件，请勿编辑此文件
+;;;
+****【系统设定】 命令列表,[System Setup] Command List,yq_systemsetup,sys,sys
+源泉总览命令,YQArch Command Pandect,yqarch,yq,yq
+用户系统配置,User Preferences,yq_sys_setting,yqsys,yqsys
+打开图形按钮,Show YQ Toolbars,yq_toolbarson,tba,tba
+关闭图形按钮,Hide YQ Toolbars,yq_toolbarsoff,tbaf,tbaf
+--
+选择当前用户,Select Current User,yq_setuser,yquser,yquser
+切换提示语言,Select Language,yq_lang,yqlang,yqlang
+设定绘图单位,Set Default Units,yq_setunits,yqunits,yqunits
+加载源泉菜单,Reload YQArch Menu,yq_menu,yqmenu,yqmenu
+--
+设置图纸/符号比例,Set Drawing Scale,yq_setdwgscale,sd,sd
+绘制图框,Drawing Frame,yq_dwgframe,tk,tk
+--
+详细帮助文档,YQArch Help,yq_help,yqhelp,yqhelp
+源泉设计版本,YQArch Version,yq_ver,yqver,yqver
+下载更新网站,YQArch Website,yq_website,yqweb,yqweb
+关于源泉设计,About YQArch,yq_about,yqabout,yqabout
+赞助与支持,Donate & Support,yq_donate,yqjz,yqjz
+--
+卸载源泉设计,YQArch Uninstall,yq_uninstall,yquninst,yquninst
+
+****【平面墙柱】 命令列表,[Plane Wall/Column] Command List,yq_wallcolumn,www,www
+画轴线,Draw Axis Line,yq_axisline,ax,ax
+简单轴线网,Draw Grid Axis,yq_gridaxis,zxw,zxw
+--
+画墙,Draw Wall,yq_wall,ww,ww
+智能墙剪,Wall Scissor,yq_trim_fix_wall,tw,tw
+修正墙体厚度,Change Wall Thickness,yq_wall_chgthk,wwt,wwt
+轴线变墙,Lines to Walls,yq_line2wall,xww,xww
+墙净距偏移,Wall Offseting,yq_wall_cdoffset,wwo,wwo
+--
+求墙中轴线,Rebuilt Wall Axis,yq_wall2axis,wwa,wwa
+填充墙、柱,Fill in Walls/Columns,yq_fill_wall,wwf,wwf
+--
+画方柱子,Rectangular Column,yq_r_column,zzr,zzr
+画圆柱子,O Shape Column,yq_o_column,zzc,zzc
+画L型柱子,L Shape Column,yq_l_column,zzl,zzl
+画T型柱子,T Shape Column,yq_t_column,zzt,zzt
+画十字型柱子,+ Shape Column,yq_c_column,zzx,zzx
+--
+轴线布置柱子,Arrange Columns,yq_axis_column,zzbz,zzbz
+变成柱子,Convert to Column,yq_pline2column,xxzz,xxzz
+填充柱子,Fill in Columns,yq_fill_column,zzf,zzf
+--
+删除墙柱门窗,Del Win/Dr/Wall/Col,yq_erase_wall,ew,ew
+
+****【平面门窗】 命令列表,[Plane Window/Door] Command List,yq_windowdoor,mmm,mmm
+墙或轴线开普通门,Open Door,yq_hole_door,ad,ad
+两点画普通门,Draw a Door,yq_door,ad2,ad2
+墙或轴线开普通窗,Open Window,yq_hole_win,aw,aw
+两点画普通窗,Draw a Window,yq_win,aw2,aw2
+普通门窗置换,Replace Window/Door,yq_windoor_replace,td,td
+墙上开门洞,Auto Open Hole,yq_hole,ho,ho
+--
+墙或轴线开门套门,Open Pocket Door,yq_hole_pocketdoor,adt,adt
+两点画门套门,Draw a Pocket Door,yq_pocketdoor,adt2,adt2
+替代为门套门,Replace by Pocket Door,yq_pocketdoor_replace,tdd,tdd
+--
+墙或轴线开参数窗,Open Param Window,yq_hole_window,wd,wd
+两点画参数窗,Draw a Param Window,yq_window,wd2,wd2
+替代为参数窗,Replace by Param Window,yq_window_replace,tdw,tdw
+--
+墙上开转角窗,Open Corner Window,yq_hole_cornerwindow,wdz,wdz
+转角窗替换样式,Replace Corner Window,yq_cwindow_replace,tdz,tdz
+--
+门槛线管理,Doorsill Manager,yq_doorsill,mkx,mkx
+门洞线管理,Door Opening Manager,yq_dooropening,mdx,mdx
+--
+线变平面窗,Lines to Windows,yq_line2window,xwd,xwd
+修改门窗宽度,Change Window/Door Width,yq_width_windoor,cw,cw
+左右移动门窗,Move Window/Door,yq_move_windoor,vw,vw
+--
+修正门窗及柱子,Repair Win/Door/Column,yq_repair,xf,xf
+移动并修正,Move and Fix,yq_moveandfix,vx,vx
+复制并修正,Copy and Fix,yq_copyandfix,cx,cx
+镜像并修正,Mirror and Fix,yq_mirrorandfix,rrx,rrx
+--
+门窗编号管理,Window Serial Number,yq_winSerialNumber,wbh,wbh
+
+****【建筑构件】 命令列表,[Building Components] Command List,yq_components,ggg,ggg
+建筑构件集,Index of Arch Components,yq_sldcomponents,gj,gj
+--
+自动扶梯平面立面,Plan/Elev Escalator,yq_escalator,ltf,ltf
+矩形楼梯间平面,Plan of Staircase,yq_staircase_plan,ltj,ltj
+弧形楼梯平面,Plan of Arc Staircase,yq_arcstair_plan,lta,lta
+电梯轿厢平面,Plan of Elevator,yq_lift_plan,dtj,dtj
+--
+平开门立面,Elevation of Door,yq_door_elevation,ade,ade
+平开门剖面,Section of Door,yq_door_section,ads,ads
+绘制凸窗剖面,Section of Bay Window,yq_baywin_section,wts,wts
+窗户立面,Elevation of Window,yq_window_elevation,wde,wde
+窗户剖面,Section of Window,yq_window_section,wds,wds
+百叶立剖窗,Elev/Sect of Shutter,yq_shutter,by,by
+幕墙玻璃剖面,Curtain Wall Glass,yq_curtainglass,mbl,mbl
+--
+线框变窗户立面,Lines to WIN Elevation,yq_lines2winelev,wdd,wdd
+门窗编号变立面框,WINDOW/DOOR SN. to Elev.,yq_sn2winelev,t2w,t2w
+幕墙立面,Elevation Curtain Wall,yq_curtainwall,mq,mq
+绘制幕/隔墙剖面,Section of Partition",yq_glass_partition,mqs,mqs
+扶手栏杆立面,Elevation Banister,yq_banister,lg,lg
+--
+楼梯间剖面,Section of Staircase,yq_staircase_section,ltp,ltp
+拉线踏步,Section of Steps,yq_step_section,lxtb,lxtb
+--
+绘制防水层剖面,Section of Waterproof,yq_waterproof,fsc,fsc
+绘制粉刷层剖面,Section of Stucco,yq_stucco,fn,fn
+
+****【装饰构件】 命令列表,[Decoration Components] Command List,yq_decoration,zzz,zzz
+装饰构件集,Index of Deco Components,yq_slddecoration,zs,zs
+--
+家具洁具布置,Auto Arrange Furniture,yq_autofurniture,jj,jj
+厕所浴室布置,Arrange WC/shower room,yq_ArrangeWC,wc,wc
+--
+衣柜平面,Plan of Chest,yq_chestplan,yg,yg
+窗帘平面,Plan of Curtain,yq_curtainplan,clp,clp
+石膏线平面,Plan of Plaster String,yq_plasterstringplan,sgx,sgx
+简易柜子平面,Plan of Cupboard,yq_cupboardplan,gz,gz
+简易柜子立面,Elev. of Cupboard,yq_cupboardelev,gze,gze
+--
+石材板剖面,Section of Stone Tile,yq_stonetile,stb,stb
+木方架子剖面,Section of Wooden Frame,yq_woodenframe,mf,mf
+层板阵列,Boards Array,yq_array_boards,cbz,cbz
+--
+木工板剖面,Section of Blockboard,yq_blockboard,mgb,mgb
+夹板剖面,Section of Plywood,yq_plywood,jb,jb
+木地板面,Section of Wood Flooring,yq_woodflooring,mdb,mdb
+石膏板剖面,Section of Gypsum Board,yq_gypsumboard,sgb,sgb
+暗藏灯槽剖面,Section Light Trough,yq_lighttrough,thdc,thdc
+轻钢龙骨隔墙,Partition Wall,yq_partitionwall,gq,gq
+玻璃剖面,Section of Glass,yq_glass,bl,bl
+--
+型钢截面,Formed Steel,yq_formedsteel,xg,xg
+角钢架子剖面,Section Iron frame,yq_ironframe,jgj,jgj
+--
+保温棉剖面,Cotton Insulation,yq_insulation,bwm,bwm
+绘制焊缝,Welding Line,yq_weldingline,hf,hf
+绘制软管,Draw Hose,yq_hose,rg,rg
+绘制管线,Draw Pipe,yq_pipe,gx,gx
+--
+板上方孔洞,Hole on Board,yq_boardhole,kd,kd
+圆柱影线,Cylinder shadow,yq_cylindershadow,yzx,yzx
+画背栓孔,Back-Bolt Hole,yq_backbolthole,bsk,bsk
+--
+平面灯具布置,Arrange Lamps,yq_autolamps,dj,dj
+满天星铺满,Random Spread,yq_randomspread,mtx,mtx
+生成室内立面框架,Indoor Elevation,yq_indoorelev,lm,lm
+
+****【建筑符号】 命令列表,[Architectural Symbols] Command List,yq_archsymbols,fff,fff
+建筑符号集,Index of Symbols,yq_sldsymbols,fh,fh
+--
+自动轴号尺寸线,Arrange Axis Symbols,yq_auto_axis_dim,azh,azh
+连续轴号尺寸线,Draw Axis Symbols,yq_symbol_axis_c,zh,zh
+--
+建筑坐标,Geodesic Coordinates,yq_geodesic_coordinates,zb,zb
+建筑标高,Designed Elevation,yq_designed_elevation,bg,bg
+等高线标高,Contour Elevation,yq_Contour_Elevation,xbg,xbg
+--
+平面剖切符号,Section Plane Symbol,yq_symbol_sectionPlane,pqf,pqf
+断面符号,Section Cutter Symbol,yq_symbol_sectionCutter,dmf,dmf
+坡度符号,Slope Symbol,yq_symbol_gradient,pd,pd
+折断线,Disconnection line,yq_disconnection_line,zx,zx
+圆管剖线,Pipe Cutting Symbol,yq_pipecutting,gpx,gpx
+对称轴,Symmetry Axis,yq_symmetry_axis,dcz,dcz
+中心线,Central Line,yq_central_line,zxx,zxx
+--
+画电线半圆跨线,Wire Surround,yq_wiresurround,acc,acc
+删电线半圆跨线,Erase Surround,yq_erasesurround,ecc,ecc
+--
+弯箭头,Bent Arrow,yq_bentarrow,aaw,aaw
+出入口箭头,Entrance Arrow,yq_entrancearrow,aae,aae
+
+****【索引标题】 命令列表,[Indexer Symbols] Command List,yq_indexers,yyy,yyy
+索引标题集,Index of Indexers,yq_sldindexers,sy,sy
+--
+剖切索引号1,Section Symbol 1,yq_identifier1,sy1,sy1
+剖切索引号2,Section Symbol 2,yq_identifier2,sy2,sy2
+剖切索引号3,Section Symbol 3,yq_identifier3,sy3,sy3
+--
+立面索引号4合1,Elevation Indexer (4in1),yq_elevindexer4in1,i0,i0
+立面索引号1,Elevation Indexer 1,yq_elevindexer1,i1,i1
+立面索引号2,Elevation Indexer 2,yq_elevindexer2,i2,i2
+立面索引号3,Elevation Indexer 3,yq_elevindexer3,i3,i3
+立面索引号4,Elevation Indexer 4,yq_elevindexer4,i4,i4
+--
+详图符号1,Detail Drawing Symbol 1,yq_detailsymbol1,xt1,xt1
+详图符号2,Detail Drawing Symbol 2,yq_detailsymbol2,xt2,xt2
+--
+自设索引符1,Indexer l,yq_indexer1,s1,s1
+自设索引符2,Indexer 2,yq_indexer2,s2,s2
+自设索引符3,Indexer 3,yq_indexer3,s3,s3
+自设索引符4,Indexer 4,yq_indexer4,s4,s4
+自设索引符5,Indexer 5,yq_indexer5,s5,s5
+自设索引符6,Indexer 6,yq_indexer6,s6,s6
+自设索引符7,Indexer 7,yq_indexer7,s7,s7
+自设索引符8,Indexer 8,yq_indexer8,s8,s8
+自设索引符9,Indexer 9,yq_indexer9,s9,s9
+--
+箭头引线,Arrow Leader,yq_leader,aax,aax
+多点引线,Multi-Point Leader,yq_mptleader,aaxx,aaxx
+竖直多点引线,Vertical Multi-Point Leader,yq_mptleader_y,aayy,aayy
+引线增删顶点,Add/Remove Leader Vertex,yq_leader_vertexes,aav,aav
+引线加箭头,Add Leader Arrows,yq_leader_addarrow,aaj,aaj
+--
+装饰图标题文字,Decoration Drawing Title,yq_drawingtitle,bt,bt
+
+****【统计工具】 命令列表,[Statistics Tools] Command List,yq_statistics,jjj,jjj
+统计工具集,Index of Statistics,yq_sldstatistics,tj,tj
+--
+选择易,Easy Filtered Select,xc_ss,ss,ss
+--
+自动编号,Auto Serial Number,yq_autoserialnumber,abh,abh
+等宽空表格,Make Empty Table,yq_emptytable,kbg,kbg
+表格单元文字居中,Table Texts Aligning,yq_text2center,bgz,bgz
+统计区域面积,Cell Area by Texts,yq_calc_cellarea,tmj,tmj
+输出到表格软件,Texts to Cell Editor,yq_texts2excel,t2e,t2e
+文字转表格图元,Texts to TABLE,yq_texts2acadTable,zbg,zbg
+--
+统计门窗表,Win/Door List,yq_windoor_list,mcb,mcb
+统计图块,Block List,yq_block_list,bbl,bbl
+统计块属性,Block Attributes List,yq_blockatt_list,sxl,sxl
+找坐标并列表,Collect Coordinates,yq_coordinate_list,zzb,zzb
+提取字串并列表,Collect any Strings,yq_string_list,ttq,ttq
+提取生成材料表,Material List,yq_material_list,clb,clb
+--
+统计面积总面积,Accumulate Area,yq_calc_sumarea,mj,mj
+文字关联面积,Area Link Text,yq_asso_area,pmj,pmj
+统计周长总周长,Accumulate Perimeter,yq_calc_perimeter,zc,zc
+文字关联周长,Perimeter Link Text,yq_asso_perimeter,pzc,pzc
+根据密度算重量,Calculate Weight,yq_calweight,zl,zl
+--
+建筑面积分摊表,Building Area Statistics,yq_AreaStat,ftb,ftb
+--
+数字的和(＋),Addition(+),yq_calc_addition,+,+
+数字的差(－),Subtraction(-),yq_calc_subtration,-,-
+数字的积(×),Multiplication(*),yq_calc_multiplication,*,*
+数字的商(÷),Division(/),yq_calc_division,/,/
+--
+计算数学表达式,Eval. Expression,yq_calc_expression,js,js
+
+****【文字内容】 命令列表,[Text Content] Command List,yq_textcontent,ttt,ttt
+用户词库管理,User Dictionary,yq_userdict,dic,dic
+翻译选中文字,Translate Text,yq_translate,fy,fy
+列表刷新文字,Update Form List,yq_updtextlist,eq,eq
+--
+输入单行文本,Input a Text,yq_text,tt,tt
+编辑各种文字,Modify any Text,yq_superedit,tte,tte
+用字典换字,Dictionary to Text,yq_dict2text,ttg,ttg
+新建或输入文本,Create/Input Texts,yq_hz_text,ctt,ctt
+编辑或输出文本,Edit/Output Texts,yq_hz_edit,ced,ced
+--
+文字替换或计算替换,Cal./Replace Text,yq_text_replace,ttr,ttr
+替换多个文字子串,Replace Substrings,yq_replace_substrs,ttrs,ttrs
+--
+连接多个文字,Join 2 Texts,yq_text_append,tta,tta
+分行合并多文字,Merge Multi-Line Text,yq_jtext,ttj,ttj
+打断文字为两段,Break Text,yq_text_break2,ttb,ttb
+打散文字为字符,Text to Characters,yq_etext,ttbb,ttbb
+--
+递增复制数值文字,Increment Copies,yq_array_numbers,1234,1234
+数字统一加增量,Add Increment,yq_increase_numbers,inc,inc
+递增数字文字,Increase Texts,yq_increase_text,ttz,ttz
+寻找特定文字,Seek Specific Text,yq_findtext,ttf,ttf
+
+****【文字其他】 命令列表,[Text Modify] Command List,yq_textother,tttt,tttt
+新建字体样式,New Text Style,yq_sldstyles,ttn,ttn
+--
+设定当前文字样式,Set Current Style,yq_text_cstyle,tts,tts
+选样式更新文字,Update Text by Style,yq_text_update,ttu,ttu
+自动替换缺文字档,Auto Replace Fonts,yq_replacefonts,ttrf,ttrf
+--
+批量文字修改排版,Change Texts,yq_changetext,ttc,ttc
+修改高度/高宽比,Change Height/Aspect,yq_text_width,ttw,ttw
+文字表格重新排序,Reorder Table Texts,yq_reordertexts,ttpx,ttpx
+--
+对正方式改为左下,Text Alignment Left,yq_text_alignmentleft,ttl,ttl
+对正方式改为右下,Text Alignment Right,yq_text_alignmentright,ttll,ttll
+文字镜像/角度恢复,Restore Mirrored/Rotated Text,yq_text_restoremirr,ttrr,ttrr
+--
+转换文字或属性定义,Convert Texts/Attdefs,yq_text2attdef,ttsx,ttsx
+炸碎文字为线段,Explode Texts to Lines,yq_txtexp,ttx,ttx
+
+****【标注绘制】 命令列表,[Dimension Draw] Command List,yq_dimdraw,ddd,ddd
+水平垂直线性标注,Dim Linear,yq_dim_linear,dd,dd
+对齐标注,Dim Aligned,yq_dim_aligned,ddx,ddx
+基线标注,Dim Baseline,yq_dim_baseline,ddb,ddb
+半径标注,Dim Radius,yq_dim_radius,ddr,ddr
+直径标注,Dim Diameter,yq_dim_diameter,ddj,ddj
+角度标注,Dim Angular,yq_dim_angular,ddan,ddan
+弧长标注,Dim Arc Length,yq_dim_arc,ddar,ddar
+三点弧长,Dim 3 Point's Arc,yq_dim_arc3pts,dda3,dda3
+快速标注,Dim Quick,yq_dim_qdim,ddq,ddq
+--
+闭合空间自动标注,Dim Closed Space,yq_dim_closedspace,ddz,ddz
+闭合多段线标注,Dim Pline,yq_dim_pline,ddzz,ddzz
+标注多段线/线边长,Dim Pline/Lines,yq_dim_polygonsides,ddss,ddss
+--
+门窗及轴线标注,Dim Axis/Windows,yq_dim_axiswd,ddw,ddw
+图块及内墙标注,Dim Blocks/Walls,yq_dim_blocks,ddww,ddww
+立面柜子标注,Dim Cupboard,yq_dim_cupboard,ddgz,ddgz
+--
+楼梯踏步等分标注,Dim Steps,yq_dim_stairs,ddst,ddst
+定数等分标注,Dim Fix Length,yq_dim_dvd,ddvd,ddvd
+--
+划线按交点标注,Dim Break at Inters.,yq_dim_intpts,ddxx,ddxx
+找交点标注弦长,Dim Chord at Inters.,yq_dim_curveintpts,ddcc,ddcc
+找交点标注弧长,Dim Arc at Inters.,yq_dim_arcparts,ddac,ddac
+选数字重建标注,Dim Rebuild by Texts,yq_dim_rearrange,ddp,ddp
+合并绘制基线标注,Dim Merge Baseline,yq_dim_mergebase,ddbb,ddbb
+--
+切换标注图层,Switch DIM Layer,yq_dim_switchlayer,dder,dder
+设定当前标注样式,Set Current DimStyle,yq_dim_cstyle,dds,dds
+选样式更新标注,Dim Update by Style,yq_dim_update,ddu,ddu
+切换强制源泉样式,Switch YQArch Dimstyle,yq_dim_switchstyle,ddyq,ddyq
+
+****【标注修改】 命令列表,[Dimension Modify] Command List,yq_dimmodify,dddd,dddd
+标注文字避让,Adjust TEXT Position,yq_dim_adjust,ddaa,ddaa
+--
+移动脚点,Extend Dim Feet,yq_dim_extend,dde,dde
+分裂扩展为多个,Split Dim,yq_dim_divide,dd2,dd2
+标注合并,Merge Dims,yq_dim_merge,dd1,dd1
+排齐脚点界线,Align Mline/Feet,yq_dim_align,ddv,ddv
+排齐界线,Align Mline,yq_dim_aligndimline,ddvv,ddvv
+排齐脚点,Align Feet,yq_dim_alignpoints,ddl,ddl
+--
+统一界线长度,Fix Extension Lens,yq_dim_extlen,ddle,ddle
+修正基线间距,Adjust Base Spacing,yq_dim_adjustbase,ddy,ddy
+批量基线间距,Batch Base Spacing,yq_dim_batchbase,ddyy,ddyy
+显示2脚线,Show Extension Lines,yq_dim_showextline,dd2e,dd2e
+切换对齐或转角,Aligned or Rotated,yq_dim_switch_ar,ddra,ddra
+--
+翻转标注文字,Overturn Dim Text,yq_dim_reverse,ddfz,ddfz
+固化标注文字,Lock the Text Content,yq_dim_fix,ddf,ddf
+标注恢复原值,Reset Default Value,yq_dim_recover,ddre,ddre
+单位转化为米,Units to Meter,yq_dim_mmtom,ddm,ddm
+标注精度取整,Rounds Dim Value,yq_dim_round,dd0,dd0
+键入新标注文字,New Dim Text,yq_dim_newtext,ddn,ddn
+--
+标注文字移位,Move Dim Text,yq_dim_tedit,ddt,ddt
+标注文字复位,Reset Dim Text Home,yq_dim_home,ddh,ddh
+
+****【曲线工具】 命令列表,[Curve Tools] Command List,yq_curvetools,xxx,xxx
+多段线增删顶点,Add/Remove Pl Vertex,yq_pline_vertexes,xxv,xxv
+优化多段线顶点,Optimize Pline,yq_pline_optimize,xxy,xxy
+--
+线弧转换,Line to Arc,yq_line2arc,xxa,xxa
+多段线改段宽,Pline Segment Width,yq_plsegment_width,xxw,xxw
+偏移多段线的一段,Pline Segment Offset,yq_plsegment_offset,xxs,xxs
+--
+连成多段线,Join Pline/Arc/Line,yq_pline_join,xxj,xxj
+连成闭合多段线,Close Pline/Arc/Line,yq_pline_close,xxc,xxc
+反转曲线方向,Reverse Pline Vertexs,yq_pline_reverse,xxfz,xxfz
+厚度多段线变线框,W-Pline to Wireframe,yq_wpline2wireframe,xxf,xxf
+连接2多段线顶点,Connect Vertexes,yq_connectvertexes,ljx,ljx
+--
+求边界线/外轮廓线,Find Border/Outline,yq_outline,lk,lk
+求内部轮廓线,Find Inner Contours,yq_innercontours,nlk,nlk
+求内轮廓+偏移,Inner Contours + Offset,yq_inneroffset,nlks,nlks
+线条抖动,Convert to Freehand,yq_tofreehand,hw,hw
+--
+等分曲线,Break into Equal Parts,yq_break_equal,df,df
+两点等分,Divide by 2 Points,yq_2ptsdivide,dfx,dfx
+--
+用圆弧模拟椭圆,Ellipse to Arcs,yq_ellipse2arc,e2a,e2a
+曲线转圆弧多段线,Curve to Arc Pline,yq_spline2apline,cca,cca
+曲线转线段多段线,Curve to Line Pline,yq_spline2xpline,ccx,ccx
+等弦长分曲线,Curve to Bowstrings,yq_curve2bowstring,ccxx,ccxx
+求曲线投影线,Curve Projection,yq_CurveProjection,ccy,ccy
+
+****【特殊工具】 命令列表,[Extra Tools] Command List,yq_extratools,eee,eee
+数字行管理与应用,Number Lines Manage,yq_numberlines,vv,vv
+--
+绘制双线,Double Lines,yq_doubleline,xd,xd
+修剪双线,Double Lines Scissor,yq_trimdoubleline,tx,tx
+修正双线厚度,Change Dline Thickness,yq_dlineThickness,xdt,xdt
+单线变双线,Change to Dline,yq_2doubleline,xxd,xxd
+双线净距偏移,Dline Offset,yq_dline_offset,xdo,xdo
+求双线中轴线,Axis of Double Lines,yq_doublelineAxis,ce,ce
+--
+对齐图元,Objects Alignment,yq_alignment,dq,dq
+引线对齐,Leaders Alignment,yq_leaderalign,aadq,aadq
+图框按线长调整,Align Frame & Line,yq_alignframe,tktz,tktz
+--
+画线切割,Break by a Knife,yq_breakbyknife,bd,bd
+多线切割,Break by Knives,yq_BreakByKnives,bdd,bdd
+切割删除,Break/Erase in Curve,yq_BreakAndErase,bx,bx
+切割提取大样图,Copy/Paste the Detail,yq_pastedetaildwg,qg,qg
+--
+四边形及其他变形,Transform,yq_transform,tf,tf
+--
+求矩形外框,Objects Bounding Box,yq_boundingbox,jx,jx
+变矩形外框,Convert to Bounding Box,yq_toboundingbox,wk,wk
+最小面积矩形框,Minimum Bounding Box,yq_minBoundingbox,xjx,xjx
+--
+随意翻转,Turn Objects,yq_overturn,fz,fz
+图元交换位置,Exchange Location,yq_exchangelocation,jh,jh
+按点阵布置,Copy to Points,yq_copy2points,dzbz,dzbz
+快捷辅助线,Assistant Lines,yq_assistantlines,fzx,fzx
+
+****【修改增强】 命令列表,[Modify Plus] Command List,yq_modifyplus,eeee,eeee
+图元原地缩放,Scale for Each,yq_scale_each,asc,asc
+图元原地旋转,Rotate for Each,yq_rotate_each,art,art
+图元原地镜像,Mirror for Each,yq_mirror_each,ami,ami
+XY不等比缩放,XY Scale,yq_scalexyz,scx,scx
+--
+动态拷贝,Dynamic Copy,yq_dynamiccopy,cv,cv
+定距拉伸,Stretch with Distance,yq_stretch_d,std,std
+定距移动,Move with a Distance,yq_move_d,vd,vd
+记忆移动,Memorial Move,yq_move_memorial,vr,vr
+记忆拷贝,Memorial Copy,yq_copy_memorial,cr,cr
+--
+同时偏移,Super Offset,yq_superoffset,sf,sf
+延长到点或线段,Extend to Point,yq_extendtopoint,exx,exx
+--
+连接线/弧,Link Arc/Line/Pline,yq_join_arcline,ff,ff
+对接两组线段,Connect 2 Group Lines,yq_connect2glines,fx,fx
+--
+快速加减遮罩,Add/Remove Wipeouts,yq_quickwipeout,zz,zz
+--
+交点齐断,Break All Objects,yq_breakall,ba,ba
+打断并删除短线,Break and Erase,yq_breakerase,te,te
+一点打断,Break At A Point,yq_break_at,bb,bb
+二点打断,Break At 2 Points,yq_break_at2,bf,bf
+
+****【检查修正】 命令列表,[Check adn Correct] Command List,yq_checkcorrect,ccc,ccc
+拍平图元,Flatten Out Objects,yq_clear_z,z0,z0
+拍平图块,Flatten Out Blocks,yq_block_z0,bbz0,bbz0
+--
+消除重叠相同图元,Eliminate Overlapping,yq_remove_duplicate,rd,rd
+合并重叠线,Merge Overlapping Lines,yq_lineunion,lu,lu
+连接断线/断圆弧线,Connect Lines/Arcs,yq_linklinearc,lx,lx
+清除点/短线/空字等,Remove Pt/Short-Lines,yq_lineclean,lc,lc
+校正对齐到网格,Adjust to grid,yq_adjust,jz,jz
+线段斜改正,Oblique Correction,yq_oblique_correction,xgz,xgz
+--
+杂项合并图层等,Dialog Merge,yq_merge,xhb,xhb
+清理无用项目,Purge All,yq_purgeall,pua,pua
+清理文件夹dwg,Purge DWGs in Folder,yq_purgefiles,puf,puf
+--
+查图元颜色号,Check Object's Color,yq_checkcolor,cys,cys
+找出不正交的线段,Find Non-Ortho Lines,yq_findnonortholines,bpx,bpx
+找不平行WCS平面图元,Find Unmatch WCS Plan,yq_ucsmatch,um,um
+线段垂直检测,Orthoaxis Check,yq_checkOrthoaxis,bcz,bcz
+--
+修订云线,Revcloud,yq_revcloud,yx,yx
+矩形审图框,Command Frame,yq_CommentFrame,stk,stk
+
+****【图块属性】 命令列表,[Block Tools] Command List,yq_blocktools,bbb,bbb
+成片乔灌木,Heap Trees,yq_heaptrees,zw,zw
+环境分析符号,Landscape Analyzing,yq_landscape,hj,hj
+--
+改图块内图层颜色,Change Block's Layer/Color,yq_block2bylayer,bb0,bb0
+图块改基点,Change Block Base Pt,yq_blockbasepoint,bbi,bbi
+图块改名,Block Rename,yq_block2newname,bbr,bbr
+图块批量改名,Blocks Batch Rename,yq_block_batchrename,bbg,bbg
+快速制作大样图块,Make Detail Block,yq_quickdetailblock,bbd,bbd
+设置图块(图框)比例,Set Block Scale,yq_blockscale,bbs,bbs
+批量导出图块,Write Out Blocks,yq_block_writeout,bbw,bbw
+用dwg替代图中块,Replace by DWG,yq_replacebydwg,bbtd,bbtd
+--
+快速制作一个图块,Make Block Quickly,yq_quicknewblock,bbn,bbn
+往图块中加入图元,Append to a Block,yq_block_add,bba,bba
+删除块中一个图元,Erase Object of Block,yq_block_remove,bbe,bbe
+从图块中复制图元,Copy Objs in a Block,yq_block_copy,bbc,bbc
+--
+图块加减遮罩,Add Wipeout to Block,yq_blockwipeout,bbzz,bbzz
+--
+制作匿名加密块,Create Minsert Block,yq_create_minsert,bbjm,bbjm
+炸碎图块或匿名块,Explode Minsert Blocks,yq_explode_minsert,bbx,bbx
+王炸嵌套块,Explode Nest Block,yq_explode_nblock,bbxx,bbxx
+--
+块中文字转为属性,Block Text to Attr,yq_blocktext2att,bbsx,bbsx
+修改块内属性域,Modify Attributes,yq_modify_att,sxg,sxg
+递增块内属性域,Increase Attributes,yq_increase_att,sxz,sxz
+批量处理块属性,Change Attributes,yq_changeatts,sxc,sxc
+提取块内属性为文字,Change Attr to Text,yq_blockatt2text,sxt,sxt
+删除块内属性,Erase Attr in Block,yq_erase_blkatt,sxe,sxe
+--
+内部图库,YQ Block Library,yq_blocks,kk,kk
+用户图库,User Block Library,yq_blockviewer,bv,bv
+用户图库1,User Block Library1,yq_blockviewer1,bv1,bv1
+用户图库2,User Block Library2,yq_blockviewer2,bv2,bv2
+用户图库3,User Block Library3,yq_blockviewer3,bv3,bv3
+
+****【填充线型】 命令列表,[Hatching Tools] Command List,yq_hatchingtools,hhh,hhh
+设置填充图案快捷键,Hatching Shortcuts,yq_hatchkeys,hhsc,hhsc
+改填充及比例,Hatching & Pattern Scale,yq_hatchingscale,xtc,xtc
+快捷填充,Quick Hatching,yq_hatch_quick,tc,tc
+选模板填充,Hatching by Template,yq_hatch_match,tct,tct
+参数及幻灯片填充,Parameter/Slids Hatching,yq_hatch_slide,tcc,tcc
+--
+设/移Hatch基准点,Hatching Base Point,yq_hatch_newbase,hhi,hhi
+修改填充角度,Hatching Angle,yq_hatch_angle,hha,hha
+重建填充图案边界,Hatching Border,yq_hatch_border,hhb,hhb
+剪裁填充图案,Hatching Clipping,yq_hatch_clipping,hhj,hhj
+拆分填充图案,Split Hatching,yq_hatch_split,hhx,hhx
+合并填充图案,Hatching Union,yq_hatch_union,hhu,hhu
+去除填充关联,Hatching Disassociate,yq_hatch_disasso,hhgl,hhgl
+--
+制作Hatch图案1mm,Make Hatch .PAT 1mm,yq_mkpat,mp,mp
+制作Hatch图案1:1,Make Hatch .PAT 1:1,yq_mkpat1,mp1,mp1
+提取制作填充图案,Make .PAT by Hatch,yq_mkpat_byhatch,mpp,mpp
+--
+设置线型快捷键,LineType Shortcuts,yq_ltypekeys,ltsc,ltsc
+改线型及比例,LineType & Scale,yq_ltscale,xt,xt
+切换线型,Linetype Switch,yq_ltswitch,xts,xts
+替换同线型比例,Replace Linetype Scale,yq_putltscale,plts,plts
+制作字符线型,Make Linetype,yq_mklinetype,mlt,mlt
+载入线型,Load linetypes,yq_loadlinetype,llt,llt
+
+****【图层工具】 命令列表,[Layer Tools] Command List,yq_layertools,lll,lll
+改到当前图层,Change to Current Layer,yq_layer_2current,erc,erc
+新建图层,Make a New Layer,yq_layer_new,ern,ern
+设定当前图层,Set Current Layer,yq_layer_current,ers,ers
+保存与恢复图层开关状态,Save/Restore Layer Status,yq_layer_saverestore,err,err
+--
+关闭非选图层,Isolate Layers,yq_layer_iso,erd,erd
+关闭图层,Turn Off Layers,yq_layer_off,erf,erf
+关闭全部图层,Turn Off All Layers,yq_layer_off_all,eraf,eraf
+打开图层,Turn On Layers,yq_layer_on,era,era
+打开全部图层,Turn On All Layers,yq_layer_on_all,eraa,eraa
+切换全部图层开关,All Layers On/Off,yq_layer_on2off,erv,erv
+--
+锁定图层,Lock Layers,yq_layer_lock,erl,erl
+锁定非选图层,Isolate & Lock Layers,yq_layer_iso_lock,erdl,erdl
+解锁图层,Unlock Layers,yq_layer_unlock,eru,eru
+--
+冻结图层,Freeze Layers,yq_layer_freeze,erz,erz
+冻结非选图层,Isolate & Freeze Layers,yq_layer_iso_freeze,erdz,erdz
+解冻图层,Thaw Out Layers,yq_layer_thaw,ert,ert
+--
+关闭块内图层,Turn Off Layer in Block,yq_layer_noff,erbf,erbf
+冻结块内图层,Freeze Layer in Block,yq_layer_nfreeze,erbz,erbz
+解冻/解锁/打开全部图层,Thaw/Unlock/Open All Layers,yq_layer_showall,erer,erer
+--
+批量替换图层,Batch Replace Layers,yq_layer_replace,ertd,ertd
+图层批量改名,Layers Batch Rename,yq_layer_batchrename,erg,erg
+合并图层,Merge Layers,yq_merge_layer,erm,erm
+按图元颜色重新分层,Form Layers by Color,yq_formlaybycolor,c2er,c2er
+设置图层快捷键,Layer Shortcuts,yq_layerkeys,ersc,ersc
+设置通配符图层快捷键,Wildcard Matching Layer,yq_wlayerkeys,erw,erw
+设置颜色快捷键,Color Shortcuts,yq_colorkeys,erk,erk
+--
+导出图层文件,Output Layers Text,yq_outputlayers,ero,ero
+导入图层文件,Input Layers Text,yq_inputlayers,eri,eri
+
+****【视口布局】 命令列表,[Viewport Tools] Command List,yq_viewporttools,vvv,vvv
+管理视口图层,Viewport Layer Manager,yq_vplayer_manager,vvc,vvc
+冻结视口图层,Freeze Viewport Layers,yq_vplayer_freeze,vvz,vvz
+冻结视口块内图层,Freeze VP Layer in Block,yq_vplayer_nfreeze,vvbz,vvbz
+解冻视口图层,Thaw Out VP Layers,yq_vplayer_thaw,vvt,vvt
+隔离视口图层,Isolate Layers in Viewport,yq_vplayer_iso,vvdz,vvdz
+隔离其他视口层,Isolate Layers in Other VPs,yq_vplayer_isoall,vvzz,vvzz
+视口图层变色,Grayed VP Layers,yq_vplayer_gray,vvh,vvh
+还原视口层颜色,Recover VP Layer Color,yq_vplayer_recover,vvhf,vvhf
+--
+新建视口,Make a New Vport,yq_viewport_new,vvn,vvn
+拆分视口,Viewport Split,yq_viewport_split,vv2,vv2
+模型范围转视口,New Vport from Model,yq_model2viewport,mvv,mvv
+闭合曲线变视口,Curves to Viewports,yq_curve2viewport,xxvv,xxvv
+设定视口比例,Set Vport Scale,yq_viewport_scale,vvs,vvs
+缩放视口外框及比例,Scale Viewports,yq_scalevps,vvsc,vvsc
+对齐视口内容,Vports Sync,yq_viewport_sync,vvdq,vvdq
+平移视口视图,Viewport pan,yq_viewport_pan,vvp,vvp
+--
+锁定视口,Lock Vport,yq_viewport_lock,vvl,vvl
+锁定全部视口,Lock All Vports,yq_viewport_lock_all,vval,vval
+解锁视口,Unlock Vport,yq_viewport_unlock,vvu,vvu
+解锁全部视口,Unlock All Vports,yq_viewport_unlock_all,vvau,vvau
+--
+关闭非选视口,Isolate Viewports,yq_viewport_iso,vvd,vvd
+关闭视口,Viewports Off,yq_viewport_off,vvf,vvf
+关闭全部视口,Set All Vports off,yq_viewport_off_all,vvaf,vvaf
+打开视口,Viewports On,yq_viewport_on,vva,vva
+打开全部视口,Set All Vports on,yq_viewport_on_all,vvaa,vvaa
+--
+视口转布局块,Copy to Paper Space,yq_viewport2pspace,vvbb,vvbb
+--
+布局批量改名,Layouts Batch Rename,yq_layout_batchrename,tzg,tzg
+图框拆分为布局,Frames to Layouts,yq_frames2layouts,tzf,tzf
+图纸绘图区分割,Frame Range Divideds,yq_framedivided,tzfg,tzfg
+--
+旋转立面视图方向,Rotate VPort's Dir.,yq_ucsdir,vvr,vvr
+视图快照,Snapshot of a View,yq_snapshot,kz,kz
+超链接及视图管理,Hyperlink Last View,yq_hyperlink,clj,clj
+
+****【特性刷子】 命令列表,[Matching Brush] Command List,yq_matchbrush,sss,sss
+刷子.匹配/替换图块,Match Block,yq_match_block,ssb,ssb
+刷子.匹配动态块属性,Match Dynamic Block,yq_match_dynprops,ssd,ssd
+刷子.匹配角度,Match Rotation Angle,yq_match_rotation,ssa,ssa
+--
+刷子.匹配图层,Match Layer,yq_match_layer,sser,sser
+刷子.匹配颜色,Match Color,yq_match_color,ssc,ssc
+刷子.匹配图层与颜色,Match Layer/Color,yq_match_layercolor,sscc,sscc
+刷子.匹配视口图层状态,Match Viewport Layers,yq_match_vplayer,ssvv,ssvv
+--
+刷子.匹配文字内容,Match Text Content,yq_match_content,sst,sst
+刷子.匹配文字样式,Match Text Style,yq_match_style,ssst,ssst
+刷子.匹配文字高度,Match Text Height,yq_match_textheight,ssh,ssh
+刷子.匹配属性标签内容,Match Text by Tag,yq_match_tagtext,ssq,ssq
+--
+刷子.匹配多段线宽度,Match Pline Width,yq_match_width,ssw,ssw
+刷子.匹配线形,Match Linetype,yq_match_linetype,ssxt,ssxt
+刷子.匹配竖向厚度,Match Thickness,yq_match_thickness,ssth,ssth
+
+****【其他工具】 命令列表,[Other Tools] Command List,yq_othertools,qqq,qqq
+选图框批量打印,Plot in Batches,yq_batchplot,bpt,bpt
+--
+编制图纸目录,Drawing Catalog,yq_catalog,dwgl,dwgl
+选图框归档图纸,Output DWGs in Batches,yq_outputdwgs,dwgs,dwgs
+排列合并图档,Arrange Frames/DWGs,yq_arrangedwgs,dwga,dwga
+--
+重设图元图层/颜色,Reset Layer/Color,yq_2bylayer,ee0,ee0
+隐藏选择图元,Hide Entities,yq_hideselect,eef,eef
+隐藏非选择图元,Hide Unselected Ent.,yq_hideunselect,eed,eed
+显示临时隐藏图元,Display Temp. Hidden,yq_displayhide,eea,eea
+强制显示全部图元,Display All Entities,yq_displayall,eeaa,eeaa
+--
+快速制作一个编组,Make a Group,yq_quickgroup,ggn,ggn
+解散一个编组,Explodes a Group,yq_explodegroup,ggx,ggx
+加入一个编组,Append to a Group,yq_group_add,gga,gga
+删除编组中图元,Erase from a Group,yq_group_remove,gge,gge
+从编组中分离图元,Separate from a Group,yq_group_separate,ggs,ggs
+清除无用编组,Purge Groups,yq_purgegroup,ggp,ggp
+--
+切换是否使用动态,Switch YQArch Dynamic,yq_switch_dynamic,dtyq,dtyq
+画出Excel粘贴板坐标,Draw from Excel Clipboard,yq_drawclipboard,ztb,ztb
+输出到谷歌地球,Output to Google Earth,yq_acad2kml,a2k,a2k
+--
+源泉设计命令查找,YQarch Command Finder,yq_commandfinder,zml,zml
+重复上个源泉命令,Last YQarch Command,yq_lastyqcmd,qq,qq

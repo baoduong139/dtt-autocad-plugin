@@ -1,0 +1,8 @@
+Hướng dẫn cài đặt
+--------
+Trước khi cài nên đóng phần mềm diệt virus
+Copy bộ cài vào thư mục "D:\yqarch\sys"
+Chạy file --- setup.exe
+Nếu Win10, thì cần tạo quyền cho chỉnh sửa của User cho thư mục ----- yqarch\sys。
+
+

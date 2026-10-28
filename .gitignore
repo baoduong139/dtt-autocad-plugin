@@ -1,0 +1,34 @@
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+.dotnet/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Backup & temporary archives
+_backup_*.zip
+*.tmp
+*.log
+dist/bundle_payload.zip
+
+# AutoCAD generated & swap files
+*.dwl
+*.dwl2
+*.bak
+
+# Libraries: Allow AutoCAD 2021 SDK DLLs
+!libs/
+!libs/*.dll

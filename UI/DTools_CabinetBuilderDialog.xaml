@@ -1,0 +1,483 @@
+<Window x:Class="DTT_AutoCAD_Plugin.UI.DTools_CabinetBuilderDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Thiết Kế &amp; Sinh Tủ Điện Vạn Năng - DTools Pro" 
+        Height="680" Width="920"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        Topmost="True"
+        FontFamily="Segoe UI, Tahoma, sans-serif"
+        PreviewKeyDown="Window_PreviewKeyDown"
+        Loaded="Window_Loaded">
+
+    <Window.Resources>
+        <!-- MODERN SHADOWS & GLOWS -->
+        <DropShadowEffect x:Key="WindowShadow" BlurRadius="24" ShadowDepth="6" Direction="270" Color="#000000" Opacity="0.30"/>
+        <DropShadowEffect x:Key="CardShadow" BlurRadius="8" ShadowDepth="2" Direction="270" Color="#64748B" Opacity="0.12"/>
+        <DropShadowEffect x:Key="GlowCyan" BlurRadius="10" ShadowDepth="0" Color="#0284C7" Opacity="0.45"/>
+
+        <!-- STYLE TAB HEADER -->
+        <Style x:Key="StyleTabBtn" TargetType="RadioButton">
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Height" Value="38"/>
+            <Setter Property="Padding" Value="14,0"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#64748B"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="Bd" Background="Transparent" BorderThickness="0,0,0,2.5" BorderBrush="Transparent" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#F1F5F9"/>
+                                <Setter Property="Foreground" Value="#0284C7"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="#0284C7"/>
+                                <Setter TargetName="Bd" Property="Background" Value="#E0F2FE"/>
+                                <Setter Property="Foreground" Value="#0284C7"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- STYLE TEXTBOX INPUT -->
+        <Style x:Key="StyleInputBox" TargetType="TextBox">
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Background" Value="#FFFFFF"/>
+            <Setter Property="BorderBrush" Value="#CBD5E1"/>
+            <Setter Property="BorderThickness" Value="1.2"/>
+            <Setter Property="Foreground" Value="#0F172A"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="8,2"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border x:Name="Border" CornerRadius="5" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                            <ScrollViewer x:Name="PART_ContentHost"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter TargetName="Border" Property="BorderBrush" Value="#0284C7"/>
+                                <Setter TargetName="Border" Property="Effect" Value="{StaticResource GlowCyan}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- STYLE CHECKBOX -->
+        <Style x:Key="StyleCheckBox" TargetType="CheckBox">
+            <Setter Property="Foreground" Value="#1E293B"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Margin" Value="0,4"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+    </Window.Resources>
+
+    <!-- KHUNG CHÍNH (MODERN LIGHT STUDIO CARD) -->
+    <Border CornerRadius="12" Background="#F8FAFC" BorderBrush="#0284C7" BorderThickness="1.5" Effect="{StaticResource WindowShadow}" Margin="12">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="52"/> <!-- HEADER DRAG HANDLE -->
+                <RowDefinition Height="44"/> <!-- TABS BAR -->
+                <RowDefinition Height="*"/>  <!-- CONTENT: INPUTS + PREVIEW -->
+                <RowDefinition Height="64"/> <!-- FOOTER ACTION BUTTONS -->
+            </Grid.RowDefinitions>
+
+            <!-- 1. HEADER (DRAG HANDLE) -->
+            <Border Grid.Row="0" CornerRadius="11,11,0,0" Background="#FFFFFF" BorderBrush="#E2E8F0" BorderThickness="0,0,0,1.2" MouseLeftButtonDown="Header_MouseDown" Cursor="SizeAll">
+                <Grid Margin="16,0">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Border Width="34" Height="34" CornerRadius="7" Background="#E0F2FE" BorderBrush="#0284C7" BorderThickness="1" Margin="0,0,10,0">
+                            <TextBlock Text="⚡" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <StackPanel VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="BỘ THIẾT KẾ TỦ ĐIỆN VẠN NĂNG" FontSize="14" FontWeight="Bold" Foreground="#0F172A"/>
+                                <Border Background="#0284C7" CornerRadius="4" Padding="6,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                    <TextBlock Text="DYNAMIC BUILDER v3.5" FontSize="9.5" FontWeight="Bold" Foreground="#FFFFFF"/>
+                                </Border>
+                            </StackPanel>
+                            <TextBlock Text="Tự động tính tọa độ, sắp xếp linh kiện &amp; sinh bản vẽ kỹ thuật CAD chuẩn 100%" FontSize="10.5" Foreground="#64748B"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- PRESET COMBOBOX & CLOSE BUTTON -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <TextBlock Text="Mẫu tủ nhanh:" FontSize="11" Foreground="#64748B" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <ComboBox x:Name="CboPresets" Width="200" Height="28" FontSize="11" FontWeight="SemiBold" SelectionChanged="CboPresets_SelectionChanged" Margin="0,0,14,0"/>
+                        <Button Click="BtnClose_Click" Width="30" Height="30" Cursor="Hand" Background="Transparent" BorderThickness="0" ToolTip="Đóng menu (Esc)">
+                            <TextBlock Text="✕" FontSize="15" FontWeight="Bold" Foreground="#64748B" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- 2. TABS BAR -->
+            <Border Grid.Row="1" Background="#FFFFFF" BorderBrush="#E2E8F0" BorderThickness="0,0,0,1">
+                <StackPanel Orientation="Horizontal" Margin="14,0">
+                    <RadioButton x:Name="TabDimensions" Content="📐 1. Góc Nhìn &amp; Kích Thước" Style="{StaticResource StyleTabBtn}" IsChecked="True" Click="Tab_Click" Tag="PanelDimensions"/>
+                    <RadioButton x:Name="TabStructure" Content="🚪 2. Cấu Trúc Vỏ &amp; Ngăn" Style="{StaticResource StyleTabBtn}" Click="Tab_Click" Tag="PanelStructure"/>
+                    <RadioButton x:Name="TabComponents" Content="🎛️ 3. Bố Trí Linh Kiện" Style="{StaticResource StyleTabBtn}" Click="Tab_Click" Tag="PanelComponents"/>
+                    <RadioButton x:Name="TabTitleBlock" Content="📋 4. Khung Tên &amp; Nhãn" Style="{StaticResource StyleTabBtn}" Click="Tab_Click" Tag="PanelTitleBlock"/>
+                </StackPanel>
+            </Border>
+
+            <!-- 3. CONTENT AREA (SPLIT: TABS CONFIG + LIVE PREVIEW) -->
+            <Grid Grid.Row="2" Margin="14,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="460"/> <!-- CỘT CẤU HÌNH THAM SỐ -->
+                    <ColumnDefinition Width="*"/>   <!-- CỘT PREVIEW TRỰC QUAN -->
+                </Grid.ColumnDefinitions>
+
+                <!-- KHUNG CHỨA CÁC TAB NHẬP LIỆU -->
+                <Border Grid.Column="0" CornerRadius="8" Background="#FFFFFF" BorderBrush="#CBD5E1" BorderThickness="1" Effect="{StaticResource CardShadow}" Padding="14">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+
+                            <!-- ==========================================
+                                 TAB 1: KÍCH THƯỚC & GÓC NHÌN
+                                 ========================================== -->
+                            <StackPanel x:Name="PanelDimensions" Visibility="Visible">
+                                <TextBlock Text="📐 KÍCH THƯỚC TỔNG THỂ VỎ TỦ (MM)" FontSize="12" FontWeight="Bold" Foreground="#0284C7" Margin="0,0,0,10"/>
+                                
+                                <Grid Margin="0,0,0,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="10"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Chiều cao vỏ tủ H (mm):" FontSize="11" Foreground="#475569" Margin="0,0,0,3"/>
+                                        <TextBox x:Name="TxtHeight" Text="1200" Style="{StaticResource StyleInputBox}" TextChanged="Parameter_Changed"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Chiều rộng vỏ tủ W (mm):" FontSize="11" Foreground="#475569" Margin="0,0,0,3"/>
+                                        <TextBox x:Name="TxtWidth" Text="800" Style="{StaticResource StyleInputBox}" TextChanged="Parameter_Changed"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <Grid Margin="0,0,0,14">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="10"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Chiều sâu vỏ tủ D (mm):" FontSize="11" Foreground="#475569" Margin="0,0,0,3"/>
+                                        <TextBox x:Name="TxtDepth" Text="300" Style="{StaticResource StyleInputBox}" TextChanged="Parameter_Changed"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Chiều cao chân đế (mm):" FontSize="11" Foreground="#475569" Margin="0,0,0,3"/>
+                                        <TextBox x:Name="TxtPlinth" Text="100" Style="{StaticResource StyleInputBox}" TextChanged="Parameter_Changed"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <Separator Background="#E2E8F0" Margin="0,4,0,10"/>
+
+                                <TextBlock Text="👁️ CHỌN CÁC MẶT CHIẾU MUỐN VẼ" FontSize="12" FontWeight="Bold" Foreground="#0284C7" Margin="0,0,0,8"/>
+                                <CheckBox x:Name="ChkFront" Content="Mặt trước (Front View) - Khung vỏ, cánh, đèn báo, đồng hồ" IsChecked="True" Style="{StaticResource StyleCheckBox}" Click="Parameter_Changed"/>
+                                <CheckBox x:Name="ChkInner" Content="Mặt cửa trong / Tấm gá (Mounting Plate) - MCCB, MCB, Busbar, TB" IsChecked="True" Style="{StaticResource StyleCheckBox}" Click="Parameter_Changed"/>
+                                <CheckBox x:Name="ChkSide" Content="Mặt hông (Side View) - Chiều sâu, chân đế, chớp tản nhiệt" IsChecked="True" Style="{StaticResource StyleCheckBox}" Click="Parameter_Changed"/>
+                                <CheckBox x:Name="ChkRear" Content="Mặt sau (Rear View) - Nắp lưng tháo rời, tai treo tường" IsChecked="False" Style="{StaticResource StyleCheckBox}" Click="Parameter_Changed"/>
+                                <CheckBox x:Name="ChkTopBottom" Content="Mặt trên / Mặt đáy (Top/Bottom) - Nắp tôn đột lỗ luồn cáp" IsChecked="False" Style="{StaticResource StyleCheckBox}" Click="Parameter_Changed"/>
+
+                                <Separator Background="#E2E8F0" Margin="0,10,0,10"/>
+                                <CheckBox x:Name="ChkAutoDim" Content="Tự động đo Kích thước Dimension (Cao, Rộng, Sâu, Đế)" IsChecked="True" Style="{StaticResource StyleCheckBox}" FontWeight="Bold" Foreground="#0284C7" Click="Parameter_Changed"/>
+                                <Grid Margin="20,4,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="10"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Chiều cao chữ Dim (mm):" FontSize="11" Foreground="#475569" Margin="0,0,0,3"/>
+                                        <TextBox x:Name="TxtDimTextHeight" Text="25" Style="{StaticResource StyleInputBox}" TextChanged="Parameter_Changed"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Tỉ lệ DimScale (1:1):" FontSize="11" Foreground="#475569" Margin="0,0,0,3"/>
+                                        <TextBox x:Name="TxtDimScale" Text="1.0" Style="{StaticResource StyleInputBox}" TextChanged="Parameter_Changed"/>
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+
+                            <!-- ==========================================
+                                 TAB 2: CẤU TRÚC VỎ & NGĂN
+                                 ========================================== -->
+                            <StackPanel x:Name="PanelStructure" Visibility="Collapsed">
+                                <TextBlock Text="🚪 CẤU TRÚC CÁNH &amp; KHÓA TỦ" FontSize="12" FontWeight="Bold" Foreground="#0284C7" Margin="0,0,0,10"/>
+                                
+                                <Grid Margin="0,0,0,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="10"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Số cánh cửa tủ:" FontSize="11" Foreground="#475569" Margin="0,0,0,3"/>
+                                        <ComboBox x:Name="CboDoorCount" Height="30" FontSize="11" SelectionChanged="Parameter_Changed">
+                                            <ComboBoxItem Content="1 cánh mở" IsSelected="True"/>
+                                            <ComboBoxItem Content="2 cánh mở giữa"/>
+                                        </ComboBox>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Vị trí tay khóa gạt:" FontSize="11" Foreground="#475569" Margin="0,0,0,3"/>
+                                        <ComboBox x:Name="CboLockPos" Height="30" FontSize="11" SelectionChanged="Parameter_Changed">
+                                            <ComboBoxItem Content="Bên Phải" IsSelected="True"/>
+                                            <ComboBoxItem Content="Bên Trái"/>
+                                            <ComboBoxItem Content="Ở Giữa"/>
+                                        </ComboBox>
+                                    </StackPanel>
+                                </Grid>
+
+                                <Separator Background="#E2E8F0" Margin="0,6,0,10"/>
+                                <TextBlock Text="💨 LƯỚI CHỚP TẢN NHIỆT (LOUVER)" FontSize="12" FontWeight="Bold" Foreground="#0284C7" Margin="0,0,0,8"/>
+                                
+                                <CheckBox x:Name="ChkLouver" Content="Bố trí cụm chớp tản nhiệt trên cánh và mặt hông" IsChecked="True" Style="{StaticResource StyleCheckBox}" Click="Parameter_Changed"/>
+                                
+                                <Grid Margin="0,4,0,12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="10"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Rộng chớp (mm):" FontSize="11" Foreground="#475569" Margin="0,0,0,3"/>
+                                        <TextBox x:Name="TxtLouverW" Text="220" Style="{StaticResource StyleInputBox}" TextChanged="Parameter_Changed"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Cao chớp (mm):" FontSize="11" Foreground="#475569" Margin="0,0,0,3"/>
+                                        <TextBox x:Name="TxtLouverH" Text="120" Style="{StaticResource StyleInputBox}" TextChanged="Parameter_Changed"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <Separator Background="#E2E8F0" Margin="0,4,0,10"/>
+                                <TextBlock Text="🔲 PHÂN CHIA KHOANG &amp; MÁNG CÁP" FontSize="12" FontWeight="Bold" Foreground="#0284C7" Margin="0,0,0,8"/>
+                                
+                                <Grid Margin="0,0,0,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="10"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Số hàng chia ngăn (Rows):" FontSize="11" Foreground="#475569" Margin="0,0,0,3"/>
+                                        <TextBox x:Name="TxtRows" Text="3" Style="{StaticResource StyleInputBox}" TextChanged="Parameter_Changed"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Số cột chia khoang (Cols):" FontSize="11" Foreground="#475569" Margin="0,0,0,3"/>
+                                        <TextBox x:Name="TxtCols" Text="1" Style="{StaticResource StyleInputBox}" TextChanged="Parameter_Changed"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <CheckBox x:Name="ChkWiringDuct" Content="Tự động vẽ máng cáp nhựa đi dây lược (Slotted Duct)" IsChecked="True" Style="{StaticResource StyleCheckBox}" Click="Parameter_Changed"/>
+                            </StackPanel>
+
+                            <!-- ==========================================
+                                 TAB 3: BỐ TRÍ LINH KIỆN
+                                 ========================================== -->
+                            <StackPanel x:Name="PanelComponents" Visibility="Collapsed">
+                                <TextBlock Text="🎛️ KHÍ CỤ ĐIỆN CHÍNH &amp; PHÂN BỔ TỌA ĐỘ" FontSize="12" FontWeight="Bold" Foreground="#0284C7" Margin="0,0,0,10"/>
+                                
+                                <Grid Margin="0,0,0,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="10"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Số lượng MCCB tổng:" FontSize="11" Foreground="#475569" Margin="0,0,0,3"/>
+                                        <TextBox x:Name="TxtMccbCount" Text="1" Style="{StaticResource StyleInputBox}" TextChanged="Parameter_Changed"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Dòng định mức MCCB:" FontSize="11" Foreground="#475569" Margin="0,0,0,3"/>
+                                        <ComboBox x:Name="CboMccbRating" Height="30" FontSize="11" SelectionChanged="Parameter_Changed">
+                                            <ComboBoxItem Content="100A 3P"/>
+                                            <ComboBoxItem Content="160A 3P"/>
+                                            <ComboBoxItem Content="250A 3P" IsSelected="True"/>
+                                            <ComboBoxItem Content="400A 3P"/>
+                                            <ComboBoxItem Content="630A 3P"/>
+                                            <ComboBoxItem Content="800A 3P"/>
+                                        </ComboBox>
+                                    </StackPanel>
+                                </Grid>
+
+                                <Grid Margin="0,0,0,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="10"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Số nhánh MCB tép ra tải:" FontSize="11" Foreground="#475569" Margin="0,0,0,3"/>
+                                        <TextBox x:Name="TxtMcbBranches" Text="18" Style="{StaticResource StyleInputBox}" TextChanged="Parameter_Changed"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Số Rơ-le kiếng / Timer:" FontSize="11" Foreground="#475569" Margin="0,0,0,3"/>
+                                        <TextBox x:Name="TxtRelayCount" Text="6" Style="{StaticResource StyleInputBox}" TextChanged="Parameter_Changed"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <StackPanel Margin="0,0,0,10">
+                                    <TextBlock Text="Số lượng cực cầu đấu dây (Terminal Blocks):" FontSize="11" Foreground="#475569" Margin="0,0,0,3"/>
+                                    <TextBox x:Name="TxtTerminalCount" Text="24" Style="{StaticResource StyleInputBox}" TextChanged="Parameter_Changed"/>
+                                </StackPanel>
+
+                                <Separator Background="#E2E8F0" Margin="0,4,0,10"/>
+                                <TextBlock Text="💡 BÁO HIỆU &amp; ĐỒNG HỒ ĐO LƯỜNG MẶT CỬA" FontSize="12" FontWeight="Bold" Foreground="#0284C7" Margin="0,0,0,8"/>
+                                <CheckBox x:Name="ChkPilotLamps" Content="Lắp 3 Đèn báo pha (Đỏ-Vàng-Xanh) &amp; Đồng hồ đo Volt/Ampe" IsChecked="True" Style="{StaticResource StyleCheckBox}" Click="Parameter_Changed"/>
+                            </StackPanel>
+
+                            <!-- ==========================================
+                                 TAB 4: KHUNG TÊN & NHÃN
+                                 ========================================== -->
+                            <StackPanel x:Name="PanelTitleBlock" Visibility="Collapsed">
+                                <TextBlock Text="📋 THÔNG SỐ NHÃN MÁC VÀ BẢNG THÔNG TIN KỸ THUẬT" FontSize="12" FontWeight="Bold" Foreground="#0284C7" Margin="0,0,0,10"/>
+                                
+                                <StackPanel Margin="0,0,0,8">
+                                    <TextBlock Text="Tên Tủ Điện (Hiển thị biển Mica &amp; Bản vẽ):" FontSize="11" Foreground="#475569" Margin="0,0,0,3"/>
+                                    <TextBox x:Name="TxtCabinetName" Text="TỦ ĐIỆN ISS-1" Style="{StaticResource StyleInputBox}" TextChanged="Parameter_Changed"/>
+                                </StackPanel>
+
+                                <Grid Margin="0,0,0,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="10"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Kích thước tấm Panel gá (WxH):" FontSize="11" Foreground="#475569" Margin="0,0,0,3"/>
+                                        <TextBox x:Name="TxtPanelSize" Text="1500x1300" Style="{StaticResource StyleInputBox}" TextChanged="Parameter_Changed"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Cấp bảo vệ chống nước/bụi:" FontSize="11" Foreground="#475569" Margin="0,0,0,3"/>
+                                        <TextBox x:Name="TxtIpRating" Text="IP54" Style="{StaticResource StyleInputBox}" TextChanged="Parameter_Changed"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <Grid Margin="0,0,0,12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="10"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Điện áp &amp; Tần số:" FontSize="11" Foreground="#475569" Margin="0,0,0,3"/>
+                                        <TextBox x:Name="TxtVoltage" Text="380V/220V - 50Hz" Style="{StaticResource StyleInputBox}" TextChanged="Parameter_Changed"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Dòng điện định mức (In):" FontSize="11" Foreground="#475569" Margin="0,0,0,3"/>
+                                        <TextBox x:Name="TxtRatedCurrent" Text="250A" Style="{StaticResource StyleInputBox}" TextChanged="Parameter_Changed"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <Separator Background="#E2E8F0" Margin="0,4,0,10"/>
+                                <CheckBox x:Name="ChkDrawTitleBlock" Content="Xuất Bảng thông số kỹ thuật tủ điện chuẩn IEC góc dưới bản vẽ" IsChecked="True" Style="{StaticResource StyleCheckBox}" FontWeight="Bold" Foreground="#0284C7" Click="Parameter_Changed"/>
+                            </StackPanel>
+
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
+
+                <!-- KHUNG XEM TRƯỚC TRỰC QUAN (LIVE VECTOR PREVIEW) -->
+                <Border Grid.Column="1" Margin="12,0,0,0" CornerRadius="8" Background="#0F172A" BorderBrush="#334155" BorderThickness="1.2">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="26"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- PREVIEW HEADER -->
+                        <Border Grid.Row="0" Background="#1E293B" CornerRadius="7,7,0,0" Padding="10,0">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="👁️ XEM TRƯỚC MÔ HÌNH (LIVE VECTOR PREVIEW)" FontSize="10.5" FontWeight="Bold" Foreground="#38BDF8"/>
+                                <TextBlock Text=" • Tỷ lệ tự động cân chỉnh" FontSize="10" Foreground="#94A3B8" Margin="6,0,0,0"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- PREVIEW CANVAS -->
+                        <Canvas Grid.Row="1" x:Name="PreviewCanvas" ClipToBounds="True" Background="#0F172A" SizeChanged="PreviewCanvas_SizeChanged"/>
+
+                        <!-- PREVIEW FOOTER -->
+                        <Border Grid.Row="2" Background="#1E293B" CornerRadius="0,0,7,7" Padding="10,0">
+                            <TextBlock x:Name="TxtPreviewInfo" Text="Kích thước: 800 x 1300 x 300 mm | Tủ 1 cánh | MCCB 250A | 18 MCB" FontSize="10" Foreground="#CBD5E1" VerticalAlignment="Center"/>
+                        </Border>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <!-- 4. FOOTER ACTION BUTTONS -->
+            <Border Grid.Row="3" Background="#FFFFFF" BorderBrush="#E2E8F0" BorderThickness="0,1.2,0,0" CornerRadius="0,0,11,11" Padding="16,0">
+                <Grid VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+                        <TextBlock Text="💡 Mẹo: Bấm " FontSize="11" Foreground="#64748B"/>
+                        <Border Background="#F1F5F9" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="3" Padding="4,1">
+                            <TextBlock Text="ENTER" FontSize="10" FontWeight="Bold" Foreground="#0284C7"/>
+                        </Border>
+                        <TextBlock Text=" để vẽ ngay | " FontSize="11" Foreground="#64748B"/>
+                        <Border Background="#F1F5F9" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="3" Padding="4,1">
+                            <TextBlock Text="TAB" FontSize="10" FontWeight="Bold" Foreground="#0284C7"/>
+                        </Border>
+                        <TextBlock Text=" chuyển ô | " FontSize="11" Foreground="#64748B"/>
+                        <Border Background="#F1F5F9" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="3" Padding="4,1">
+                            <TextBlock Text="ESC" FontSize="10" FontWeight="Bold" Foreground="#0284C7"/>
+                        </Border>
+                        <TextBlock Text=" hủy bỏ" FontSize="11" Foreground="#64748B"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Click="BtnCancel_Click" Width="100" Height="36" Margin="0,0,10,0" Cursor="Hand" Background="#F1F5F9" BorderBrush="#CBD5E1" BorderThickness="1">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border CornerRadius="6" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                                        <TextBlock Text="✖ Hủy Bỏ (Esc)" FontSize="11.5" FontWeight="SemiBold" Foreground="#475569" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+
+                        <Button Click="BtnBuild3D_Click" Width="170" Height="36" Margin="0,0,10,0" Cursor="Hand" Background="#0D9488" BorderThickness="0">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border CornerRadius="6" Background="{TemplateBinding Background}">
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <TextBlock Text="🧊" FontSize="14" Foreground="#FFFFFF" Margin="0,0,6,0"/>
+                                            <TextBlock Text="DỰNG 3D SOLID" FontSize="11.5" FontWeight="Bold" Foreground="#FFFFFF"/>
+                                        </StackPanel>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+
+                        <Button Click="BtnBuild_Click" Width="210" Height="36" Cursor="Hand" Background="#0284C7" BorderThickness="0" Effect="{StaticResource GlowCyan}">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border CornerRadius="6" Background="{TemplateBinding Background}">
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <TextBlock Text="⚡" FontSize="14" Foreground="#FFFFFF" Margin="0,0,6,0"/>
+                                            <TextBlock Text="VẼ TỦ ĐIỆN NGAY [ENTER]" FontSize="11.5" FontWeight="Bold" Foreground="#FFFFFF"/>
+                                        </StackPanel>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</Window>

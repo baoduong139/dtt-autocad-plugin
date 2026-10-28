@@ -1,0 +1,302 @@
+<Window x:Class="DTT_AutoCAD_Plugin.UI.DTools_PlcBuilderDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Thư Viện PLC I/O Parametric &amp; Smart Sync - DTools Pro" 
+        Height="620" Width="880"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        Topmost="True"
+        FontFamily="Segoe UI, Tahoma, sans-serif"
+        PreviewKeyDown="Window_PreviewKeyDown">
+
+    <Window.Resources>
+        <DropShadowEffect x:Key="WindowShadow" BlurRadius="24" ShadowDepth="6" Direction="270" Color="#000000" Opacity="0.30"/>
+        <DropShadowEffect x:Key="GlowCyan" BlurRadius="10" ShadowDepth="0" Color="#0284C7" Opacity="0.45"/>
+
+        <Style x:Key="StyleTabBtn" TargetType="RadioButton">
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Height" Value="38"/>
+            <Setter Property="Padding" Value="16,0"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#64748B"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="Bd" Background="Transparent" BorderThickness="0,0,0,2.5" BorderBrush="Transparent" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#F1F5F9"/>
+                                <Setter Property="Foreground" Value="#0284C7"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="#0284C7"/>
+                                <Setter TargetName="Bd" Property="Background" Value="#E0F2FE"/>
+                                <Setter Property="Foreground" Value="#0284C7"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="StyleInputBox" TargetType="TextBox">
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Background" Value="#FFFFFF"/>
+            <Setter Property="BorderBrush" Value="#CBD5E1"/>
+            <Setter Property="BorderThickness" Value="1.2"/>
+            <Setter Property="Foreground" Value="#0F172A"/>
+            <Setter Property="FontSize" Value="11.5"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="8,2"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+    </Window.Resources>
+
+    <Border CornerRadius="12" Background="#F8FAFC" BorderBrush="#0284C7" BorderThickness="1.5" Effect="{StaticResource WindowShadow}" Margin="12">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="42"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="60"/>
+            </Grid.RowDefinitions>
+
+            <!-- HEADER -->
+            <Border Grid.Row="0" Background="#FFFFFF" BorderBrush="#E2E8F0" BorderThickness="0,0,0,1.2" CornerRadius="11,11,0,0" MouseLeftButtonDown="Header_MouseDown" Cursor="SizeAll">
+                <Grid Margin="16,0,12,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Border Width="28" Height="28" CornerRadius="6" Background="#0284C7" Margin="0,0,10,0">
+                            <TextBlock Text="🎛️" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="THƯ VIỆN PLC I/O PARAMETRIC &amp; SMART SYNC TỦ ĐIỆN" FontSize="13" FontWeight="Bold" Foreground="#0F172A"/>
+                            <TextBlock Text="Siemens • Mitsubishi • Omron • Schneider • Đồng Bộ Mạch Nguyên Lý &lt;-&gt; Mặt Tủ Panel" FontSize="9.5" Foreground="#64748B"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <Button Grid.Column="1" Click="BtnClose_Click" Width="30" Height="30" Cursor="Hand" Background="Transparent" BorderThickness="0">
+                        <TextBlock Text="✖" FontSize="14" Foreground="#94A3B8" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Button>
+                </Grid>
+            </Border>
+
+            <!-- TABS -->
+            <Border Grid.Row="1" Background="#FFFFFF" BorderBrush="#E2E8F0" BorderThickness="0,0,0,1.2" Padding="14,0">
+                <StackPanel Orientation="Horizontal">
+                    <RadioButton x:Name="TabPlc" Content="🎛️ 1. Thư Viện PLC I/O Parametric" Style="{StaticResource StyleTabBtn}" IsChecked="True" Click="Tab_Click" Tag="PanelPlc"/>
+                    <RadioButton x:Name="TabSync" Content="🔄 2. Smart Sync Đối Chiếu Mạch &lt;-&gt; Mặt Tủ" Style="{StaticResource StyleTabBtn}" Click="Tab_Click" Tag="PanelSync"/>
+                </StackPanel>
+            </Border>
+
+            <!-- CONTENT -->
+            <Grid Grid.Row="2" Margin="14,12,14,8">
+                <!-- TAB 1: PLC PARAMETRIC -->
+                <Grid x:Name="PanelPlc" Visibility="Visible">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="380"/>
+                        <ColumnDefinition Width="14"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="⚙️ THIẾT LẬP DÒNG PLC &amp; THÔNG SỐ I/O" FontSize="11.5" FontWeight="Bold" Foreground="#0284C7" Margin="0,0,0,10"/>
+                        
+                        <TextBlock Text="Hãng sản xuất PLC:" FontSize="10.5" Foreground="#475569" Margin="0,0,0,3"/>
+                        <ComboBox x:Name="CboBrand" Height="30" FontSize="11" Margin="0,0,0,8" SelectionChanged="CboBrand_SelectionChanged">
+                            <ComboBoxItem Content="Siemens SIMATIC S7-1200" IsSelected="True"/>
+                            <ComboBoxItem Content="Siemens SIMATIC S7-1500"/>
+                            <ComboBoxItem Content="Mitsubishi MELSEC iQ-F FX5U"/>
+                            <ComboBoxItem Content="Omron SYSMAC CP1H"/>
+                            <ComboBoxItem Content="Schneider Modicon M221"/>
+                        </ComboBox>
+
+                        <TextBlock Text="Tên model CPU:" FontSize="10.5" Foreground="#475569" Margin="0,0,0,3"/>
+                        <TextBox x:Name="TxtModel" Text="CPU 1214C DC/DC/DC" Style="{StaticResource StyleInputBox}" Margin="0,0,0,8"/>
+
+                        <Grid Margin="0,0,0,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="10"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Số điểm DI (Đầu vào):" FontSize="10.5" Foreground="#475569" Margin="0,0,0,2"/>
+                                <TextBox x:Name="TxtDiCount" Text="14" Style="{StaticResource StyleInputBox}"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Số điểm DO (Đầu ra):" FontSize="10.5" Foreground="#475569" Margin="0,0,0,2"/>
+                                <TextBox x:Name="TxtDoCount" Text="10" Style="{StaticResource StyleInputBox}"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid Margin="0,0,0,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="10"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Số kênh Analog AI:" FontSize="10.5" Foreground="#475569" Margin="0,0,0,2"/>
+                                <TextBox x:Name="TxtAiCount" Text="2" Style="{StaticResource StyleInputBox}"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Ký hiệu Tag nhãn:" FontSize="10.5" Foreground="#475569" Margin="0,0,0,2"/>
+                                <TextBox x:Name="TxtTag" Text="PLC-01" Style="{StaticResource StyleInputBox}"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <TextBlock Text="Nguồn nuôi CPU:" FontSize="10.5" Foreground="#475569" Margin="0,0,0,3"/>
+                        <ComboBox x:Name="CboPower" Height="30" FontSize="11" Margin="0,0,0,8">
+                            <ComboBoxItem Content="24VDC (L+ / M / PE)" IsSelected="True"/>
+                            <ComboBoxItem Content="100-240VAC (L1 / N / PE)"/>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <!-- PREVIEW PLC CARD -->
+                    <Border Grid.Column="2" CornerRadius="8" Background="#0F172A" BorderBrush="#334155" BorderThickness="1.5" Padding="14">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Text="👁️ THÔNG TIN MÔ-ĐUN PLC CHỌN LỰA" FontSize="11" FontWeight="Bold" Foreground="#38BDF8" Margin="0,0,0,10"/>
+                            <StackPanel Grid.Row="1">
+                                <Border Background="#1E293B" CornerRadius="6" Padding="12" Margin="0,0,0,10">
+                                    <StackPanel>
+                                        <TextBlock x:Name="LblPlcHeader" Text="SIEMENS S7-1200 CPU 1214C" FontSize="13" FontWeight="Bold" Foreground="#FFFFFF"/>
+                                        <TextBlock Text="Mã Catalog: 6ES7 214-1AG40-0XB0" FontSize="10" Foreground="#94A3B8" Margin="0,2,0,6"/>
+                                        <TextBlock Text="• Nguồn cấp: 24VDC (20.4-28.8VDC)" FontSize="10.5" Foreground="#CBD5E1"/>
+                                        <TextBlock Text="• Đầu vào số: 14 DI 24VDC (Sink/Source) I0.0 - I1.5" FontSize="10.5" Foreground="#CBD5E1"/>
+                                        <TextBlock Text="• Đầu ra số: 10 DO 24VDC Transistor Q0.0 - Q1.1" FontSize="10.5" Foreground="#CBD5E1"/>
+                                        <TextBlock Text="• Đầu vào tương tự: 2 AI (0-10VDC) 10-bit resolution" FontSize="10.5" Foreground="#CBD5E1"/>
+                                        <TextBlock Text="• Truyền thông: 1 cổng RJ45 PROFINET 10/100 Mbps" FontSize="10.5" Foreground="#CBD5E1"/>
+                                    </StackPanel>
+                                </Border>
+                                <TextBlock Text="💡 Gợi ý: Bấm [⚡ CHÈN KHỐI PLC VÀO CAD] để tự động sinh khối sơ đồ nguyên lý với đầy đủ cọc đấu, chân nguồn và nhãn I/O mở rộng động." FontSize="10" Foreground="#94A3B8" TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <!-- TAB 2: SMART SYNC -->
+                <Grid x:Name="PanelSync" Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Border Grid.Row="0" Background="#E0F2FE" BorderBrush="#0284C7" BorderThickness="1" CornerRadius="6" Padding="12,8" Margin="0,0,0,10">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="🎯 " FontSize="16"/>
+                            <TextBlock Text="TỰ ĐỘNG ĐỐI CHIẾU SƠ ĐỒ NGUYÊN LÝ &lt;-&gt; MẶT TỦ PANEL LAYOUT" FontWeight="Bold" Foreground="#0284C7" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- DANH SÁCH LINH KIỆN -->
+                    <Border Grid.Row="1" Background="#FFFFFF" BorderBrush="#CBD5E1" BorderThickness="1.2" CornerRadius="6" Padding="10">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Text="📋 Danh sách linh kiện quét được từ Sơ đồ nguyên lý (Schematics):" FontSize="11" FontWeight="Bold" Foreground="#334155" Margin="0,0,0,6"/>
+
+                            <ListView Grid.Row="1" x:Name="ListSyncItems" BorderThickness="0" FontSize="10.5">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="Ký Hiệu Tag" Width="90" DisplayMemberBinding="{Binding Tag}"/>
+                                        <GridViewColumn Header="Tên Thiết Bị Linh Kiện" Width="220" DisplayMemberBinding="{Binding Name}"/>
+                                        <GridViewColumn Header="Phân Loại" Width="100" DisplayMemberBinding="{Binding TypeCategory}"/>
+                                        <GridViewColumn Header="Thông Số Kỹ Thuật" Width="180" DisplayMemberBinding="{Binding Spec}"/>
+                                        <GridViewColumn Header="Kích Thước WxH (mm)" Width="130">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock>
+                                                        <Run Text="{Binding RealWidth, StringFormat={}{0:F0}}"/>
+                                                        <Run Text=" x "/>
+                                                        <Run Text="{Binding RealHeight, StringFormat={}{0:F0}}"/>
+                                                        <Run Text=" mm"/>
+                                                    </TextBlock>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Header="Trạng Thái Panel" Width="110">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Border Background="#DCFCE7" CornerRadius="4" Padding="4,1">
+                                                        <TextBlock Text="Sẵn sàng xếp" Foreground="#15803D" FontWeight="SemiBold"/>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Grid>
+
+            <!-- FOOTER -->
+            <Border Grid.Row="3" Background="#FFFFFF" BorderBrush="#E2E8F0" BorderThickness="0,1.2,0,0" CornerRadius="0,0,11,11" Padding="16,0">
+                <Grid VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+                        <TextBlock Text="💡 Bấm " FontSize="11" Foreground="#64748B"/>
+                        <Border Background="#F1F5F9" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="3" Padding="4,1">
+                            <TextBlock Text="ESC" FontSize="10" FontWeight="Bold" Foreground="#0284C7"/>
+                        </Border>
+                        <TextBlock Text=" để đóng cửa sổ" FontSize="11" Foreground="#64748B"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Click="BtnCancel_Click" Width="100" Height="34" Margin="0,0,10,0" Cursor="Hand" Background="#F1F5F9" BorderBrush="#CBD5E1" BorderThickness="1">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border CornerRadius="6" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                                        <TextBlock Text="✖ Hủy Bỏ" FontSize="11" FontWeight="SemiBold" Foreground="#475569" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+
+                        <Button x:Name="BtnAutoPanelSync" Click="BtnAutoPanelSync_Click" Width="210" Height="34" Margin="0,0,10,0" Cursor="Hand" Background="#0D9488" BorderThickness="0">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border CornerRadius="6" Background="{TemplateBinding Background}">
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <TextBlock Text="🔄 " FontSize="13" Foreground="#FFFFFF"/>
+                                            <TextBlock Text="TỰ ĐỘNG XẾP VÀO PANEL" FontSize="11" FontWeight="Bold" Foreground="#FFFFFF"/>
+                                        </StackPanel>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+
+                        <Button x:Name="BtnInsertPlc" Click="BtnInsertPlc_Click" Width="230" Height="34" Cursor="Hand" Background="#0284C7" BorderThickness="0" Effect="{StaticResource GlowCyan}">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border CornerRadius="6" Background="{TemplateBinding Background}">
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <TextBlock Text="⚡ " FontSize="14" Foreground="#FFFFFF"/>
+                                            <TextBlock Text="CHÈN KHỐI PLC VÀO CAD" FontSize="11" FontWeight="Bold" Foreground="#FFFFFF"/>
+                                        </StackPanel>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</Window>

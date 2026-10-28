@@ -1,0 +1,34 @@
+;;; [源泉设计]-[新建文字样式]设定文件,用户可以编辑扩充此文件
+;;; 官网:yqarch.cn 论坛:bigd.haotui.com QQ群:119803917
+;;;
+;;; 说明:
+;;;   等号左边是字体样式名(也是幻灯片名)，等号右边为字体文档名组合；
+;;;   前面24个幻灯片已经内置，其他需要使用mslide命令制作同名幻灯片，收入用户文件夹；
+;;;   分号后面内容为注释,会被忽略。
+
+SIMSUN  = 宋体
+SIMHEI  = 黑体
+SIMKAI  = 楷体
+SIMFANG = 仿宋
+SIMLI   = 隶书
+SIMYOU  = 幼圆
+simplex = simplex.shx
+romanc  = romanc.shx
+romand  = romand.shx
+_hzdxgc = superos.shx,hzdxgc.shx
+_hzdx   = superos.shx,hzdx.shx
+_hzst   = romand.shx,hzst.shx
+_hzfs   = txt2.shx,hzfs.shx
+_hzkt   = txt2.shx,hzkt.shx
+_hzxk   = txt2.shx,hzxk.shx
+_hzwb   = txt2.shx,hzwb.shx
+_hzls   = txt2.shx,hzls.shx
+_hzxy   = txt2.shx,hzxy.shx
+_hzht   = txt2.shx,hzht.shx
+_hzhp   = txt2.shx,hzhp.shx
+_hzzy   = txt2.shx,hzzy.shx
+_hzhtf  = txt2.shx,hzhtf.shx
+_hzhpf  = txt2.shx,hzhpf.shx
+_hzzyf  = txt2.shx,hzzyf.shx               ; 注: 此行以上幻灯片已经内置
+新GB    = gbenor.shx,gbcbig.shx
+新黑体  = 黑体

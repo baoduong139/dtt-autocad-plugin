@@ -1,0 +1,106 @@
+<Window x:Class="DTT_AutoCAD_Plugin.UI.DTools_DrcReportDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Báo Cáo Kiểm Lỗi Thiết Kế Mạch Điện - DRC Inspector" 
+        Height="540" Width="860"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        Topmost="True"
+        FontFamily="Segoe UI, Tahoma, sans-serif"
+        PreviewKeyDown="Window_PreviewKeyDown">
+
+    <Window.Resources>
+        <DropShadowEffect x:Key="WindowShadow" BlurRadius="24" ShadowDepth="6" Direction="270" Color="#000000" Opacity="0.30"/>
+        <DropShadowEffect x:Key="GlowRed" BlurRadius="10" ShadowDepth="0" Color="#EF4444" Opacity="0.45"/>
+    </Window.Resources>
+
+    <Border CornerRadius="12" Background="#F8FAFC" BorderBrush="#EF4444" BorderThickness="1.5" Effect="{StaticResource WindowShadow}" Margin="12">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="45"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="60"/>
+            </Grid.RowDefinitions>
+
+            <!-- HEADER -->
+            <Border Grid.Row="0" Background="#FFFFFF" BorderBrush="#E2E8F0" BorderThickness="0,0,0,1.2" CornerRadius="11,11,0,0" MouseLeftButtonDown="Header_MouseDown" Cursor="SizeAll">
+                <Grid Margin="16,0,12,0">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="🛡️ " FontSize="18"/>
+                        <TextBlock Text="KIỂM TRA LỖI THIẾT KẾ MẠCH ĐIỆN (ELECTRICAL DRC INSPECTOR)" FontSize="13.5" FontWeight="Bold" Foreground="#0F172A" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <Button Click="BtnClose_Click" HorizontalAlignment="Right" Width="28" Height="28" Background="Transparent" BorderThickness="0" Cursor="Hand">
+                        <TextBlock Text="✕" FontSize="14" Foreground="#64748B" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Button>
+                </Grid>
+            </Border>
+
+            <!-- SUMMARY BANNER -->
+            <Border Grid.Row="1" Background="#FEF2F2" BorderBrush="#FECACA" BorderThickness="0,0,0,1" Padding="16,0">
+                <Grid VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock x:Name="TxtSummary" Text="⚠️ Phát hiện: 0 Lỗi nghiêm trọng (Error) | 0 Cảnh báo (Warning)" FontSize="11.5" FontWeight="Bold" Foreground="#991B1B"/>
+                    </StackPanel>
+                    <TextBlock Text="Quy chuẩn kiểm tra: IEC 61082 / IEC 60364" FontSize="10" Foreground="#64748B" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                </Grid>
+            </Border>
+
+            <!-- ISSUES LIST -->
+            <Grid Grid.Row="2" Margin="16,10">
+                <ListView x:Name="LstIssues" Background="#FFFFFF" BorderBrush="#CBD5E1" BorderThickness="1">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Mức độ" Width="90">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Border CornerRadius="4" Padding="6,2" Background="{Binding SeverityBackground}">
+                                            <TextBlock Text="{Binding Severity}" FontWeight="Bold" FontSize="10" Foreground="{Binding SeverityForeground}" HorizontalAlignment="Center"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Mã Quy Tắc" Width="100" DisplayMemberBinding="{Binding ErrorCode}"/>
+                            <GridViewColumn Header="Tiêu Đề Lỗi" Width="220" DisplayMemberBinding="{Binding Title}"/>
+                            <GridViewColumn Header="Chi Tiết Vi Phạm" Width="260" DisplayMemberBinding="{Binding Details}"/>
+                            <GridViewColumn Header="Gợi Ý Khắc Phục" Width="140" DisplayMemberBinding="{Binding Suggestion}"/>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </Grid>
+
+            <!-- FOOTER -->
+            <Border Grid.Row="3" Background="#FFFFFF" BorderBrush="#E2E8F0" BorderThickness="0,1.2,0,0" CornerRadius="0,0,11,11" Padding="16,0">
+                <Grid VerticalAlignment="Center">
+                    <TextBlock Text="💡 Bấm 'Khoanh Vùng Lỗi' để vẽ vòng tròn đỏ đám mây vị trí lỗi trên CAD" FontSize="10.5" Foreground="#64748B" VerticalAlignment="Center"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Click="BtnClose_Click" Width="100" Height="34" Margin="0,0,10,0" Cursor="Hand" Background="#F1F5F9" BorderBrush="#CBD5E1" BorderThickness="1">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border CornerRadius="6" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                                        <TextBlock Text="Đóng" FontSize="11" FontWeight="SemiBold" Foreground="#475569" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+
+                        <Button Click="BtnMarkOnCad_Click" Width="230" Height="34" Cursor="Hand" Background="#DC2626" BorderThickness="0" Effect="{StaticResource GlowRed}">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border CornerRadius="6" Background="{TemplateBinding Background}">
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <TextBlock Text="🔍 " FontSize="13" Foreground="#FFFFFF"/>
+                                            <TextBlock Text="KHOANH VÙNG LỖI TRÊN CAD" FontSize="11" FontWeight="Bold" Foreground="#FFFFFF"/>
+                                        </StackPanel>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</Window>

@@ -1,0 +1,977 @@
+;;;==========================================================================================
+;;; “源泉设计” v6.7.2 原始命令及原始快捷键说明文件 yqshortcut.txt
+;;;------------------------------------------------------------------------------------------
+;;; 注：● 本文件不会运行，所有快捷键均可发动yqarch命令总览来修改；
+;;;     ● 命令星级 * - ***** 表示命令的使用频率和重要性；
+;;;     ● 原始快捷键设置着重于左手键；
+;;;==========================================================================================
+
+;;;------------------------------------------------------------------------------------------
+;;;------------            “源泉设计” 全部原始命令及原始快捷键              ---------------
+;;;------------                 设定在文件 user*\shortcut.yqs                 ---------------
+;;;------------------------------------------------------------------------------------------
+
+;;;------------------------------------- 系统设定工具 ---------------------------------------
+
+;;;类别    别名     命令原名                命令说明
+;;;         ↓         ↓                      ↓
+[系统设定] sys      yq_systemsetup          ;【系统设定】系列命令对话框发动程序
+
+[系统设定] yqsys    yq_sys_setting          ;当前用户系统配置(设置图层、文字样式等) ****
+[系统设定] yq       yqarch                  ;源泉设计命令总览 *****
+[系统设定] tba      yq_toolbarson           ;打开所有源泉工具栏(图形按钮) *
+[系统设定] tbaf     yq_toolbarsoff          ;关闭所有源泉工具栏(图形按钮) *
+
+[系统设定] yquser   yq_setuser              ;选择源泉设计当前用户(个性设置) *
+[系统设定] yqlang   yq_lang                 ;切换提示语言(英文/中文) *
+[系统设定] yqunits  yq_setunits             ;设定缺省绘图单位(毫米/厘米/分米/米/英寸) *
+[系统设定] yqmenu   yq_menu                 ;重新载入(更新)源泉设计附加菜单 *
+
+[系统设定] sd       yq_setdwgscale          ;设定图纸比例并缩放各种建筑符号 ***** 
+                                                                           (v6.6 修改的 ●●)
+[系统设定] tk       yq_dwgframe             ;绘制图框 **
+
+[系统设定] yqhelp   yq_help                 ;源泉设计详细帮助 *
+[系统设定] yqver    yq_ver                  ;源泉设计版本信息 *
+[系统设定] yqweb    yq_website              ;源泉设计下载更新网站 *
+[系统设定] yqabout  yq_about                ;关于源泉设计 *
+[系统设定] yqjz     yq_donate               ;赞助与支持 *
+
+[系统设定] yquninst yq_uninstall            ;在当前AutoCAD可用配置中卸载源泉设计 *
+
+;;;------------------------------------ 平面墙柱工具 ----------------------------------------
+
+[墙柱工具] www      yq_wallcolumn           ;【平面墙柱工具】系列命令对话框发动程序
+
+[墙柱工具] ax       yq_axisline             ;画轴线(用轴线层画直线) *
+[墙柱工具] zxw      yq_gridaxis             ;简单轴线网 **
+
+[墙柱工具] ww       yq_wall                 ;画自动墙，墙柱交叉处自动修剪墙体 *****
+[墙柱工具] TW       yq_trim_fix_wall        ;智能墙剪，墙柱交叉处自动修剪(重要) *****
+[墙柱工具] wwT      yq_wall_chgthk          ;修正墙体厚度(自动调节门窗厚度) ****
+[墙柱工具] Xww      yq_line2wall            ;轴线(线/圆弧/多段线)变墙,墙柱交接处自动修剪 ***
+[墙柱工具] wwO      yq_wall_cdoffset        ;平面墙体净距偏移 **
+
+[墙柱工具] wwA      yq_wall2axis            ;求墙中轴线 **
+[墙柱工具] wwF      yq_fill_wall            ;填充墙、柱 **
+
+[墙柱工具] zzR      yq_r_column             ;画方柱子，清空柱子内的墙体 ****
+[墙柱工具] zzC      yq_o_column             ;画圆柱子，清空柱子内的墙体 ****
+[墙柱工具] zzL      yq_l_column             ;画"L"型柱子，清空柱子内的墙体 ***
+[墙柱工具] zzT      yq_t_column             ;画"T"型柱子，清空柱子内的墙体 ***
+[墙柱工具] zzX      yq_c_column             ;画十字型柱子，清空柱子内的墙体 ***
+
+[墙柱工具] zzBZ     yq_axis_column          ;框选轴线，在所有选中的轴线交点上布置柱子 **
+[墙柱工具] xxzz     yq_pline2column         ;将多段线/圆/SOLID/填充变为柱子 **
+[墙柱工具] zzF      yq_fill_column          ;填充柱子 **
+
+[墙柱工具] EW       yq_erase_wall           ;删除平面墙/柱/门窗，自动修补删后墙体 ****
+
+;;;------------------------------------- 平面门窗工具 ---------------------------------------
+
+[门窗工具] mmm      yq_windowdoor           ;【平面门窗工具】系列命令对话框发动程序
+
+[门窗工具] AD       yq_hole_door            ;墙或轴线开普通门 *****
+[门窗工具] AD2      yq_door                 ;两点画普通门 ***
+[门窗工具] AW       yq_hole_win             ;墙或轴线开普通窗 *****
+[门窗工具] AW2      yq_win                  ;两点画普通窗 ***
+[门窗工具] TD       yq_windoor_replace      ;普通门窗置换(从门窗图库中选择) ****
+[门窗工具] HO       yq_hole                 ;墙上开门洞 **
+
+[门窗工具] ADT      yq_hole_pocketdoor      ;墙或轴线开门套门 *****          (v6.5 修改的 ●)
+[门窗工具] ADT2     yq_pocketdoor           ;两点画门套门 ***                (v6.5 修改的 ●)
+[门窗工具] TDD      yq_pocketdoor_replace   ;替代为门套门 ****
+
+[门窗工具] WD       yq_hole_window          ;墙或轴线开参数窗 *****
+[门窗工具] WD2      yq_window               ;两点画参数窗 ***
+[门窗工具] TDW      yq_window_replace       ;替代为参数窗 ****
+
+[门窗工具] WDZ      yq_hole_cornerwindow    ;墙上开转角窗 *****
+[门窗工具] TDZ      yq_cwindow_replace      ;转角窗替换样式 ****
+
+[门窗工具] MKX      yq_doorsill             ;门槛线管理 **
+[门窗工具] MDX      yq_dooropening          ;门洞线管理 **
+
+[门窗工具] xWD      yq_line2window          ;线变平面窗 **
+[门窗工具] CW       yq_width_windoor        ;修改门窗宽度，自动修改墙垛 **** 
+                                                                             (v6.5 修改的 ●)
+[门窗工具] VW       yq_move_windoor         ;左右平移门窗，自动修改墙垛 ****
+
+[门窗工具] XF       yq_repair               ;修正门窗(修复位置、厚度并兼容天正3)和柱子 ****
+[门窗工具] vX       yq_moveandfix           ;移动并修正门窗柱子和标高符 ****
+[门窗工具] cX       yq_copyandfix           ;复制并修正门窗柱子和标高符 ****
+[门窗工具] rrX      yq_mirrorandfix         ;镜像并修正门窗柱子和标高符 ****
+
+[门窗工具] WBH      yq_winSerialNumber      ;门窗编号管理 ***
+
+;;;------------------------------------- 绘制建筑构件 ---------------------------------------
+
+[建筑构件] ggg      yq_components           ;【建筑构件】系列命令对话框发动程序
+
+[建筑构件] gj       yq_sldcomponents        ;建筑构件集 *****
+
+[建筑构件] LTF      yq_escalator            ;绘制自动扶梯平面立面 ****
+[建筑构件] LTJ      yq_staircase_plan       ;绘制矩形楼梯间平面 ****
+[建筑构件] LTA      yq_arcstair_plan        ;绘制弧形楼梯平面 ***
+[建筑构件] DTJ      yq_lift_plan            ;绘制电梯轿厢平面 **
+
+[建筑构件] adE      yq_door_elevation       ;绘制平开门立面 ****             (v6.5 新添的 ●)
+[建筑构件] adS      yq_door_section         ;绘制平开门剖面 ****           (v6.6 新添的 ●●)
+[建筑构件] wtS      yq_baywin_section       ;绘制凸窗剖面 ****             (v6.6 新添的 ●●)
+[建筑构件] wdE      yq_window_elevation     ;绘制窗户立面 ****
+[建筑构件] wdS      yq_window_section       ;绘制窗户剖面 **
+[建筑构件] BY       yq_shutter              ;绘制百叶窗立面/剖面 **
+[建筑构件] mBL      yq_curtainglass         ;幕墙玻璃剖面 **               (v6.6 新添的 ●●)
+
+[建筑构件] wdD      yq_lines2winelev        ;线框变窗户立面 ***
+[建筑构件] t2w      yq_sn2winelev           ;门窗编号变门窗立面框 **       (v6.6 修改的 ●●)
+[建筑构件] MQ       yq_curtainwall          ;绘制幕墙立面 ***
+[建筑构件] MQS      yq_glass_partition      ;绘制玻璃幕/隔墙剖面 **        (v6.6 新添的 ●●)
+[建筑构件] LG       yq_banister             ;扶手栏杆立面 ***
+
+[建筑构件] LTP      yq_staircase_section    ;绘制楼梯间剖面 ****
+[建筑构件] lxtb     yq_step_section         ;绘制踏步剖面(拉线踏步)**
+
+[建筑构件] FSC      yq_waterproof           ;绘制防水层剖面 **
+[建筑构件] FN       yq_stucco               ;绘制粉刷层剖面 *
+
+;;;------------------------------------- 绘制装饰构件 ---------------------------------------
+
+[装饰构件] zzz      yq_decoration           ;【装饰构件】系列命令对话框发动程序
+
+[装饰构件] zs       yq_slddecoration        ;装饰构件集 *****
+
+[装饰构件] JJ       yq_autofurniture        ;家具洁具平面布置 *****
+[装饰构件] WC       yq_ArrangeWC            ;公共厕所浴室平面布置 *****      (v6.5 修改的 ●)
+
+[装饰构件] YG       yq_chestplan            ;衣柜平面 **
+[装饰构件] CLP      yq_curtainplan          ;窗帘平面 **                   (v6.6 改名的 ●●)
+[装饰构件] SGX      yq_plasterstringplan    ;偏移石膏线平面(偏移多段线)**
+[装饰构件] GZ       yq_cupboardplan         ;简易柜子平面 *
+[装饰构件] GZE      yq_cupboardelev         ;简易柜子立面 **                 (v6.5 新添的 ●)
+
+[装饰构件] STB      yq_stonetile            ;绘制石头板及海棠角剖面 ***
+[装饰构件] MF       yq_woodenframe          ;绘制木方架子剖面 *
+[装饰构件] CBZ      yq_array_boards         ;层板阵列 **                   (v6.6 新添的 ●●)
+
+[装饰构件] MGB      yq_blockboard           ;绘制木工板剖面 *
+[装饰构件] JB       yq_plywood              ;绘制夹板剖面 *
+[装饰构件] MDB      yq_woodflooring         ;绘制木地板剖面 *
+[装饰构件] BL       yq_glass                ;绘制玻璃剖面 *
+[装饰构件] SGB      yq_gypsumboard          ;绘制石膏板剖面 ***
+[装饰构件] THDC     yq_lighttrough          ;绘制暗藏灯槽剖面 ***
+[装饰构件] GQ       yq_partitionwall        ;绘制轻钢龙骨石膏板隔墙平面 **
+
+[装饰构件] XG       yq_formedsteel          ;绘制型钢截面 *
+[装饰构件] JGJ      yq_ironframe            ;绘制角钢架子剖面 *
+
+[装饰构件] BWM      yq_insulation           ;绘制保温棉剖面 *
+[装饰构件] HF       yq_weldingline          ;绘制焊缝 *
+[装饰构件] RG       yq_hose                 ;绘制软管 *
+[装饰构件] GX       yq_pipe                 ;绘制管线 *                    (v6.6 新添的 ●●)
+
+[装饰构件] KD       yq_boardhole            ;板上方孔洞 *
+[装饰构件] YZX      yq_cylindershadow       ;圆柱影线 *
+[装饰构件] BSK      yq_backbolthole         ;画背栓孔 **                   (v6.6 新添的 ●●)
+
+[装饰构件] DJ       yq_autolamps            ;平面灯具布置 *
+[装饰构件] MTX      yq_randomspread         ;满天星随机铺满 *
+[装饰构件] LM       yq_indoorelev           ;生成室内立面框架 ***
+
+;;;-------------------------------------- 绘制建筑符号 --------------------------------------
+
+[建筑符号] fff      yq_archsymbols          ;【建筑符号】系列命令对话框发动程序
+
+[建筑符号] fh       yq_sldsymbols           ;建筑符号集 *****
+
+[建筑符号] aZH      yq_auto_axis_dim        ;选择轴线自动布置轴号和二道尺寸线 *****
+[建筑符号] ZH       yq_symbol_axis_c        ;按轴线连续绘制轴号和二道尺寸线 ****
+
+[建筑符号] ZB       yq_geodesic_coordinates ;建筑/测量坐标 ****
+[建筑符号] BG       yq_designed_elevation   ;建筑/结构标高 ****            (v6.6 修改的 ●●)
+[建筑符号] xbg      yq_Contour_Elevation    ;等高线标高 *
+
+[建筑符号] pqf      yq_symbol_sectionPlane  ;平面剖切符号 **               (v6.6 修改的 ●●)
+[建筑符号] dmf      yq_symbol_sectionCutter ;断面符号 **                   (v6.6 修改的 ●●)
+[建筑符号] PD       yq_symbol_gradient      ;绘制坡度符号 **
+[建筑符号] ZX       yq_disconnection_line   ;绘制折断线 **
+[建筑符号] GPX      yq_pipecutting          ;绘制圆管剖线 *
+[建筑符号] dcz      yq_symmetry_axis        ;两点绘制对称轴 *
+[建筑符号] zxx      yq_central_line         ;绘制中心线 *                    (v6.5 修改的 ●)
+
+[建筑符号] aCC      yq_wiresurround         ;画电线半圆跨线 *
+[建筑符号] eCC      yq_erasesurround        ;删电线半圆跨线 *
+
+[建筑符号] aaw      yq_bentarrow            ;弯箭头 *
+[建筑符号] aae      yq_entrancearrow        ;出入口箭头 *
+
+;;;-------------------------------------- 绘制索引符号 --------------------------------------
+
+[索引符号] yyy      yq_indexers             ;【索引符号】系列命令对话框发动程序
+
+[索引符号] sy       yq_sldindexers          ;索引符号集 *****
+
+[索引符号] sy1      yq_identifier1          ;剖切索引号1 ***
+[索引符号] sy2      yq_identifier2          ;剖切索引号2 ***
+[索引符号] sy3      yq_identifier3          ;剖切索引号3 ***               (v6.6 新添的 ●●)
+
+[索引符号] i0       yq_elevindexer4in1      ;立面索引号4合1 ***
+[索引符号] i1       yq_elevindexer1         ;立面索引号1 *
+[索引符号] i2       yq_elevindexer2         ;立面索引号2 *
+[索引符号] i3       yq_elevindexer3         ;立面索引号3 *
+[索引符号] i4       yq_elevindexer4         ;立面索引号4 *
+
+[索引符号] xt1      yq_detailsymbol1        ;详图符号1 **
+[索引符号] xt2      yq_detailsymbol2        ;详图符号2 **
+
+[索引符号] s1       yq_indexer1             ;自设索引符1 ***
+[索引符号] s2       yq_indexer2             ;自设索引符2 ***
+[索引符号] s3       yq_indexer3             ;自设索引符3 ***
+[索引符号] s4       yq_indexer4             ;自设索引符4 ***
+[索引符号] s5       yq_indexer5             ;自设索引符5 ***
+[索引符号] s6       yq_indexer6             ;自设索引符6 ***
+[索引符号] s7       yq_indexer7             ;自设索引符7 ***
+[索引符号] s8       yq_indexer8             ;自设索引符8 ***
+[索引符号] s9       yq_indexer9             ;自设索引符9 ***
+
+[索引符号] aax      yq_leader               ;箭头引线 ****                 (v6.6 新添的 ●●)
+[索引符号] aaxx     yq_mptleader            ;多点引线 ****                 (v6.6 新添的 ●●)
+[索引符号] aayy     yq_mptleader_y          ;竖直多点引线 ****             (v6.6 新添的 ●●)
+[索引符号] aav      yq_leader_vertexes      ;引线增删顶点 ***                (v6.5 新添的 ●)
+[索引符号] aaj      yq_leader_addarrow      ;引线加箭头 ***                (v6.6 新添的 ●●)
+
+[索引符号] bt       yq_drawingtitle         ;装饰图标题文字 ***
+
+;;;---------------------------------------- 统计工具 ----------------------------------------
+
+[统计工具] jjj      yq_statistics           ;【统计工具】系列命令对话框发动程序
+
+[统计工具] tj       yq_sldstatistics        ;统计选择集 *****
+
+[统计工具] ss       xc_ss                   ;选择易(小菜作品,图元过滤统计工具) *****
+
+[统计工具] aBH      yq_autoserialnumber     ;自动编号(可用于房间、车位等) ***** (v6.6 修改的 ●●)
+[统计工具] Kbg      yq_emptytable           ;绘制等宽空表格 **
+[统计工具] bgZ      yq_text2center          ;表格单元文字(编号)居中 **     (v6.6 改名的 ●●)
+[统计工具] tMJ      yq_calc_cellarea        ;统计区域面积 ***              (v6.6 修改的 ●●)
+[统计工具] T2E      yq_texts2excel          ;输出到表格软件 *****          (v6.6 修改的 ●●)
+[统计工具] Zbg      yq_texts2acadTable      ;文字表格转Acad表格图元 ** 
+
+[统计工具] MCB      yq_windoor_list         ;统计门窗表(可分层统计) *****
+[统计工具] bbL      yq_block_list           ;统计图块(含缩略图) **         (v6.6 改名的 ●●)
+[统计工具] sxL      yq_blockatt_list        ;统计块属性和动态参数 **       (v6.6 修改的 ●●)
+[统计工具] zZB      yq_coordinate_list      ;找坐标并列表(坐标收集器) **   (v6.6 改名的 ●●)
+[统计工具] ttQ      yq_string_list          ;提取收集各种字串并列表 (文字统计) *** 
+                                                                           (v6.6 改名的 ●●)
+[统计工具] CLB      yq_material_list        ;提取材料索引号生成材料表 **   (v6.6 新添的 ●●)
+
+[统计工具] MJ       yq_calc_sumarea         ;统计输出面积、总面积, 面积与文字动态关联 ***
+[统计工具] pMJ      yq_asso_area            ;建立曲线与面积文字的关联 **
+[统计工具] ZC       yq_calc_perimeter       ;统计输出周长、总周长, 周长与文字动态关联 **
+[统计工具] pZC      yq_asso_perimeter       ;建立曲线与周长文字的关联 **
+[统计工具] ZL       yq_calweight            ;根据密度计算重量 **           (v6.6 新添的 ●●)
+
+[统计工具] ftb      yq_AreaStat             ;建筑面积简单分摊表 **
+
+[统计工具] +        yq_calc_addition        ;计算输出多个数字的和 **
+[统计工具] -        yq_calc_subtration      ;计算输出被减数与多个数字的差 *
+[统计工具] *        yq_calc_multiplication  ;计算输出多个数字的乘积 *
+[统计工具] /        yq_calc_division        ;计算输出被除数除以多个除数的商 *
+[统计工具] JS       yq_calc_expression      ;计算数学表达式输出结果 *
+
+;;;-------------------------------------- 文字内容工具 --------------------------------------
+
+[文字内容] ttt      yq_textcontent          ;【文字内容】系列命令对话框发动程序
+
+[文字内容] DIC      yq_userdict             ;用户词库管理 *****
+[文字内容] FY       yq_translate            ;中英翻译选中文字 **
+[文字内容] EQ       yq_updtextlist          ;列表刷新文字 *                (v6.6 新添的 ●●)
+
+[文字内容] tt       yq_text                 ;输入单行文本 ****
+[文字内容] ttE      yq_superedit            ;编辑各种文字(包括块内文字、标注、属性等) ****
+[文字内容] ttG      yq_dict2text            ;用字典换字 **
+[文字内容] CTT      yq_hz_text              ;新建或输入文本 ***
+[文字内容] CED      yq_hz_edit              ;编辑或输出文本 ***
+
+[文字内容] ttR      yq_text_replace         ;文字替换或计算替换 *****      (v6.6 修改的 ●●)
+[文字内容] ttRS     yq_replace_substrs      ;一一对应替换多个文字子串 **   (v6.6 新添的 ●●)
+
+[文字内容] ttA      yq_text_append          ;连接多个文字 ***
+[文字内容] ttJ      yq_jtext                ;分行合并多个文字 **
+[文字内容] ttB      yq_text_break2          ;打断文字为两段 ***
+[文字内容] ttBB     yq_etext                ;分离文字为字符 *
+
+[文字内容] 1234     yq_array_numbers        ;递增复制数值文字(兼容轴号) **
+[文字内容] INC      yq_increase_numbers     ;增量数值文字(兼容轴号) **
+[文字内容] ttz      yq_increase_text        ;递增数字文字(兼容轴号) **     (v6.6 新添的 ●●)
+[文字内容] ttF      yq_findtext             ;寻找特定文字 **               (v6.6 修改的 ●●)
+
+;;;-------------------------------------- 文字其他工具 --------------------------------------
+
+[文字其他] tttt     yq_textother            ;【文字其他】系列命令对话框发动程序
+
+[文字其他] ttN      yq_sldstyles            ;新建文字样式 ***
+
+[文字其他] ttS      yq_text_cstyle          ;设定文字的当前样式 ***
+[文字其他] ttU      yq_text_update          ;选样式更新文字 ***
+[文字其他] ttRF     yq_replacefonts         ;用预设文字档替换空缺的文字档 **
+
+[文字其他] ttC      yq_changetext           ;批量文字修改(排版/对齐/文字加框)等 *****
+[文字其他] ttW      yq_text_width           ;改变文字的字高或宽高比 **
+[文字其他] ttPX     yq_reordertexts         ;文字(表格)重新排序 ***        (v6.6 新添的 ●●)
+
+[文字其他] ttL      yq_text_alignmentleft   ;将文字对正方式改成左下(不改变文字的位置) *
+[文字其他] ttLL     yq_text_alignmentright  ;将文字对正方式改成右下(不改变文字的位置) *
+[文字其他] ttRR     yq_text_restoremirr     ;文字/图块的镜像/角度恢复 *    (v6.6 修改的 ●●)
+
+[文字其他] ttSX     yq_text2attdef          ;转换为单行文字或属性定义 *
+[文字其他] ttX      yq_txtexp               ;炸碎文字为线段 *              (v6.6 修改的 ●●)
+
+;;;-------------------------------------- 绘制尺寸线 ----------------------------------------
+
+[标注绘制] ddd      yq_dimdraw              ;【标注绘制】系列命令对话框发动程序
+
+[标注绘制] dd       yq_dim_linear           ;尺寸标注-水平垂直标注 ****
+[标注绘制] ddX      yq_dim_aligned          ;尺寸标注-对齐标注 **
+[标注绘制] ddB      yq_dim_baseline         ;尺寸标注-基线标注 **
+[标注绘制] ddR      yq_dim_radius           ;尺寸标注-半径标注 **
+[标注绘制] ddJ      yq_dim_diameter         ;尺寸标注-直径标注 *
+[标注绘制] ddAN     yq_dim_angular          ;尺寸标注-角度标注 *
+[标注绘制] ddAR     yq_dim_arc              ;尺寸标注-弧长标注 **
+[标注绘制] ddA3     yq_dim_arc3pts          ;尺寸标注-3点弧长标注 **       (v6.6 新添的 ●●)
+[标注绘制] ddQ      yq_dim_qdim             ;尺寸标注-快速标注 **
+
+[标注绘制] ddZ      yq_dim_closedspace      ;尺寸标注-闭合空间自动标注 ****
+[标注绘制] ddZZ     yq_dim_pline            ;尺寸标注-闭合多段线自动标注 ****
+[标注绘制] ddSS     yq_dim_polygonsides     ;尺寸标注-批量标注多段线/线段边长 *** 
+                                                                           (v6.6 新添的 ●●)
+
+[标注绘制] ddW      yq_dim_axiswd           ;尺寸标注-门窗及轴线标注 ***
+[标注绘制] ddww     yq_dim_blocks           ;尺寸标注-图块及内墙标注 **
+[标注绘制] ddGZ     yq_dim_cupboard         ;尺寸标注-立面柜子标注 *
+
+[标注绘制] ddST     yq_dim_stairs           ;尺寸标注-楼梯踏步等分尺寸标注 *
+[标注绘制] ddVD     yq_dim_dvd              ;尺寸标注-定数等分尺寸标注 *   (v6.6 新添的 ●●)
+
+[标注绘制] ddXX     yq_dim_intpts           ;尺寸标注-拉线按交点标注 **
+[标注绘制] ddCC     yq_dim_curveintpts      ;尺寸标注-找曲线交点标注弦长 *
+[标注绘制] ddAC     yq_dim_arcparts         ;尺寸标注-找圆弧交点标注弧长 *
+[标注绘制] ddBB     yq_dim_mergebase        ;尺寸标注-合并绘制基线标注 **
+[标注绘制] ddP      yq_dim_rearrange        ;尺寸标注-选数字排列重建标注 **
+
+[标注绘制] ddER     yq_dim_switchlayer      ;切换标注图层 *
+[标注绘制] ddS      yq_dim_cstyle           ;设定当前尺寸标注样式 ***
+[标注绘制] ddU      yq_dim_update           ;选样式更新标注 ***
+[标注绘制] ddYQ     yq_dim_switchstyle      ;临时切换是否强制使用源泉标注样式 *
+
+;;;-------------------------------------- 修改尺寸线 ----------------------------------------
+
+[标注修改] dddd     yq_dimmodify            ;【标注修改】系列命令对话框发动程序
+
+[标注修改] ddAA     yq_dim_adjust           ;线性标注文字自动避让 ***
+
+[标注修改] ddE      yq_dim_extend           ;移动标注脚点 ***
+[标注修改] dd2      yq_dim_divide           ;多功能标注+断开或扩展标注为多个 **** 
+                                                                           (v6.6 修改的 ●●)
+[标注修改] dd1      yq_dim_merge            ;合并多个尺寸标注 ****
+[标注修改] ddV      yq_dim_align            ;排齐标注线、脚点 ***
+[标注修改] ddVV     yq_dim_aligndimline     ;排齐标注线 **
+[标注修改] ddL      yq_dim_alignpoints      ;排齐脚点 **
+
+[标注修改] ddLE     yq_dim_extlen           ;统一标注界线长度 *
+[标注修改] ddY      yq_dim_adjustbase       ;修正基线标注间距 **
+[标注修改] ddYY     yq_dim_batchbase        ;批量修正基线标注间距 ***
+[标注修改] dd2E     yq_dim_showextline      ;恢复显示标注的两条界线 *
+[标注修改] ddRA     yq_dim_switch_ar        ;转换对齐标注或转角标注 *
+
+[标注修改] ddFZ     yq_dim_reverse          ;翻转标注文字 **
+[标注修改] ddF      yq_dim_fix              ;固化标注文字 **
+[标注修改] ddRE     yq_dim_recover          ;标注文字恢复原值 **
+[标注修改] ddM      yq_dim_mmtom            ;标注单位切换到米 **
+[标注修改] dd0      yq_dim_round            ;修改标注精度(取整) **
+[标注修改] ddN      yq_dim_newtext          ;给多个标注键入新标注文字 *
+
+[标注修改] ddT      yq_dim_tedit            ;标注文字移位 **
+[标注修改] ddH      yq_dim_home             ;标注文字位置复位 **
+
+;;;--------------------------------------- 曲线工具 -----------------------------------------
+
+[曲线工具] xxx      yq_curvetools           ;【曲线工具】系列命令对话框发动程序
+
+[曲线工具] xxV      yq_pline_vertexes       ;多段线增删顶点 ***
+[曲线工具] xxY      yq_pline_optimize       ;优化(减少)多段线顶点 ***      (v6.6 修改的 ●●)
+
+[曲线工具] xxA      yq_line2arc             ;线弧转换及曲度调整 **
+[曲线工具] xxW      yq_plsegment_width      ;修改多段线线段宽度 *
+[曲线工具] xxS      yq_plsegment_offset     ;偏移多段线的一段 *
+
+[曲线工具] xxJ      yq_pline_join           ;连接线段、多段线和圆弧为多段线 ****
+[曲线工具] xxC      yq_pline_close          ;连接线段、多段线和圆弧为闭合多段线 ***
+[曲线工具] xxFZ     yq_pline_reverse        ;反转曲线方向 **                 (v6.5 改名的 ●)
+[曲线工具] xxF      yq_wpline2wireframe     ;将有厚度的多段线变线框 **
+[曲线工具] LJX      yq_connectvertexes      ;连接两根多段线的顶点 *
+
+[曲线工具] lk       yq_outline              ;求边界线/外轮廓线 ***
+[曲线工具] nlk      yq_innercontours        ;求内部轮廓线 **
+[曲线工具] nlks     yq_inneroffset          ;求内轮廓+偏移 **              (v6.6 新添的 ●●)
+[曲线工具] hw       yq_tofreehand           ;将线/多段线转换为手绘效果 **
+
+[曲线工具] DF       yq_break_equal          ;等分曲线 ***                    (v6.5 修改的 ●)
+[曲线工具] DFx      yq_2ptsdivide           ;两点等分 **                     (v6.5 修改的 ●)
+
+[曲线工具] e2a      yq_ellipse2arc          ;用较少圆弧模拟椭圆 **
+[曲线工具] cca      yq_spline2apline        ;将样条曲线和椭圆转换为圆弧多段线 **
+                                                                           (v6.6 修改的 ●●)
+[曲线工具] ccx      yq_spline2xpline        ;将样条曲线和椭圆转换为线段多段线 **
+                                                                           (v6.6 修改的 ●●)
+[曲线工具] ccxx     yq_curve2bowstring      ;等弦长分曲线 *                (v6.6 修改的 ●●)
+[曲线工具] ccy      yq_CurveProjection      ;求曲线投影线 *
+
+;;;------------------------------------- 特殊工具 -------------------------------------------
+
+[特殊工具] eee      yq_extratools           ;【特殊工具】系列命令对话框发动程序
+
+[特殊工具] vv       yq_numberlines          ;数字行管理与应用(图元偏移复制等) ****
+
+[特殊工具] xd       yq_doubleline           ;绘制双线 *****
+[特殊工具] TX       yq_trimdoubleline       ;修剪双线 *****
+[特殊工具] xdT      yq_dlineThickness       ;修正双线厚度 ***
+[特殊工具] xxd      yq_2doubleline          ;单线变双线 ***
+[特殊工具] xdo      yq_dline_offset         ;双线净距偏移 *                (v6.6 新添的 ●●)
+[特殊工具] CE       yq_doublelineAxis       ;求普通双线中轴线 **
+
+[特殊工具] DQ       yq_alignment            ;对齐图元 ****
+[特殊工具] aaDQ     yq_leaderalign          ;箭头引线对齐 ***              (v6.6 修改的 ●●)
+[特殊工具] tkTZ     yq_alignframe           ;图框按线长调整 *
+
+[特殊工具] bD       yq_BreakByKnife         ;画线切割 ***
+[特殊工具] bDD      yq_BreakByKnives        ;多线切割 ***
+[特殊工具] bX       yq_BreakAndErase        ;打断删除框内图元 ***
+[特殊工具] QG       yq_pastedetaildwg       ;切割提取大样图 ***
+
+[特殊工具] TF       yq_transform            ;四边形变形及其他变形 *****
+
+[特殊工具] JX       yq_boundingbox          ;求图元矩形外框、中心线或中心点 *
+[特殊工具] WK       yq_toboundingbox        ;变矩形外框 *
+[特殊工具] xJX      yq_minBoundingbox       ;求最小包裹矩形或外接圆 **     (v6.6 修改的 ●●)
+
+[特殊工具] FZ       yq_overturn             ;随意翻转(可用于门窗改方向) ****
+[特殊工具] JH       yq_exchangelocation     ;图元交换位置(若文字仅交换内容) *
+[特殊工具] dzBZ     yq_copy2points          ;按点阵布置图元 **
+[特殊工具] FZX      yq_assistantlines       ;快捷辅助线 **
+
+;;;------------------------------------- 修改增强工具 ---------------------------------------
+
+[修改增强] eeee     yq_modifyplus           ;【修改增强】系列命令对话框发动程序
+
+[修改增强] aSC      yq_scale_each           ;图元原地缩放 **
+[修改增强] aRT      yq_rotate_each          ;图元原地旋转 **
+[修改增强] aMI      yq_mirror_each          ;图元原地镜像(以自身的几何中心) * 
+                                                                             (v6.5 新添的 ●)
+[修改增强] scX      yq_scalexyz             ;XY不等比缩放 **
+
+[修改增强] cv       yq_dynamiccopy          ;动态拷贝 **
+[修改增强] stD      yq_stretch_d            ;定距拉伸 *
+[修改增强] vD       yq_move_d               ;定距移动 *
+[修改增强] vR       yq_move_memorial        ;记忆移动 *
+[修改增强] cR       yq_copy_memorial        ;记忆拷贝 *
+
+[修改增强] SF       yq_superoffset          ;同时偏移 **
+[修改增强] exX      yq_ExtendToPoint        ;延长线段、多段线、标注、圆弧到指定点或线段 ***
+
+
+[修改增强] FF       yq_join_arcline         ;连接线段、圆弧和多段线(同轨则合并) ***
+[修改增强] FX       yq_connect2glines       ;同时延长对接两组线段 ***
+
+[修改增强] ZZ       yq_quickwipeout         ;快速加减遮罩 ***              (v6.6 修改的 ●●)
+
+[修改增强] bA       yq_breakall             ;所有交点齐打断 ***
+[修改增强] TE       yq_breakerase           ;框选打断并删除框内短线 *
+[修改增强] BB       yq_break_at             ;一点打断 *
+[修改增强] BF       yq_break_at2            ;二点打断 *
+
+;;;------------------------------------- 检查修正工具 ---------------------------------------
+
+[检查修正] ccc      yq_checkcorrect         ;【检查修正】系列命令对话框发动程序
+
+[检查修正] Z0       yq_clear_z              ;拍平图元(将图元移至z轴为0的平面) **
+[检查修正] bbZ0     yq_block_z0             ;拍平图块(将块内图元移至z轴为0的平面) **
+
+
+[检查修正] RD       yq_remove_duplicate     ;消除重叠的相同图元 ***
+[检查修正] LU       yq_lineunion            ;合并重叠线 **                 (v6.6 恢复的 ●●)
+[检查修正] LX       yq_linkLineArc          ;批量连接断线、断圆弧线 ***
+[检查修正] LC       yq_lineclean            ;清除点、空文字、短线段和短多段线 *
+[检查修正] JZ       yq_adjust               ;图元校正对齐到网格 **
+[检查修正] xgz      yq_oblique_correction   ;线段斜改正 **                 (v6.6 新添的 ●●)
+
+[检查修正] xHB      yq_merge                ;杂项合并(图层/文字样式/标注样式)  ***
+[检查修正] puA      yq_purgeall             ;快速清理无用项目(无用的图块、层、线形等) **
+[检查修正] puF      yq_purgefiles           ;清理(purge)指定文件夹下所有.dwg文件的无用项目 *
+
+[检查修正] CYS      yq_checkcolor           ;查图元颜色号 *
+[检查修正] BPX      yq_findNonOrthoLines    ;找出与UCS轴线接近但不正交的线段 *
+[检查修正] UM       yq_ucsmatch             ;找出与WCS平面不平行的图元 *
+[检查修正] BCZ      yq_checkOrthoaxis       ;线段垂直检测 *
+
+[检查修正] YX       yq_revcloud             ;修订云线 *
+[检查修正] STK      yq_CommentFrame         ;矩形审图框 *                (v6.7 新添的 ●●●)
+
+;;;-------------------------------------- 图块、图库管理 ------------------------------------
+
+[图块工具] bbb      yq_blocktools           ;【图块工具】系列命令对话框发动程序
+
+[图块工具] zw       yq_heaptrees            ;成片乔灌木 **
+[图块工具] hj       yq_landscape            ;环境分析符号 ****
+
+[图块工具] bb0      yq_block2bylayer        ;重设图块内图层、颜色 **     (v6.7 修改的 ●●●)
+[图块工具] bbI      yq_blockbasepoint       ;图块改基点,更新后现有同名块位置不动 **
+[图块工具] bbR      yq_block2newname        ;图块改名 **
+[图块工具] bbG      yq_block_batchrename    ;图块批量改名 *                (v6.6 修改的 ●●)
+[图块工具] bbD      yq_quickdetailblock     ;快速制作大样图图块 **
+[图块工具] bbS      yq_blockscale           ;设置图块(图框)比例 *
+[图块工具] bbW      yq_block_writeout       ;批量导出图块文件 *
+[图块工具] bbTD     yq_replacebydwg         ;用dwg替代图中同名块 **        (v6.6 新添的 ●●)
+
+[图块工具] bbN      yq_quicknewblock        ;快速制作一个新图块 **
+[图块工具] bbA      yq_block_add            ;往现有图块中加入图元 *
+[图块工具] bbE      yq_block_remove         ;删除块中一个图元 *
+[图块工具] bbC      yq_block_copy           ;从现有图块中复制部分图元 *
+[图块工具] bbZZ     yq_blockwipeout         ;图块加减遮罩 **               (v6.6 修改的 ●●)
+
+[图块工具] bbJM     yq_create_minsert       ;产生一个匿名多重引用块(简单加密) *
+[图块工具] bbX      yq_explode_minsert      ;炸碎图块(或匿名多重引用块) *
+[图块工具] bbXX     yq_explode_nblock       ;王炸嵌套块 **                 (v6.6 新添的 ●●)
+
+[图块工具] bbsx     yq_blocktext2att        ;块中文字转为属性 **   
+[图块工具] sxG      yq_modify_att           ;修改块内属性域 ***
+[图块工具] sxZ      yq_increase_att         ;递增块内属性域(多用于图框图号增量) ***
+[图块工具] sxC      yq_changeatts           ;批量处理块属性 ***
+[图块工具] sxT      yq_blockatt2text        ;提取块内属性为文字(不打碎块) **
+[图块工具] sxE      yq_erase_blkatt         ;删除块内属性 *
+
+[图块工具] KK       yq_blocks               ;内部图库-主要收集动态块 ***** (v6.6 新添的 ●●)
+[图块工具] BV       yq_blockviewer          ;用户图库管理 *****
+[图块工具] BV1      yq_blockviewer1         ;用户图库管理 ***
+[图块工具] BV2      yq_blockviewer2         ;用户图库管理 ***
+[图块工具] BV3      yq_blockviewer3         ;用户图库管理 ***
+
+;;;------------------------------------- 填充、线型工具 -------------------------------------
+
+[填充线型] hhh      yq_hatchingtools        ;【填充工具】系列命令对话框发动程序
+
+[填充线型] hhsc     yq_hatchkeys            ;设置填充图案快捷键 **         (v6.6 新添的 ●●)
+[填充线型] xtc      yq_hatchingscale        ;修改填充及填充图案比例 ***
+[填充线型] TC       yq_hatch_quick          ;快捷填充 ****
+[填充线型] TCT      yq_hatch_match          ;选现有图案作为模板填充 ***
+[填充线型] TCC      yq_hatch_slide          ;参数填充及幻灯片填充 *****    (v6.6 修改的 ●●)
+
+[填充线型] hhI      yq_hatch_newbase        ;重设或移动填充图案基准点 **
+[填充线型] hhA      yq_hatch_angle          ;修改填充角度 **               (v6.6 修改的 ●●)
+[填充线型] hhB      yq_hatch_border         ;重建填充图案边界 *
+[填充线型] hhJ      yq_hatch_clipping       ;剪裁填充图案 **
+[填充线型] hhX      yq_hatch_split          ;拆分填充图案 *
+[填充线型] hhU      yq_hatch_union          ;合并填充图案 *
+[填充线型] hhGL     yq_hatch_disasso        ;去除填充关联 *
+
+[填充线型] MP       yq_mkpat                ;制作Hatch填充图案用的.pat文件(1mm重复) ****
+[填充线型] MP1      yq_mkpat1               ;制作Hatch填充图案用的.pat文件(1:1重复) ****
+[填充线型] MPP      yq_mkpat_byhatch        ;提取现有填充图案制作.pat文件 ***
+
+[填充线型] ltsc     yq_ltypekeys            ;设置转换线型快捷键(不处理块内图元) ** 
+                                                                           (v6.6 新添的 ●●)
+[填充线型] xt       yq_ltscale              ;修改对象的线型及线型比例 ***
+[填充线型] xtS      yq_ltswitch             ;切换线型(处理块内图元) **
+[填充线型] pLTS     yq_putltscale           ;替换同线型的比例 **           (v6.6 新添的 ●●)
+[填充线型] mLT      yq_mklinetype           ;制作字符线型 ***
+[填充线型] lLT      yq_loadlinetype         ;载入线型 **
+
+;;;-------------------------------------- 图层设定工具 --------------------------------------
+
+[图层工具] lll      yq_layertools           ;【图层工具】系列命令对话框发动程序
+
+[图层工具] erC      yq_layer_2current       ;选图元改到当前层 **
+[图层工具] erN      yq_layer_new            ;新建图层(或预定图层) **
+[图层工具] erS      yq_layer_current        ;设定当前图层 ***
+[图层工具] erR      yq_layer_saverestore    ;保存与恢复图层开关状态 *
+
+[图层工具] erD      yq_layer_iso            ;关闭非选图层(保留打开所选图层，关闭其他图层) ***
+[图层工具] erF      yq_layer_off            ;关闭图层 ***                    (v6.5 修改的 ●)
+[图层工具] erAF     yq_layer_off_all        ;关闭全部图层(除当前层) ***
+[图层工具] erA      yq_layer_on             ;打开图层 ***
+[图层工具] erAA     yq_layer_on_all         ;打开全部图层 ***
+[图层工具] erV      yq_layer_on2off         ;切换全部图层开关 *
+
+[图层工具] erL      yq_layer_lock           ;锁定图层 *                      (v6.5 修改的 ●)
+[图层工具] erDL     yq_layer_iso_lock       ;锁定非选图层(解锁所选图层，锁定其他图层) **
+[图层工具] erU      yq_layer_unlock         ;解锁图层 *                      (v6.5 修改的 ●)
+
+[图层工具] erZ      yq_layer_freeze         ;冻结图层 *
+[图层工具] erDZ     yq_layer_iso_freeze     ;冻结非选图层 *
+[图层工具] erT      yq_layer_thaw           ;解冻图层 *
+
+[图层工具] erBF     yq_layer_noff           ;关闭块内图层 *                (v6.6 新添的 ●●)
+[图层工具] erBZ     yq_layer_nfreeze        ;冻结块内图层 *                (v6.6 新添的 ●●)
+[图层工具] erER     yq_layer_showall        ;解冻、解锁、打开全部图层 *
+
+[图层工具] erTD     yq_layer_replace        ;批量替换图层 **               (v6.6 新添的 ●●)
+[图层工具] erG      yq_layer_batchrename    ;图层批量改名 *                (v6.6 修改的 ●●)
+[图层工具] erM      yq_merge_layer          ;合并图层 **                   (v6.6 修改的 ●●)
+[图层工具] c2er     yq_formlaybycolor       ;将图元按颜色重新分层(不改bylayer图元) *
+[图层工具] erSC     yq_layerkeys            ;设置转换图层快捷键 **         (v6.6 新添的 ●●)
+[图层工具] erW      yq_wlayerkeys           ;设置通配符图层快捷键 **       (v6.6 新添的 ●●)
+[图层工具] erK      yq_colorkeys            ;设置转换颜色快捷键[0-255] *
+
+[图层工具] erO      yq_outputlayers         ;导出图层文件 *
+[图层工具] erI      yq_inputlayers          ;导入图层文件 *
+
+;;;-------------------------------------- 视口布局工具 --------------------------------------
+
+[视口工具] vvv      yq_viewporttools        ;【视口工具】 系列命令对话框发动程序
+
+[视口工具] vvC      yq_vplayer_manager      ;管理视口图层 ***
+[视口工具] vvZ      yq_vplayer_freeze       ;冻结视口图层 *
+[视口工具] vvBZ     yq_vplayer_nfreeze      ;冻结视口块(参照)内图层 *      (v6.6 新添的 ●●)
+[视口工具] vvT      yq_vplayer_thaw         ;解冻视口图层 *
+[视口工具] vvDZ     yq_vplayer_iso          ;视口中冻结非选图层 **         (v6.6 新添的 ●●)
+[视口工具] vvZZ     yq_vplayer_isoall       ;选定图层并在其他视口中冻结 *
+[视口工具] vvH      yq_vplayer_gray         ;视口内图层变色 *
+[视口工具] vvHF     yq_vplayer_recover      ;还原视口内图层颜色 *
+
+[视口工具] vvN      yq_viewport_new         ;新建视口 *
+[视口工具] vv2      yq_viewport_split       ;拆分矩形视口 **               (v6.6 新添的 ●●)
+[视口工具] mVV      yq_model2viewport       ;按模型范围新建视口 *
+[视口工具] xxVV     yq_curve2viewport       ;闭合曲线变视口 *
+[视口工具] vvS      yq_viewport_scale       ;设定视口比例 **
+[视口工具] vvSC     yq_scalevps             ;同时缩放视口外框及比例 **     (v6.6 新添的 ●●)
+[视口工具] vvDQ     yq_viewport_sync        ;对齐视口内容 ***
+[视口工具] vvP      yq_viewport_pan         ;平移视口视图 *                (v6.6 修改的 ●●)
+
+[视口工具] vvL      yq_viewport_lock        ;锁定视口 *
+[视口工具] vvAL     yq_viewport_lock_all    ;锁定全部视口 *
+[视口工具] vvU      yq_viewport_unlock      ;解锁视口 *
+[视口工具] vvAU     yq_viewport_unlock_all  ;解锁全部视口 *
+
+[视口工具] vvD      yq_viewport_iso         ;关闭非选视口(保留打开所选视口，关闭其他视口) * 
+                                                                           (v6.6 新添的 ●●)
+[视口工具] vvF      yq_viewport_off         ;关闭视口 *
+[视口工具] vvAF     yq_viewport_off_all     ;关闭全部视口 *
+[视口工具] vvA      yq_viewport_on          ;打开视口 *
+[视口工具] vvAA     yq_viewport_on_all      ;打开全部视口 *
+
+[视口工具] vvBB     yq_viewport2pspace      ;将视口内容复制为图纸空间块 **
+
+[视口工具] tzG      yq_layout_batchrename   ;布局批量改名 *
+[视口工具] tzF      yq_frames2layouts       ;选图框拆分为布局 *
+[视口工具] tzFG     yq_framedivided         ;图纸绘图区分割 *
+
+[视口工具] vvR      yq_ucsdir               ;旋转立面4个视图方向 *         (v6.6 改名的 ●●)
+[视口工具] KZ       yq_snapshot             ;视图快照(立体视图平面化) *
+[视口工具] CLJ      yq_hyperlink            ;超链接及视图管理 ***
+
+;;;------------------------------------- 特性刷子工具 ---------------------------------------
+
+[特性刷子] sss      yq_matchbrush           ;【特性刷子】系列命令对话框发动程序
+
+[特性刷子] ssB      yq_match_block       ;刷子.匹配图块/替换图块(若样板是门窗只能刷门窗) ****
+                                                                         (v6.5 改名修改的 ●)
+[特性刷子] ssD      yq_match_dynprops       ;刷子.匹配动态块属性 *         (v6.6 修改的 ●●)
+[特性刷子] ssA      yq_match_rotation       ;刷子.匹配角度 **
+
+[特性刷子] ssER     yq_match_layer          ;刷子.匹配图层 ***
+[特性刷子] ssC      yq_match_color          ;刷子.匹配颜色 *
+[特性刷子] ssCC     yq_match_layercolor     ;刷子.匹配图层与颜色 *
+[特性刷子] ssVV     yq_match_vplayer        ;刷子.匹配视口图层状态 *
+
+[特性刷子] ssT      yq_match_content        ;刷子.匹配文字内容 ***
+[特性刷子] ssST     yq_match_style          ;刷子.匹配文字样式 *
+[特性刷子] ssH      yq_match_textheight     ;刷子.匹配文字高度 *
+[特性刷子] ssq      yq_match_tagtext        ;刷子.匹配属性标签内容 *
+
+[特性刷子] ssXT     yq_match_linetype       ;刷子.匹配线形 *
+[特性刷子] ssW      yq_match_width          ;刷子.匹配多段线宽度(多段线改宽/改粗,可刷线段、圆、弧) ***
+[特性刷子] ssTH     yq_match_thickness      ;刷子.匹配竖向厚度 *
+
+;;;--------------------------------------- 其他工具 -----------------------------------------
+
+[其他工具] qqq      yq_othertools           ;【其他工具】系列命令对话框发动程序
+
+[其他工具] BPT      yq_batchplot            ;选图框快速批量打印 ****       (v6.6 修改的 ●●)
+
+[其他工具] dwgL     yq_catalog              ;选图框编制图纸目录 ****       (v6.6 修改的 ●●)
+[其他工具] dwgS     yq_outputdwgs           ;选图框批量导出图纸(图纸归档) **
+[其他工具] dwgA     yq_arrangedwgs          ;排列合并图档 **               (v6.6 修改的 ●●)
+;;[其他工具] dwgC     yq_comparedwgs          ;图档简单比较 **             (v6.6 废止的 ●●)
+
+[其他工具] ee0      yq_2bylayer             ;重设图元图层、颜色(含图块内) ** (v6.7 新添的 ●●●)
+[其他工具] eeF      yq_hideselect           ;临时隐藏选择图元 ***
+[其他工具] eeD      yq_hideunselect         ;临时隐藏非选择图元 ***
+[其他工具] eeA      yq_displayhide          ;显示全部临时隐藏图元 ***
+[其他工具] eeAA     yq_displayall           ;强制显示全部隐藏图元 **
+
+[其他工具] ggN      yq_quickgroup           ;快速制作一个新编组 **
+[其他工具] ggX      yq_explodegroup         ;解散一个编组 **
+[其他工具] ggA      yq_group_add            ;追加图元入一个编组 *
+[其他工具] ggE      yq_group_remove         ;删除编组中图元 *
+[其他工具] ggS      yq_group_separate       ;从编组中分离图元 *
+[其他工具] ggP      yq_purgegroup           ;清除无用编组 *
+
+[其他工具] dtYQ     yq_switch_dynamic       ;临时切换源泉命令(部分)是否使用动态 * 
+                                                                           (v6.6 新添的 ●●)
+[其他工具] ZTB      yq_drawclipboard        ;用Excel粘贴板内容绘制点或多段线 *
+[其他工具] A2K      yq_acad2kml             ;将AutoCAD图元导入Google Earth *****
+
+[其他工具] zml      yq_commandfinder        ;源泉设计命令查找 *              (v6.5 修改的 ●)
+[其他工具] qq       yq_lastyqcmd            ;重复上一个源泉设计命令 *
+
+
+;;;------------------------------------------------------------------------------------------
+;;;------------                原始命令及原始快捷键列表 结束                  ---------------
+;;;------------------------------------------------------------------------------------------
+
+
+
+
+
+
+;;;------------------------------------------
+;;; 以下是组合命令面板--临时补充命令(Q5例程)    设定在文件sys\yqpanel.txt
+;;;------------------------------------------
+【杂项设置】
+[Q5例程] 打开源泉安装目录,YQArch Folder
+[Q5例程] 当前dwg图档目录,DWG Folder
+[Q5例程] 打印样式文件夹,Plotter Style Folder
+[Q5例程] Windows临时文件夹,Windows Temporary Dir
+
+[Q5例程] 快捷键及命令简介[yqshortcut.txt],Command & Shortcut List
+[Q5例程] 最新[源泉设计说明及更新.txt],Update Information File
+[Q5例程] 编辑预定层文件[layer.txt],Edit Layer File
+[Q5例程] 用户图档初始化文件[startup.lsp],User startup file
+[Q5例程] 快捷键文件[ACAD.PGP],AutoCAD Shortcuts
+[Q5例程] ACAD.PGP转为lsp,Convert ACAD.PGP to lsp,yq_pgp2lsp
+[Q5例程] 字体替代文件[acad.fmp],Fonts Replace File
+[Q5例程] 字体替代变量[FONTALT],System Val[FONTALT]
+
+[Q5例程] 源泉命令面板文件[yqpanel.txt],System Panel
+[Q5例程] 用户命令面板文件[userpanel.txt],User Panel
+[Q5例程] 线型文件[ACADISO.LIN],Edit ACADISO.LIN
+
+[Q5例程] 插入日期时间字串,Date String,yq_date,day
+[Q5例程] 当前dwg打开时间,DWG Opening Time,yq_opentime
+
+[Q5例程] Excel表格转入,Excel Import,yq_excel2table,e2t
+[Q5例程] 图像输出Word,Bmp to Word
+
+[Q5例程] 局部再生,Part Regen,yq_rg
+[Q5例程] 视图缩小,Zoom Down,yq_zd
+[Q5例程] 缩放范围,Zoom Extend,yq_ze
+[Q5例程] 上个视图,Zoom Previous,yq_zz
+
+[Q5例程] 保存/还原捕捉,Save/Restore OSmode,yq_oos,oos
+
+【修改/复制】
+[Q5例程] 带基点剪切,Cutclip on Base,yq_ccb
+[Q5例程] 镜像,Mirror,yq_mi
+[Q5例程] 不拖拽复制,Copy no Dragging,yq_cxx
+[Q5例程] 不拖拽移动,Move no Dragging,yq_vxx
+[Q5例程] 复制到表格中央,Copy to Center,yq_czz
+[Q5例程] 移动到表格中央,Move to Center,yq_vzz
+[Q5例程] 次数复制,Copy & Array,yq_cm,cn
+[Q5例程] 内等分复制,Copy & Divide Insided,yq_copydivide,cdf
+
+[Q5例程] 选取值偏移,Select and Offset,yq_seloffset
+[Q5例程] 选数字行偏移
+[Q5例程] 旋转到0度,Rotate to 0,yq_rz
+[Q5例程] 复制旋转对齐,Copy and Rotate,yq_copyandrotate,xzc
+[Q5例程] 可镜像的复制,Copy and Mirror,yq_xcopy,yc                        (v6.7 新添的 ●●●)
+[Q5例程] 等分角度,Divide Angle,yq_angledivide,dfa
+
+[Q5例程] 动态修剪,Dynamic Trim,yq_dynamictrim,tv
+[Q5例程] 动态延伸,Dynamic Extend,yq_dynamicextend,exv
+[Q5例程] 修剪出挑小线头,Trim Thrums,yq_trimthrums
+[Q5例程] 剪表格线头,Trim Table Lines,yq_trimtable
+[Q5例程] 改为定长,Lengthen Object,yq_len,lenx
+
+[Q5例程] 动态文字高度
+[Q5例程] 动态文字角度
+[Q5例程] 动态图块角度
+
+[Q5例程] 填充拉伸,Hatch Strecth,yq_hhs,hhs                               (v6.7 新添的 ●●●)
+
+【曲线/图元】
+[Q5例程] 批量圆角多段线,Fillet Plines,yq_fxx
+[Q5例程] 批量倒角多段线,Chamfer Plines,yq_cfxx
+[Q5例程] 批量圆角线段,Fillet Lines,yq_batchfillet
+[Q5例程] 批量倒角线段,Chamfer Lines,yq_batchchamfer
+
+[Q5例程] 模糊内轮廓,Fuzzy Inside Borderline,yq_fuzzyinside
+[Q5例程] 模糊外轮廓,Find Fuzzy Outline,yq_fuzzyoutline
+
+[Q5例程] 多段线挤出,Extrude a pline,yq_plineextrude,jc
+[Q5例程] 复制多段线的一段,Copy a Pline Segment,yq_copysegment,xxcc
+[Q5例程] 等分多段线的一段,Divide a Pline Segment,yq_dividesegment,xxdf
+[Q5例程] 交点间隔打断,Interval Break,yq_break_interval,bjx
+
+[Q5例程] 求多段线质心,Pline Centroid,yq_qzx
+[Q5例程] 曲线法线,Normal at Curve,yq_normal
+
+[Q5例程] SOLID变HATCH,Convert SOLID to HATCH,yq_s2h
+[Q5例程] 弧变圆,Convert Arc to Circle,yq_a2c
+[Q5例程] 圆变多段线,Convert Circle to Pline,yq_c2x
+[Q5例程] 圆弧等分曲线,Spline/Ellipse to Arc Pline,yq_s2a,s2a
+[Q5例程] 线段等分曲线,Spline/Ellipse to line Pline,yq_s2x,s2x
+
+[Q5例程] 整数矩形,Integer Rectangle,yq_irectangle,recz
+[Q5例程] 三点矩形,3 Point Rectangle,yq_rect3pt,rec3                        (v6.6 新添的 ●●)
+[Q5例程] 四边形对角线,Quads to Diagonals,yq_diagonal,djx                   (v6.6 新添的 ●●)
+[Q5例程] 画格内线,Draw Inside Line,yq_insideline,rx
+[Q5例程] 定角构造线,Angle Xline,yq_anglexline,gzx
+[Q5例程] 选线画平滑连接弧,Append Arc,yq_appendarc,aj
+
+[Q5例程] 文字沿曲线放置,Text Along Curve,yq_text2curve,tt2c                (v6.6 新添的 ●●)
+
+【标注/图块】
+[Q5例程] 切换固定图纸空间比例,Switch PS Dimscale,yq_fixpsdimscale,ddps
+[Q5例程] 多功能标注,Auto DIM,yq_dim_auto,ddc
+[Q5例程] 标注多边形内角,DIM Polygon Angles,yq_dim_polygonangles,ddans
+[Q5例程] 标注批量圆弧长,DIM Arcs Length,yq_dim_arcs,ddars
+[Q5例程] 0长度标注删除,Erase 0 Length DIM,yq_dim_del0,dde0
+[Q5例程] 标注倾斜,DIM Slope,yq_dim_slope,ddo                               (v6.6 新添的 ●●)
+[Q5例程] 尺寸驱动的拉伸,Strech by Dimension,yq_dimstretch,sdd              (v6.6 新添的 ●●)
+[Q5例程] 选尺寸画对齐线,Dimensions to Lines,yq_dim2lines,dd2x              (v6.6 新添的 ●●)
+
+[Q5例程] 允许炸开块,Put Explodable,yq_Explodable
+[Q5例程] 不允许炸开块,Put Non-Explodable,yq_nonExplodable
+[Q5例程] 炸块属性转文字,Exp. Att Blk,yq_expattblk,bbxt
+[Q5例程] 炸开块到所在层,Exp.to Blk's Lay,yq_edb
+[Q5例程] 炸开块到当前层,Exp.to Cur Layer,yq_edc
+[Q5例程] 分堆成块,Blocks by Grouping,yq_blockgrouping
+[Q5例程] 替换块内颜色,Replace color in block,yq_blockchcolor,bbcc
+
+[Q5例程] 炸开参照块,Explode Reference Block,yq_refx,refx
+[Q5例程] 参照块改相对路径,Xref to Relative,yq_xref2rel,xf2r                (v6.6 新添的 ●●)
+[Q5例程] 参照块改绝对路径,Xref to Absolute,yq_xref2abs,xf2a                (v6.6 新添的 ●●)
+
+【特殊】
+[Q5例程] 几个关联开关,Relations Switches,yq_relswitch,gl
+
+[Q5例程] 快速切割图像,Clip Image,yq_qgtx,qgtx
+[Q5例程] 拆分图像,Image Splitting,yq_imagesplit,cftx
+[Q5例程] 拆分板材,Board Splitting,yq_boardsplit,cfb
+
+[Q5例程] 绘制垫块,Heel Block,yq_heelblock,dk                               (v6.6 新添的 ●●)
+[Q5例程] 外凸包线,The Outer Hull,yq_outerhull
+[Q5例程] 画凹缝,Draw Sawtooth,yq_sawtooth
+[Q5例程] 车边镜,Beveled Plate Glass,yq_cbj,cbj
+[Q5例程] 修剪幕墙横竖线(保留双竖线，切断双横线),Curtainwall Scissor,yq_trimcurtainwall,tq
+[Q5例程] 绘制线路并交点断开,Draw Circuits,yq_circuit
+[Q5例程] 引线填充图块,Leader of Hatching/Block,yq_hbleader
+[Q5例程] 立面展开,Unwind Elevation,yq_lmzk
+[Q5例程] 图块/灯具连线,Blocks Connection,yq_linkblocks,lb
+[Q5例程] 链式选取,Get Linked Selection Sets,yq_lsxq                      (v6.7 新添的 ●●●)
+
+[Q5例程] 框内变虚线,Hidden in frames,yq_breakandhidden,bxx
+[Q5例程] 沿曲线调整图块,Align along a Curve,yq_align2curve
+
+[Q5例程] 全图改为指定图层,All to A Layer,yq_all2layer,er0
+[Q5例程] 恢复颜色/线性/线宽随层,Recover Color/Ltype/LW Bylayer,yq_00,00    (v6.6 新添的 ●●)
+[Q5例程] 检查是否封闭,Check If Closed,yq_chkclosed,bfb
+
+
+;;;----------------------------------------
+;;; 以下是组合命令面板--算量工具等(Q6例程)    设定在文件sys\yqpanel.txt
+;;;----------------------------------------
+
+【文字特殊】
+[Q6例程] 文字.普通匹配,Match Text Mode1,(yq_match_content0 1),sst1
+[Q6例程] 文字.单选匹配,Match Text Mode2,(yq_match_content0 2),sst2
+[Q6例程] 文字.多属性匹配,Match Text Mode3,(yq_match_content0 3),sst3
+
+[Q6例程] 去除前后空格,Delete End Spaces,yq_delendspaces
+[Q6例程] 文字切换大小写,Upper/Lower Case,yq_strcase
+[Q6例程] 拷贝翻译词组,Copy & translate,yq_copytranslate,xfy
+[Q6例程] 天正文字转文字,Tch_Text to Text,yq_tch2text
+
+[Q6例程] 对正左下,Alignment Left,   (yq_text_alignment "L"),tt1
+[Q6例程] 对正中下,Alignment Center, (yq_text_alignment "C"),tt2
+[Q6例程] 对正右下,Alignment Right,  (yq_text_alignment "R"),tt3
+[Q6例程] 对正中央,Alignment MiddleCenter,   (yq_text_alignment "MC"),tt4
+[Q6例程] 全图改为宋体,All to SIMSUN,(yq_setallstyles "宋体" 1)
+[Q6例程] 全图改为黑体,All to SIMHEI,(yq_setallstyles "黑体" 1)
+[Q6例程] 全图改为单线宋,All to HZDX,(yq_setallstyles "superos.shx||hzdx.shx" 0.8)
+
+【算量小工具】
+[Q6例程] 设置算量图层,Set Calculation Layer,yq_calLayer
+[Q6例程] 全图变色,All to Gray,yq_all2gray
+[Q6例程] 选取变色,Select to Gray,yq_2gray
+[Q6例程] 改为图层颜色,To Layer's Color,yq_2layercolor
+
+[Q6例程] 弧长拱高求半径,Arc/Sagitta to Radius,yq_as2r
+[Q6例程] 数字行绝对/相对转换,Numbers Rel/Abs,yq_abs2rel
+
+[Q6例程] 小数点左移6位,Text to M2,yq_m2
+[Q6例程] 小数点左移3位,Text to Meter,yq_m1
+
+[Q6例程] 文字放入粘贴板,Text to Clipboard,yq_text2clipboard,wz
+[Q6例程] 单选文字追加Excel格,Text to Excel,yq_appendtext2cell,tce
+[Q6例程] 数字部分追加Excel格,Number to Excel,yq_appendnum2cell,nce
+[Q6例程] 尺寸数字追加Excel格,Dim to Excel,yq_appenddim2cell,ddce
+
+[Q6例程] 求面积/周长/墙面积,Get Area/Perimeter,yq_areawall,wmj
+
+[Q6例程] 点取面积输出Excel当前格,Pickup Area to Excel,yq_pickArea2excel,dmj
+[Q6例程] 画矩形取面积输出Excel格,Rectangle Area to Excel,yq_RectangleArea,kmj
+[Q6例程] 选曲线取面积输出Excel格,Select Area to Excel,yq_plineArea,smj
+[Q6例程] 文字区域面积输出Excel格,Cell Area to Excel,yq_textCellArea,zmj
+[Q6例程] 选填充取面积输出Excel格,Select harching to Excel,yq_hatchArea,hmj
+
+[Q6例程] 选曲线取周长输出Excel格,Select Perimeter to Excel,yq_plinePerimeter,szc
+[Q6例程] 画矩形取中线输出Excel格,Rectangle Midline to Excel,yq_RectangleMidline,kzc
+
+【过滤选择】
+[Q6例程] 图元过滤选择,Ename Filter,yq_enamefilter,xee
+[Q6例程] 图层过滤选择,Layer Filter,yq_layerfilter,xer
+[Q6例程] 颜色过滤选择,Color Filter,yq_colorfilter,xcr
+略...
+
+【专删工具】
+[Q6例程] 图元过滤删除,Filter Erase,yq_filterErase,dee
+略...
+
+
+;;;------------------------------------------
+;;; 以下是组合命令面板--天正插件工具(Q7例程)    设定在文件sys\yqpanel.txt
+;;;------------------------------------------
+[Q7例程] 尝试炸开天正加密块,Crack Tch Protect,yq_tzcracker,tzx
+略...
+
+
+;;;----------------------
+;;; 以下是用户面板快捷键    在文件user*\userpanel.txt
+;;;----------------------
+[U3例程] pz      用户系统配置例子快捷键       userpanel.txt
+[U3例程] xh      横构造线                     userpanel.txt
+[U3例程] xv      竖构造线                     userpanel.txt
+[U3例程] x2      十字构造线                   userpanel.txt
+[U3例程] dn      列表换字-管径                userpanel.txt
+[U3例程] clmc    列表换字-材料                userpanel.txt
+
+[U3例程] dqt     上边线对齐                   userpanel.txt
+[U3例程] dql     左边线对齐                   userpanel.txt
+[U3例程] dqr     右边线对齐                   userpanel.txt
+[U3例程] dqb     下边线对齐                   userpanel.txt
+
+
+;;;----------------------------------------------
+;;; 以下是用户例程或快捷键(有些命令需要手动打开)     在文件user*\usercmd.lsp
+;;;----------------------------------------------
+1`      切换模型/布局                usercmd.lsp
+``      切换图纸/模型空间            usercmd.lsp
+
+
+
+;;;--------------
+;;; 网上收集例程
+;;;--------------
+[收集例程] j2f   中文字串简体->繁体转换  HZCOVERT.LSP
+[收集例程] f2j   中文字串繁体->简体转换  HZCOVERT.LSP

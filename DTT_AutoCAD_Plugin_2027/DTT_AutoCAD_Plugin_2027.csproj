@@ -1,0 +1,56 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <AssemblyName>DTT_AutoCAD_Plugin_2027</AssemblyName>
+    <RootNamespace>DTT_AutoCAD_Plugin</RootNamespace>
+    <OutputType>Library</OutputType>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <Version>2027.1.0</Version>
+    <Company>DTT CAD Software Corporation</Company>
+    <Product>DTT Tools 2027 Electrical Pro</Product>
+    <Description>DTT Tools 2027 - Bộ Công Cụ Điện Thông Minh cho AutoCAD Electrical 2027 (.NET 8 Native)</Description>
+    <OutputPath>..\dist_2027\bin\Release\net8.0-windows\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+
+  <!-- Tham chiếu API AutoCAD 2025/2026/2027 (.NET 8) -->
+  <ItemGroup>
+    <PackageReference Include="AutoCAD.NET" Version="25.1.0">
+      <PrivateAssets>all</PrivateAssets>
+      <ExcludeAssets>runtime</ExcludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <!-- Tham chiếu các Project Core và Application -->
+  <ItemGroup>
+    <ProjectReference Include="..\src\DTools.Core\DTools.Core.csproj" />
+    <ProjectReference Include="..\src\DTools.Application\DTools.Application.csproj" />
+  </ItemGroup>
+
+  <!-- Biên dịch mã nguồn dùng chung từ thư mục gốc -->
+  <ItemGroup>
+    <Compile Include="..\AppEntry.cs" Link="Shared\AppEntry.cs" />
+    <Compile Include="..\Common\**\*.cs" Link="Shared\Common\%(RecursiveDir)%(Filename)%(Extension)" />
+    <Compile Include="..\Modules\**\*.cs" Link="Shared\Modules\%(RecursiveDir)%(Filename)%(Extension)" />
+    <Compile Include="..\UI\**\*.cs" Link="Shared\UI\%(RecursiveDir)%(Filename)%(Extension)" />
+    <Page Include="..\UI\**\*.xaml" Link="Shared\UI\%(RecursiveDir)%(Filename)%(Extension)" SubType="Designer" Generator="MSBuild:Compile" />
+  </ItemGroup>
+
+  <!-- Loại bỏ file loader để loader được build thành assembly riêng biệt -->
+  <ItemGroup>
+    <Compile Remove="DTT_Loader_2027.cs" />
+  </ItemGroup>
+
+  <!-- Loại bỏ file build/test nếu có -->
+  <ItemGroup>
+    <Compile Remove="..\src\**" />
+    <Compile Remove="..\tests\**" />
+    <Compile Remove="..\Build\**" />
+  </ItemGroup>
+
+</Project>

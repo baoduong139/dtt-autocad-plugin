@@ -1,0 +1,1550 @@
+<UserControl x:Class="DTT_AutoCAD_Plugin.UI.DTT_PaletteView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="850" d:DesignWidth="360"
+             FontFamily="Segoe UI, Tahoma, sans-serif"
+             Background="{DynamicResource ThemePaletteBg}"
+             TextOptions.TextFormattingMode="Display"
+             TextOptions.TextRenderingMode="ClearType"
+             RenderOptions.ClearTypeHint="Enabled"
+             UseLayoutRounding="True"
+             SnapsToDevicePixels="True"
+             x:Name="RootPaletteControl">
+
+    <UserControl.Resources>
+        <!-- DYNAMIC THEME BRUSHES (SLATE & ACCENT BLUE/CYAN) -->
+        <SolidColorBrush x:Key="ThemePaletteBg" Color="#0F172A"/>
+        <SolidColorBrush x:Key="ThemeCardBg" Color="#1E293B"/>
+        <SolidColorBrush x:Key="ThemeCardBorder" Color="#334155"/>
+        <SolidColorBrush x:Key="ThemeTextPrimary" Color="#F8FAFC"/>
+        <SolidColorBrush x:Key="ThemeTextSecondary" Color="#94A3B8"/>
+        <SolidColorBrush x:Key="ThemeAccent" Color="#0EA5E9"/>
+        <SolidColorBrush x:Key="ThemeAccentHover" Color="#38BDF8"/>
+        <SolidColorBrush x:Key="ThemeControlBg" Color="#0F172A"/>
+        <SolidColorBrush x:Key="ThemeControlBorder" Color="#334155"/>
+        <SolidColorBrush x:Key="ThemeSidebarBg" Color="#1E293B"/>
+        <SolidColorBrush x:Key="ThemeTabNormalText" Color="#64748B"/>
+        <SolidColorBrush x:Key="ThemeTabActiveText" Color="#00D2FF"/>
+        <SolidColorBrush x:Key="ThemeTabActiveBg" Color="#0F172A"/>
+
+        <!-- DROP SHADOWS -->
+        <DropShadowEffect x:Key="ShadowDeep" BlurRadius="6" ShadowDepth="2" Direction="270" Color="#000000" Opacity="0.18"/>
+        <DropShadowEffect x:Key="GlowCyan" BlurRadius="8" ShadowDepth="0" Color="#0EA5E9" Opacity="0.4"/>
+        <DropShadowEffect x:Key="GlowGold" BlurRadius="8" ShadowDepth="0" Color="#F59E0B" Opacity="0.35"/>
+        <DropShadowEffect x:Key="GlowGreen" BlurRadius="8" ShadowDepth="0" Color="#10B981" Opacity="0.35"/>
+        <DropShadowEffect x:Key="GlowPurple" BlurRadius="8" ShadowDepth="0" Color="#A855F7" Opacity="0.35"/>
+        <DropShadowEffect x:Key="GlowRed" BlurRadius="8" ShadowDepth="0" Color="#EF4444" Opacity="0.35"/>
+
+        <!-- STYLE COMBOBOX HIỆN ĐẠI (BO GÓC 6PX, BORDER MẢNH) -->
+        <Style x:Key="StyleModernComboBox" TargetType="ComboBox">
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Foreground" Value="{DynamicResource ThemeTextPrimary}"/>
+            <Setter Property="Background" Value="{DynamicResource ThemeControlBg}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ThemeControlBorder}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <ToggleButton x:Name="ToggleButton" 
+                                          Focusable="false"
+                                          IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                          ClickMode="Press">
+                                <ToggleButton.Template>
+                                    <ControlTemplate TargetType="ToggleButton">
+                                        <Border x:Name="Border" 
+                                                CornerRadius="6" 
+                                                Background="{TemplateBinding Background}" 
+                                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                                BorderThickness="{TemplateBinding BorderThickness}">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="24"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Path x:Name="Arrow" Grid.Column="1" 
+                                                      HorizontalAlignment="Center" VerticalAlignment="Center" 
+                                                      Data="M 0 0 L 4 4 L 8 0 Z" 
+                                                      Fill="{DynamicResource ThemeTextSecondary}"/>
+                                            </Grid>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="true">
+                                                <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource ThemeAccent}"/>
+                                                <Setter TargetName="Arrow" Property="Fill" Value="{DynamicResource ThemeAccent}"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </ToggleButton.Template>
+                            </ToggleButton>
+                            <ContentPresenter x:Name="ContentSite" 
+                                              IsHitTestVisible="False" 
+                                              Content="{TemplateBinding SelectionBoxItem}"
+                                              ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                              ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                              Margin="10,0,26,0"
+                                              VerticalAlignment="Center"
+                                              HorizontalAlignment="Left"/>
+                            <Popup x:Name="Popup" 
+                                   Placement="Bottom" 
+                                   IsOpen="{TemplateBinding IsDropDownOpen}"
+                                   AllowsTransparency="True" 
+                                   Focusable="False" 
+                                   PopupAnimation="Slide">
+                                <Grid x:Name="DropDown" 
+                                      SnapsToDevicePixels="True" 
+                                      MinWidth="{TemplateBinding ActualWidth}" 
+                                      MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                    <Border x:Name="DropDownBorder" 
+                                            Background="{DynamicResource ThemeCardBg}" 
+                                            BorderBrush="{DynamicResource ThemeControlBorder}" 
+                                            BorderThickness="1" 
+                                            CornerRadius="6" 
+                                            Margin="0,2,0,4">
+                                        <Border.Effect>
+                                            <DropShadowEffect BlurRadius="8" ShadowDepth="2" Color="#000000" Opacity="0.35"/>
+                                        </Border.Effect>
+                                        <ScrollViewer Margin="2" SnapsToDevicePixels="True">
+                                            <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained"/>
+                                        </ScrollViewer>
+                                    </Border>
+                                </Grid>
+                            </Popup>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="HasItems" Value="false">
+                                <Setter TargetName="DropDownBorder" Property="MinHeight" Value="95"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- STYLE COMBOBOX ITEM -->
+        <Style TargetType="ComboBoxItem">
+            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Foreground" Value="{DynamicResource ThemeTextPrimary}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBoxItem">
+                        <Border x:Name="ItemBorder" CornerRadius="4" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" Margin="1">
+                            <ContentPresenter/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsHighlighted" Value="True">
+                                <Setter TargetName="ItemBorder" Property="Background" Value="{DynamicResource ThemeAccent}"/>
+                                <Setter Property="Foreground" Value="#FFFFFF"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="ItemBorder" Property="Background" Value="{DynamicResource ThemeAccent}"/>
+                                <Setter Property="Foreground" Value="#FFFFFF"/>
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- STYLE NÚT HÀNH ĐỘNG CARD TRONG SETTINGS (HOVER MƯỢT, BO GÓC 6PX) -->
+        <Style x:Key="StyleActionCardBtn" TargetType="Button">
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Foreground" Value="{DynamicResource ThemeTextPrimary}"/>
+            <Setter Property="FontSize" Value="10.5"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Border" CornerRadius="6" Background="{DynamicResource ThemeControlBg}" BorderBrush="{DynamicResource ThemeControlBorder}" BorderThickness="1" Padding="6,0">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="{DynamicResource ThemeAccent}"/>
+                                <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource ThemeAccentHover}"/>
+                                <Setter Property="Foreground" Value="#FFFFFF"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Border" Property="RenderTransform">
+                                    <Setter.Value><TranslateTransform Y="1"/></Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="StyleActionCardBtnDanger" TargetType="Button">
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Foreground" Value="{DynamicResource ThemeTextPrimary}"/>
+            <Setter Property="FontSize" Value="10.5"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Border" CornerRadius="6" Background="{DynamicResource ThemeControlBg}" BorderBrush="{DynamicResource ThemeControlBorder}" BorderThickness="1" Padding="6,0">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="#DC2626"/>
+                                <Setter TargetName="Border" Property="BorderBrush" Value="#EF4444"/>
+                                <Setter Property="Foreground" Value="#FFFFFF"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Border" Property="RenderTransform">
+                                    <Setter.Value><TranslateTransform Y="1"/></Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- STYLE NÚT LỆNH TIÊU CHUẨN (LIGHT STUDIO MODERN CARD) -->
+        <Style x:Key="Style3DButton" TargetType="Button">
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Foreground" Value="#0F172A"/>
+            <Setter Property="FontSize" Value="11.5"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Height" Value="34"/>
+            <Setter Property="Margin" Value="0,2,0,3"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <Border x:Name="BorderOuter" 
+                                    CornerRadius="6" 
+                                    BorderThickness="1" 
+                                    BorderBrush="#CBD5E1"
+                                    Background="#FFFFFF"
+                                    RenderTransformOrigin="0.5,0.5"
+                                    Effect="{StaticResource ShadowDeep}">
+                                <Grid Margin="8,0">
+                                    <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="BorderOuter" Property="BorderBrush" Value="#0284C7"/>
+                                <Setter TargetName="BorderOuter" Property="Background" Value="#F0F9FF"/>
+                                <Setter TargetName="BorderOuter" Property="Effect" Value="{StaticResource GlowCyan}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="BorderOuter" Property="RenderTransform">
+                                    <Setter.Value><TranslateTransform Y="1.5"/></Setter.Value>
+                                </Setter>
+                                <Setter TargetName="BorderOuter" Property="BorderBrush" Value="#0369A1"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- NÚT VIP CYAN (Mặt Bằng, Điện) -->
+        <Style x:Key="StyleVipButton" TargetType="Button" BasedOn="{StaticResource Style3DButton}">
+            <Setter Property="Height" Value="38"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="VipBorder" CornerRadius="7" BorderThickness="1.5"
+                                BorderBrush="#0284C7" Background="#F0F9FF" RenderTransformOrigin="0.5,0.5"
+                                Effect="{StaticResource GlowCyan}">
+                            <Grid Margin="10,0">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="VipBorder" Property="Background" Value="#E0F2FE"/>
+                                <Setter TargetName="VipBorder" Property="BorderBrush" Value="#0369A1"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="VipBorder" Property="RenderTransform">
+                                    <Setter.Value><TranslateTransform Y="1.5"/></Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- NÚT VIP GOLD (Mặt Cắt, Menu) -->
+        <Style x:Key="StyleGoldButton" TargetType="Button" BasedOn="{StaticResource StyleVipButton}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="GoldBorder" CornerRadius="7" BorderThickness="1.5"
+                                BorderBrush="#F59E0B" Background="#FFFBEB" RenderTransformOrigin="0.5,0.5"
+                                Effect="{StaticResource GlowGold}">
+                            <Grid Margin="10,0">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="GoldBorder" Property="Background" Value="#FEF3C7"/>
+                                <Setter TargetName="GoldBorder" Property="BorderBrush" Value="#D97706"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="GoldBorder" Property="RenderTransform">
+                                    <Setter.Value><TranslateTransform Y="1.5"/></Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- NÚT VIP GREEN (Kết cấu, Tiện ích) -->
+        <Style x:Key="StyleGreenButton" TargetType="Button" BasedOn="{StaticResource StyleVipButton}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="GreenBorder" CornerRadius="7" BorderThickness="1.5"
+                                BorderBrush="#10B981" Background="#ECFDF5" RenderTransformOrigin="0.5,0.5"
+                                Effect="{StaticResource GlowGreen}">
+                            <Grid Margin="10,0">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="GreenBorder" Property="Background" Value="#D1FAE5"/>
+                                <Setter TargetName="GreenBorder" Property="BorderBrush" Value="#059669"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="GreenBorder" Property="RenderTransform">
+                                    <Setter.Value><TranslateTransform Y="1.5"/></Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- NÚT VIP PURPLE (Kết cấu) -->
+        <Style x:Key="StylePurpleButton" TargetType="Button" BasedOn="{StaticResource StyleVipButton}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="PurpleBorder" CornerRadius="7" BorderThickness="1.5"
+                                BorderBrush="#A855F7" Background="#FAF5FF" RenderTransformOrigin="0.5,0.5"
+                                Effect="{StaticResource GlowPurple}">
+                            <Grid Margin="10,0">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="PurpleBorder" Property="Background" Value="#F3E8FF"/>
+                                <Setter TargetName="PurpleBorder" Property="BorderBrush" Value="#7E22CE"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="PurpleBorder" Property="RenderTransform">
+                                    <Setter.Value><TranslateTransform Y="1.5"/></Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- STYLE TAB DỌC SIDEBAR CHUẨN ĐỒNG BỘ UI/UX -->
+        <Style x:Key="StyleSideTabBtn" TargetType="RadioButton">
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="Width" Value="56"/>
+            <Setter Property="Margin" Value="0,2,0,2"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Foreground" Value="{DynamicResource ThemeTabNormalText}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="TabBorder" CornerRadius="7" Background="Transparent" BorderThickness="1" BorderBrush="Transparent" Padding="2">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="TabBorder" Property="Background" Value="{DynamicResource ThemeCardBg}"/>
+                                <Setter TargetName="TabBorder" Property="BorderBrush" Value="{DynamicResource ThemeControlBorder}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource ThemeAccentHover}"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="TabBorder" Property="Background" Value="{DynamicResource ThemeTabActiveBg}"/>
+                                <Setter TargetName="TabBorder" Property="BorderBrush" Value="{DynamicResource ThemeAccent}"/>
+                                <Setter TargetName="TabBorder" Property="Effect" Value="{StaticResource GlowCyan}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource ThemeTabActiveText}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- NÚT VIP RED (Xóa, Cảnh báo, Nguy hiểm) -->
+        <Style x:Key="StyleRedButton" TargetType="Button" BasedOn="{StaticResource StyleVipButton}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="RedBorder" CornerRadius="7" BorderThickness="1.5"
+                                BorderBrush="#EF4444" Background="#FEF2F2" RenderTransformOrigin="0.5,0.5"
+                                Effect="{StaticResource GlowRed}">
+                            <Grid Margin="10,0">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="RedBorder" Property="Background" Value="#FEE2E2"/>
+                                <Setter TargetName="RedBorder" Property="BorderBrush" Value="#DC2626"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="RedBorder" Property="RenderTransform">
+                                    <Setter.Value><TranslateTransform Y="1.5"/></Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <!-- BỐ CỤC CHÍNH -->
+    <Grid x:Name="MainRootGrid">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- HEADER HIỆN ĐẠI DTOOLS PRO -->
+        <Border Grid.Row="0" x:Name="HeaderBorder" Background="{DynamicResource ThemeCardBg}" BorderBrush="{DynamicResource ThemeCardBorder}" BorderThickness="0,0,0,1" Padding="10,8,10,8">
+            <StackPanel>
+                <Grid Margin="0,0,0,6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                        <!-- Logo Icon glow cyan -->
+                        <Border Width="26" Height="26" CornerRadius="6" Margin="0,0,8,0">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                    <GradientStop Color="#0284C7" Offset="0"/>
+                                    <GradientStop Color="#0EA5E9" Offset="0.5"/>
+                                    <GradientStop Color="#38BDF8" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="6" ShadowDepth="1" Color="#0284C7" Opacity="0.4"/>
+                            </Border.Effect>
+                            <TextBlock Text="⚡" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#FFFFFF" FontWeight="ExtraBold"/>
+                        </Border>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock x:Name="LblAppTitle" Text="DTools Pro" FontSize="13.5" FontWeight="ExtraBold" Foreground="{DynamicResource ThemeTextPrimary}"/>
+                            <TextBlock Text="AutoCAD Automation Suite" FontSize="8.5" Foreground="{DynamicResource ThemeTextSecondary}"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Version Badge -->
+                    <Border Grid.Column="1" CornerRadius="10" Padding="8,3" VerticalAlignment="Center">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="#0284C7" Offset="0"/>
+                                <GradientStop Color="#0EA5E9" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="6" ShadowDepth="1" Color="#0284C7" Opacity="0.35"/>
+                        </Border.Effect>
+                        <TextBlock Text="v5.0 PRO" FontSize="9" FontWeight="ExtraBold" Foreground="#FFFFFF"/>
+                    </Border>
+                </Grid>
+
+                <!-- SEARCH BAR -->
+                <Border CornerRadius="6" BorderThickness="1" Height="30" Background="{DynamicResource ThemeControlBg}" BorderBrush="{DynamicResource ThemeControlBorder}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="28"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="🔍" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource ThemeAccent}"/>
+                        <TextBox Grid.Column="1" x:Name="TxtSearch" 
+                                 Background="Transparent" 
+                                 BorderThickness="0" 
+                                 Foreground="{DynamicResource ThemeTextPrimary}" 
+                                 CaretBrush="{DynamicResource ThemeAccent}"
+                                 FontSize="11" 
+                                 VerticalContentAlignment="Center"
+                                 Padding="2,0,4,0"
+                                 TextChanged="TxtSearch_TextChanged"/>
+                    </Grid>
+                </Border>
+            </StackPanel>
+        </Border>
+
+        <!-- THÂN: SIDEBAR + CONTENT -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="62"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- SIDEBAR DỌC (12 PHÂN HỆ ĐỒNG BỘ SLATE & ACCENT CYAN) -->
+            <Border Grid.Column="0" x:Name="SidebarBorder" Background="{DynamicResource ThemeSidebarBg}" BorderBrush="{DynamicResource ThemeControlBorder}" BorderThickness="0,0,1,0" Padding="2,4">
+                <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel>
+                        <RadioButton x:Name="TabDoctor" Style="{StaticResource StyleSideTabBtn}" IsChecked="True" Click="Tab_Click" Tag="PanelDoctor" ToolTip="Bảo Dưỡng Bản Vẽ">
+                            <StackPanel HorizontalAlignment="Center">
+                                <TextBlock Text="🩺" FontSize="17"/>
+                                <TextBlock Text="Bác Sĩ" FontSize="9.5" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </RadioButton>
+
+                        <!-- TAB YQ QUICK PRO: THAO TÁC NHANH SIÊU TỐC -->
+                        <RadioButton x:Name="TabYqQuick" Style="{StaticResource StyleSideTabBtn}" Click="Tab_Click" Tag="PanelYqQuick" ToolTip="Thao Tác Nhanh Siêu Tốc YQArch (Tường, Cửa, Dim, Layer, Block, Q1-Q4)">
+                            <StackPanel HorizontalAlignment="Center">
+                                <TextBlock Text="⚡" FontSize="17"/>
+                                <TextBlock Text="Nhanh YQ" FontSize="9.5" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </RadioButton>
+
+                        <RadioButton x:Name="TabArch" Style="{StaticResource StyleSideTabBtn}" Click="Tab_Click" Tag="PanelArch" ToolTip="Kiến Trúc &amp; Nhà Cửa">
+                            <StackPanel HorizontalAlignment="Center">
+                                <TextBlock Text="🏡" FontSize="17"/>
+                                <TextBlock Text="Kiến Trúc" FontSize="9.5" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </RadioButton>
+
+                        <RadioButton x:Name="TabStruct" Style="{StaticResource StyleSideTabBtn}" Click="Tab_Click" Tag="PanelStruct" ToolTip="Kết Cấu &amp; Cốt Thép">
+                            <StackPanel HorizontalAlignment="Center">
+                                <TextBlock Text="🏗️" FontSize="17"/>
+                                <TextBlock Text="Kết Cấu" FontSize="9.5" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </RadioButton>
+
+                        <RadioButton x:Name="TabMep" Style="{StaticResource StyleSideTabBtn}" Click="Tab_Click" Tag="PanelMep" ToolTip="MEP &amp; PCCC">
+                            <StackPanel HorizontalAlignment="Center">
+                                <TextBlock Text="💧" FontSize="17"/>
+                                <TextBlock Text="MEP" FontSize="9.5" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </RadioButton>
+
+                        <RadioButton x:Name="TabElec" Style="{StaticResource StyleSideTabBtn}" Click="Tab_Click" Tag="PanelElec" ToolTip="Điện &amp; Tủ Điện">
+                            <StackPanel HorizontalAlignment="Center">
+                                <TextBlock Text="⚡" FontSize="17"/>
+                                <TextBlock Text="Điện" FontSize="9.5" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </RadioButton>
+
+                        <RadioButton x:Name="TabSymbols" Style="{StaticResource StyleSideTabBtn}" Click="Tab_Click" Tag="PanelSymbols" ToolTip="Kho Ký Hiệu &amp; Linh Kiện Tủ Điện">
+                            <StackPanel HorizontalAlignment="Center">
+                                <TextBlock Text="🏷️" FontSize="17"/>
+                                <TextBlock Text="Ký Hiệu" FontSize="9.5" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </RadioButton>
+
+                        <RadioButton x:Name="TabDraw2D" Style="{StaticResource StyleSideTabBtn}" Click="Tab_Click" Tag="PanelDraw2D" ToolTip="Vẽ &amp; Chỉnh Sửa 2D">
+                            <StackPanel HorizontalAlignment="Center">
+                                <TextBlock Text="📐" FontSize="17"/>
+                                <TextBlock Text="Vẽ 2D" FontSize="9.5" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </RadioButton>
+
+                        <RadioButton x:Name="TabDim" Style="{StaticResource StyleSideTabBtn}" Click="Tab_Click" Tag="PanelDim" ToolTip="Kích Thước DIM">
+                            <StackPanel HorizontalAlignment="Center">
+                                <TextBlock Text="📏" FontSize="17"/>
+                                <TextBlock Text="Đo Dim" FontSize="9.5" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </RadioButton>
+
+                        <RadioButton x:Name="TabUtil" Style="{StaticResource StyleSideTabBtn}" Click="Tab_Click" Tag="PanelUtil" ToolTip="Tiện Ích Siêu Tốc">
+                            <StackPanel HorizontalAlignment="Center">
+                                <TextBlock Text="🚀" FontSize="17"/>
+                                <TextBlock Text="Tiện Ích" FontSize="9.5" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </RadioButton>
+
+                        <RadioButton x:Name="Tab3D" Style="{StaticResource StyleSideTabBtn}" Click="Tab_Click" Tag="Panel3D" ToolTip="Vật Liệu &amp; 3D Solid">
+                            <StackPanel HorizontalAlignment="Center">
+                                <TextBlock Text="🎨" FontSize="17"/>
+                                <TextBlock Text="3D/Hatch" FontSize="9.5" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </RadioButton>
+
+                        <RadioButton x:Name="TabSettings" Style="{StaticResource StyleSideTabBtn}" Click="Tab_Click" Tag="PanelSettings" ToolTip="Cài Đặt &amp; Tùy Biến">
+                            <StackPanel HorizontalAlignment="Center">
+                                <TextBlock Text="⚙️" FontSize="17"/>
+                                <TextBlock Text="Cài Đặt" FontSize="9.5" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </RadioButton>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+            <!-- KHU VỰC NỘI DUNG -->
+            <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="8,4,8,8">
+                <Grid x:Name="MainContentGrid">
+
+                    <!-- ============================================================
+                         TAB 1: 🩺 BẢO DƯỠNG BẢN VẼ
+                         ============================================================ -->
+                    <StackPanel x:Name="PanelDoctor" Visibility="Visible">
+                        <TextBlock Text="🩺 BẢO DƯỠNG &amp; SỬA LỖI CAD CHUYÊN SÂU" FontSize="11.5" FontWeight="Bold" Foreground="#0284C7" Margin="2,4,0,6"/>
+                        <Button Style="{StaticResource StyleVipButton}" Click="Btn_Click" Tag="DT_CLEAN" ToolTip="Dọn rác triệt để (Purge + RegApps + Zero Length) + Audit database tự động">
+                            <TextBlock Text="🧹 Dọn Rác &amp; Sửa Lỗi DWG Triệt Để (DT_CLEAN)" FontWeight="Bold" Foreground="#0284C7"/>
+                        </Button>
+                        <Button Style="{StaticResource StyleGoldButton}" Click="Btn_Click" Tag="DT_QUICKLAYER" ToolTip="Tự động quét và phân loại toàn bộ Text, Dim, Hatch, Trục vào đúng Layer chuẩn">
+                            <TextBlock Text="🏷️ Sắp Xếp Layer Nhanh (DT_QUICKLAYER)" FontWeight="Bold" Foreground="#B45309"/>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="DT_YQREFIX" ToolTip="Kiểm tra hệ thống, nạp lại CUIX và cấu hình YQArch Tiếng Việt">
+                            <TextBlock><Run Text="🩺 " Foreground="#0284C7"/><Run Text="Khôi Phục YQArch Tiếng Việt (DT_YQREFIX)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_PURGE Regapp * N _PURGE Zero * N " ToolTip="Quét xóa RegApps rác và nét độ dài = 0">
+                            <TextBlock><Run Text="🧹 " Foreground="#ea580c"/><Run Text="Deep Purge Rác (RegApp + Zero Length)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_FLATTEN All  " ToolTip="Đưa toàn bộ đối tượng về Z=0">
+                            <TextBlock><Run Text="📐 " Foreground="#d97706"/><Run Text="Flatten Z=0 Toàn Bộ Bản Vẽ"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="DTT_FIXFONT " ToolTip="Sửa lỗi font tiếng Việt ? ? ? về chuẩn Unicode">
+                            <TextBlock><Run Text="🔤 " Foreground="#059669"/><Run Text="Fix Font Tiếng Việt (Unicode Standard)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_AUDIT Y " ToolTip="Sửa lỗi database bản vẽ">
+                            <TextBlock><Run Text="🛠 " Foreground="#0284C7"/><Run Text="Audit Sửa Lỗi Database (_AUDIT)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_OVERKILL  " ToolTip="Xóa các đường trùng nhau, đối tượng chồng khít">
+                            <TextBlock><Run Text="🗑️ " Foreground="#e11d48"/><Run Text="Xóa Đường Trùng Nhau (_OVERKILL)"/></TextBlock>
+                        </Button>
+                    </StackPanel>
+
+                    <!-- ============================================================
+                         TAB YQ QUICK: ⚡ THAO TÁC NHANH SIÊU TỐC (YQARCH QUICK TOOLS)
+                         ============================================================ -->
+                    <StackPanel x:Name="PanelYqQuick" Visibility="Collapsed">
+                        <TextBlock Text="⚡ THAO TÁC NHANH YQARCH TIẾNG VIỆT" FontSize="11.5" FontWeight="Bold" Foreground="#0284C7" Margin="2,4,0,4"/>
+
+                        <Grid Margin="0,2,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="6"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="DT_YQREFIX" ToolTip="Khôi phục &amp; nạp lại Menu YQArch Tiếng Việt ngay lập tức">
+                                <TextBlock><Run Text="🔄 " Foreground="#0284C7"/><Run Text="Nạp Lại YQArch"/></TextBlock>
+                            </Button>
+                            <Button Grid.Column="2" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="yqsys " ToolTip="Cài đặt hệ thống YQArch: đơn vị, tỉ lệ, layer chuẩn (yqsys)">
+                                <TextBlock><Run Text="⚙️ " Foreground="#64748B"/><Run Text="Cấu Hình YQSys"/></TextBlock>
+                            </Button>
+                        </Grid>
+
+                        <Grid Margin="0,0,0,6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="6"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="DT_QUICKLAYER" ToolTip="Tự động sắp xếp phân loại Layer bản vẽ nhanh">
+                                <TextBlock><Run Text="🏷️ " Foreground="#B45309"/><Run Text="Layer Nhanh"/></TextBlock>
+                            </Button>
+                            <Button Grid.Column="2" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="DT_MENU" ToolTip="Cập nhật hoặc hiển thị lại MenuBar 'DTools Pro' trên đỉnh AutoCAD">
+                                <TextBlock><Run Text="📋 " Foreground="#059669"/><Run Text="Menu DTools"/></TextBlock>
+                            </Button>
+                        </Grid>
+
+                        <TextBlock Text="🧱 TƯỜNG &amp; CỘT NHANH (WALL &amp; COLUMN)" FontSize="11.5" FontWeight="Bold" Foreground="#B45309" Margin="2,8,0,4"/>
+                        <Button Style="{StaticResource StyleVipButton}" Click="Btn_Click" Tag="ww " ToolTip="Vẽ tường đôi thông minh, tự động cắt tỉa tại tất cả các góc giao (Lệnh WW)">
+                            <TextBlock Text="🧱 Vẽ Tường Tự Cắt Giao (WW)" FontWeight="Bold" Foreground="#0284C7"/>
+                        </Button>
+                        <Button Style="{StaticResource StyleGoldButton}" Click="Btn_Click" Tag="TW " ToolTip="Cắt tỉa tường &amp; cột siêu tốc, tự động nhận diện giao cắt (Lệnh TW)">
+                            <TextBlock Text="✂️ Cắt Tỉa Tường Thông Minh (TW)" FontWeight="Bold" Foreground="#B45309"/>
+                        </Button>
+                        <Grid Margin="0,2,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="6"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="wwT " ToolTip="Đổi độ dày tường và tự co dãn cửa đi/cửa sổ (Lệnh WWT)">
+                                <TextBlock><Run Text="📐 " Foreground="#B45309"/><Run Text="Đổi Dày Tường (WWT)"/></TextBlock>
+                            </Button>
+                            <Button Grid.Column="2" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="Xww " ToolTip="Chuyển đổi tim trục / đường nét Line thành tường đôi (Lệnh XWW)">
+                                <TextBlock><Run Text="⭕ " Foreground="#0284C7"/><Run Text="Line Ra Tường (XWW)"/></TextBlock>
+                            </Button>
+                        </Grid>
+                        <Grid Margin="0,2,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="6"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="JWW " ToolTip="Nối dài tường hoặc bo góc tường giao (Lệnh JWW)">
+                                <TextBlock><Run Text="🔗 " Foreground="#0284C7"/><Run Text="Nối Tường (JWW)"/></TextBlock>
+                            </Button>
+                            <Button Grid.Column="2" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="BWW " ToolTip="Bẻ vát mép góc tường (Lệnh BWW)">
+                                <TextBlock><Run Text="📐 " Foreground="#B45309"/><Run Text="Vát Mép Tường (BWW)"/></TextBlock>
+                            </Button>
+                        </Grid>
+                        <Grid Margin="0,2,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="6"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="zzR " ToolTip="Vẽ cột chữ nhật / vuông tự xóa ruột tường (Lệnh ZZR)">
+                                <TextBlock><Run Text="🏛️ " Foreground="#7C3AED"/><Run Text="Cột Chữ Nhật (ZZR)"/></TextBlock>
+                            </Button>
+                            <Button Grid.Column="2" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="zzBZ " ToolTip="Quét chọn toàn bộ tim trục để rải cột tự động (Lệnh ZZBZ)">
+                                <TextBlock><Run Text="🎯 " Foreground="#059669"/><Run Text="Rải Cột Trục (ZZBZ)"/></TextBlock>
+                            </Button>
+                        </Grid>
+                        <Button Style="{StaticResource StyleRedButton}" Click="Btn_Click" Tag="EW " ToolTip="Xóa tường, cửa hoặc cột và tự động vá kín lại nét tường cũ (Lệnh EW)">
+                            <TextBlock Text="🧹 Xóa Tường Tự Vá Nét Liền (EW)" FontWeight="Bold" Foreground="#DC2626"/>
+                        </Button>
+
+                        <TextBlock Text="🚪 CỬA ĐI &amp; CỬA SỔ TỰ ĐỘNG (DOOR &amp; WINDOW)" FontSize="11.5" FontWeight="Bold" Foreground="#0284C7" Margin="2,8,0,4"/>
+                        <Grid Margin="0,2,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="6"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Style="{StaticResource StyleVipButton}" Click="Btn_Click" Tag="AD " ToolTip="Click vào tường hoặc trục để đục cửa đi 1 cánh tự động (Lệnh AD)">
+                                <TextBlock Text="🚪 Đục Cửa Đi (AD)" FontWeight="Bold" Foreground="#0284C7"/>
+                            </Button>
+                            <Button Grid.Column="2" Style="{StaticResource StyleVipButton}" Click="Btn_Click" Tag="AW " ToolTip="Click vào tường hoặc trục để đục cửa sổ tự động (Lệnh AW)">
+                                <TextBlock Text="🪟 Đục Cửa Sổ (AW)" FontWeight="Bold" Foreground="#0284C7"/>
+                            </Button>
+                        </Grid>
+                        <Grid Margin="0,2,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="6"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="WDZ " ToolTip="Đục cửa sổ góc tại góc giao 2 tường (Lệnh WDZ)">
+                                <TextBlock><Run Text="📐 " Foreground="#0284C7"/><Run Text="Cửa Sổ Góc (WDZ)"/></TextBlock>
+                            </Button>
+                            <Button Grid.Column="2" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="CW " ToolTip="Thay đổi bề rộng cửa đi hoặc cửa sổ nhanh (Lệnh CW)">
+                                <TextBlock><Run Text="↔️ " Foreground="#B45309"/><Run Text="Đổi Rộng Cửa (CW)"/></TextBlock>
+                            </Button>
+                        </Grid>
+                        <Grid Margin="0,2,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="6"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="VW " ToolTip="Trượt dịch chuyển cửa trên tường và tự dời lỗ đục (Lệnh VW)">
+                                <TextBlock><Run Text="✥ " Foreground="#059669"/><Run Text="Dời Cửa Tự Vá (VW)"/></TextBlock>
+                            </Button>
+                            <Button Grid.Column="2" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="ZXD " ToolTip="Đổi hướng lật cánh cửa đi (Lệnh ZXD)">
+                                <TextBlock><Run Text="🔄 " Foreground="#7C3AED"/><Run Text="Lật Cánh Cửa (ZXD)"/></TextBlock>
+                            </Button>
+                        </Grid>
+                        <Grid Margin="0,2,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="6"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="LTJ " ToolTip="Vẽ mặt bằng cầu thang bộ 2 vế chữ U tự động (Lệnh LTJ)">
+                                <TextBlock><Run Text="🪜 " Foreground="#7C3AED"/><Run Text="Mặt Bằng Thang (LTJ)"/></TextBlock>
+                            </Button>
+                            <Button Grid.Column="2" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="DTJ " ToolTip="Vẽ mặt bằng hố thang máy tự động (Lệnh DTJ)">
+                                <TextBlock><Run Text="🛗 " Foreground="#0284C7"/><Run Text="Hố Thang Máy (DTJ)"/></TextBlock>
+                            </Button>
+                        </Grid>
+
+                        <TextBlock Text="📏 KÍCH THƯỚC DIM &amp; CHỮ (SMART DIM &amp; TEXT)" FontSize="11.5" FontWeight="Bold" Foreground="#059669" Margin="2,8,0,4"/>
+                        <Button Style="{StaticResource StyleGreenButton}" Click="Btn_Click" Tag="ddz " ToolTip="Tự động đo chuỗi kích thước Dim liên tục siêu tốc thông minh (Lệnh DDZ)">
+                            <TextBlock Text="⚡ Đo Dim Nhanh Tự Động (DDZ / DDC)" FontWeight="Bold" Foreground="#059669"/>
+                        </Button>
+                        <Grid Margin="0,2,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="6"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="d2d " ToolTip="Nối chuỗi Dim nhanh thông minh (Lệnh D2D)">
+                                <TextBlock><Run Text="⏩ " Foreground="#059669"/><Run Text="Nối Chuỗi Dim (D2D)"/></TextBlock>
+                            </Button>
+                            <Button Grid.Column="2" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="dda " ToolTip="Đo kích thước đoạn xiên song song (Lệnh DDA)">
+                                <TextBlock><Run Text="⤡ " Foreground="#0284C7"/><Run Text="Dim Xiên Đoạn (DDA)"/></TextBlock>
+                            </Button>
+                        </Grid>
+                        <Grid Margin="0,2,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="6"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="dde " ToolTip="Gióng đều và cắt bằng chân đường Dim thẳng hàng (Lệnh DDE)">
+                                <TextBlock><Run Text="📏 " Foreground="#0284C7"/><Run Text="Gióng Chân Dim (DDE)"/></TextBlock>
+                            </Button>
+                            <Button Grid.Column="2" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="dde0 " ToolTip="Quét xóa sạch các đối tượng Dim rác có chiều dài bằng 0 (Lệnh DDE0)">
+                                <TextBlock><Run Text="🗑️ " Foreground="#DC2626"/><Run Text="Xóa Dim Lỗi L=0 (DDE0)"/></TextBlock>
+                            </Button>
+                        </Grid>
+                        <Grid Margin="0,2,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="6"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="ssT " ToolTip="Chổi quét sao chép nội dung chữ từ nguồn sang đích (Lệnh SST)">
+                                <TextBlock><Run Text="🖌️ " Foreground="#B45309"/><Run Text="Quét Khớp Chữ (SST)"/></TextBlock>
+                            </Button>
+                            <Button Grid.Column="2" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="yq_strcase " ToolTip="Chuyển đổi chữ HOA sang thường hoặc thường sang HOA hàng loạt">
+                                <TextBlock><Run Text="🔤 " Foreground="#7C3AED"/><Run Text="HOA ↔ Thường (strcase)"/></TextBlock>
+                            </Button>
+                        </Grid>
+                        <Grid Margin="0,2,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="6"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="tt2c " ToolTip="Tự động xếp chuỗi Text uốn lượn chạy dọc theo đường cong Pline/Spline (Lệnh TT2C)">
+                                <TextBlock><Run Text="〰️ " Foreground="#7C3AED"/><Run Text="Chữ Theo Cong (TT2C)"/></TextBlock>
+                            </Button>
+                            <Button Grid.Column="2" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="ttr " ToolTip="Xoay chữ thẳng hàng theo góc 0 độ ngang (Lệnh TTR)">
+                                <TextBlock><Run Text="📐 " Foreground="#0284C7"/><Run Text="Xoay Chữ Ngang (TTR)"/></TextBlock>
+                            </Button>
+                        </Grid>
+                        <Grid Margin="0,2,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="6"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="tt2b " ToolTip="Tự động vẽ khung bao quanh chữ viết (Lệnh TT2B)">
+                                <TextBlock><Run Text="🔲 " Foreground="#B45309"/><Run Text="Đóng Khung Chữ (TT2B)"/></TextBlock>
+                            </Button>
+                            <Button Grid.Column="2" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="zmj " ToolTip="Click chọn vùng kín hoặc hình học, tự xuất diện tích sang bảng Excel / Table (Lệnh ZMJ)">
+                                <TextBlock><Run Text="📊 " Foreground="#059669"/><Run Text="Diện Tích Excel (ZMJ)"/></TextBlock>
+                            </Button>
+                        </Grid>
+
+                        <TextBlock Text="📑 LAYER &amp; BLOCK THẦN TỐC (LAYER &amp; BLOCKS)" FontSize="11.5" FontWeight="Bold" Foreground="#7C3AED" Margin="2,8,0,4"/>
+                        <Grid Margin="0,2,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="6"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="erF " ToolTip="Tắt ngay layer của đối tượng vừa click chọn (Lệnh ERF)">
+                                <TextBlock><Run Text="🚫 " Foreground="#DC2626"/><Run Text="Tắt Layer Chọn (ERF)"/></TextBlock>
+                            </Button>
+                            <Button Grid.Column="2" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="erD " ToolTip="Cô lập chỉ giữ lại layer đối tượng vừa chọn, tắt hết các layer khác (Lệnh ERD)">
+                                <TextBlock><Run Text="🎯 " Foreground="#B45309"/><Run Text="Cô Lập Layer (ERD)"/></TextBlock>
+                            </Button>
+                        </Grid>
+                        <Grid Margin="0,2,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="6"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="erA " ToolTip="Bật lại toàn bộ các layer đang tắt (Lệnh ERA)">
+                                <TextBlock><Run Text="💡 " Foreground="#059669"/><Run Text="Bật Mọi Layer (ERA)"/></TextBlock>
+                            </Button>
+                            <Button Grid.Column="2" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="erER " ToolTip="Mở khóa, giải đóng băng và bật tất cả layer sạch sẽ 100% (Lệnh ERER)">
+                                <TextBlock><Run Text="🔓 " Foreground="#0284C7"/><Run Text="Mở Sạch Layer (ERER)"/></TextBlock>
+                            </Button>
+                        </Grid>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="ee0 " ToolTip="Đưa tất cả màu sắc, kiểu nét, độ dày về chuẩn ByLayer (Lệnh EE0)">
+                            <TextBlock><Run Text="🎨 " Foreground="#0284C7"/><Run Text="Đưa Toàn Bộ Đối Tượng Về ByLayer (EE0)"/></TextBlock>
+                        </Button>
+                        <Grid Margin="0,2,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="6"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="bbxt " ToolTip="Phá vỡ Block thuộc tính nhưng giữ nguyên giá trị chữ viết thành Text (Lệnh BBXT)">
+                                <TextBlock><Run Text="💥 " Foreground="#B45309"/><Run Text="Phá Block Giữ Text (BBXT)"/></TextBlock>
+                            </Button>
+                            <Button Grid.Column="2" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="bbG " ToolTip="Đổi tên Block hàng loạt nhanh chóng (Lệnh BBG)">
+                                <TextBlock><Run Text="🏷️ " Foreground="#0284C7"/><Run Text="Đổi Tên Block (BBG)"/></TextBlock>
+                            </Button>
+                        </Grid>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="bfb " ToolTip="Kiểm tra đường bao Polyline có kín tuyệt đối hay không (Lệnh BFB)">
+                            <TextBlock><Run Text="🔒 " Foreground="#7C3AED"/><Run Text="Kiểm Tra Polyline Kín/Hở (BFB)"/></TextBlock>
+                        </Button>
+                    </StackPanel>
+
+                    <!-- ============================================================
+                         TAB 2: 🏡 KIẾN TRÚC &amp; NHÀ CỬA
+                         ============================================================ -->
+                    <StackPanel x:Name="PanelArch" Visibility="Collapsed">
+                        <TextBlock Text="📦 THƯ VIỆN DYNAMIC BLOCKS NỘI BỘ" FontSize="11.5" FontWeight="Bold" Foreground="#0284C7" Margin="2,4,0,4"/>
+                        <Button Style="{StaticResource StyleVipButton}" Click="Btn_Click" Tag="DT_INSERTBLOCK" ToolTip="Chèn Dynamic Block từ thư viện nội bộ Dtools/Blocks/ kèm tự động cấu hình tham số">
+                            <TextBlock Text="📦 Chèn Dynamic Block Thư Viện (DT_INSERTBLOCK)" FontWeight="Bold" Foreground="#0284C7"/>
+                        </Button>
+                        <Grid Margin="0,2,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="6"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="DT_DOOR" ToolTip="Chèn nhanh Cửa Đi Động (Architectural_Doors) kèm kích thước và lật hướng">
+                                <TextBlock><Run Text="🚪 " Foreground="#0284C7"/><Run Text="Cửa Đi Động (DT_DOOR)"/></TextBlock>
+                            </Button>
+                            <Button Grid.Column="2" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="DT_COLUMN" ToolTip="Chèn nhanh Cột Kiến Trúc Động (Architectural_Columns) kèm tiết diện">
+                                <TextBlock><Run Text="🏛️ " Foreground="#7C3AED"/><Run Text="Cột Động (DT_COLUMN)"/></TextBlock>
+                            </Button>
+                        </Grid>
+                        <Grid Margin="0,2,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="6"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="DT_ELEVATION" ToolTip="Chèn nhanh Ký hiệu Cao độ (Annotations)">
+                                <TextBlock><Run Text="📐 " Foreground="#B45309"/><Run Text="Cao Độ (DT_ELEVATION)"/></TextBlock>
+                            </Button>
+                            <Button Grid.Column="2" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="DT_OPENBLOCKS" ToolTip="Mở thư mục Dtools/Blocks/ trong Windows Explorer để thêm bớt file block DWG">
+                                <TextBlock><Run Text="📂 " Foreground="#059669"/><Run Text="Mở Kho Blocks"/></TextBlock>
+                            </Button>
+                        </Grid>
+
+                        <TextBlock Text="🏡 MẶT BẰNG &amp; MẶT CẮT" FontSize="11.5" FontWeight="Bold" Foreground="#B45309" Margin="2,8,0,4"/>
+                        <Button Style="{StaticResource StyleVipButton}" Click="Btn_Click" Tag="DTT_SCAN_TO_CAD " ToolTip="Quét ảnh chụp / scan / PDF bản vẽ và tự động dựng lại nét CAD (DWG) bằng AI Vision &amp; Computer Vision">
+                            <TextBlock Text="⚡🤖 Quét Bản Vẽ (Ảnh/PDF) Ra CAD (AI Vision)" FontWeight="Bold" Foreground="#7C3AED"/>
+                        </Button>
+                        <Button Style="{StaticResource StyleVipButton}" Click="Btn_Click" Tag="DTT_HOUSE_PLAN " ToolTip="Vẽ mặt bằng nhà kiến trúc thông minh với Preview 2D/3D tương tác, hệ trục và 3 lớp Dim">
+                            <TextBlock Text="🏛️ Mặt Bằng Nhà Kiến Trúc &amp; Preview 2D/3D" FontWeight="Bold" Foreground="#0284C7"/>
+                        </Button>
+                        <Button Style="{StaticResource StyleVipButton}" Click="Btn_Click" Tag="DTT_STANDARD_FLOOR_PLAN " ToolTip="Tự động sinh mặt bằng tầng điển hình: 4 phòng, cột BTCT, thang, cửa, cửa sổ, 3 lớp Dim (nhập L x W)">
+                            <TextBlock Text="🏠 Mặt Bằng Tầng Điển Hình Auto (4 Phòng + Thang)" FontWeight="Bold" Foreground="#059669"/>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="DTT_HOUSEPLAN " ToolTip="Vẽ mặt bằng nhà WxL tự động với tường, cửa, nhãn phòng">
+                            <TextBlock><Run Text="🏡 " Foreground="#059669"/><Run Text="Mặt Bằng Nhà Tự Động (WxL)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="DTT_WALLSEC " ToolTip="Vẽ mặt cắt tường móng đầy đủ cao độ (+3.600 ~ -1.200)">
+                            <TextBlock><Run Text="🏛️ " Foreground="#7c3aed"/><Run Text="Mặt Cắt Tường Móng &amp; Cao Độ Kiến Trúc"/></TextBlock>
+                        </Button>
+
+                        <TextBlock Text="🧱 TƯỜNG XÂY GẠCH" FontSize="11.5" FontWeight="Bold" Foreground="#B45309" Margin="2,8,0,4"/>
+                        <Button Style="{StaticResource StyleGoldButton}" Click="Btn_Click" Tag="DTT_WALL_MENU " ToolTip="Mở menu chọn loại tường: 220, 110, 100, 75mm &amp; Vẽ Liên Tục">
+                            <TextBlock Text="🧱 Menu Chọn Tường  (220/110/100/75mm + Liên Tục)" FontWeight="Bold" Foreground="#B45309"/>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="DTT_WALL220 " ToolTip="Vẽ tường bao 220mm, hỏi liên tục">
+                            <TextBlock><Run Text="🧱 " Foreground="#b45309"/><Run Text="Tường Bao 220mm  (Có Vẽ Liên Tục)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="DTT_WALL110 " ToolTip="Vẽ tường ngăn 110mm, hỏi liên tục">
+                            <TextBlock><Run Text="🧱 " Foreground="#d97706"/><Run Text="Tường Ngăn 110mm  (Có Vẽ Liên Tục)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="DTT_WALL_CONT " ToolTip="Vẽ chuỗi tường liên tục đa điểm như lệnh PLINE">
+                            <TextBlock><Run Text="⭕ " Foreground="#ea580c"/><Run Text="Vẽ Liên Tục Đa Điểm 220mm  (PLINE Mode)"/></TextBlock>
+                        </Button>
+
+                        <TextBlock Text="🚪 CỬA ĐI &amp; CỬA SỔ" FontSize="11.5" FontWeight="Bold" Foreground="#0284C7" Margin="2,8,0,4"/>
+                        <Button Style="{StaticResource StyleVipButton}" Click="Btn_Click" Tag="DTT_DOOR_MENU " ToolTip="Mở menu chọn loại cửa: D800/900/1200 + 2 cánh + trượt + gấp">
+                            <TextBlock Text="🚪 Menu Cửa Đi  (D800/900/1200/Trượt/Gấp)" FontWeight="Bold" Foreground="#0284C7"/>
+                        </Button>
+                        <Button Style="{StaticResource StyleVipButton}" Click="Btn_Click" Tag="DTT_WIN_MENU " ToolTip="Mở menu chọn cửa sổ: S600/1200/1500/1800 + lam gió">
+                            <TextBlock Text="🪟 Menu Cửa Sổ  (S600/1200/1500/1800 + Lam Gió)" FontWeight="Bold" Foreground="#38bdf8"/>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="DTT_DOOR900 " ToolTip="Chèn cửa đi 1 cánh D900, chọn hướng mở, vẽ liên tục">
+                            <TextBlock><Run Text="🚪 " Foreground="#10b981"/><Run Text="Cửa Đi 1 Cánh D900  (Chọn Hướng Mở)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="DTT_DOOR1200 " ToolTip="Chèn cửa đi 2 cánh D1200">
+                            <TextBlock><Run Text="🚪 " Foreground="#fbbf24"/><Run Text="Cửa Đi 2 Cánh D1200  (Phòng Khách/Hội Trường)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="DTT_WIN1200 " ToolTip="Chèn cửa sổ 2 cánh S1200, vẽ liên tục">
+                            <TextBlock><Run Text="🪟 " Foreground="#38bdf8"/><Run Text="Cửa Sổ 2 Cánh S1200  (Tiêu Chuẩn)"/></TextBlock>
+                        </Button>
+
+                        <TextBlock Text="🎯 TRỤC &amp; NHÃN PHÒNG" FontSize="11" FontWeight="Bold" Foreground="#a78bfa" Margin="2,8,0,4"/>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="DTT_ROOMTAG " ToolTip="Thả nhãn phòng liên tục, tự dò diện tích">
+                            <TextBlock><Run Text="🏷️ " Foreground="#f472b6"/><Run Text="Nhãn Phòng Tự Tính Diện Tích  (Liên Tục)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="DTT_GRID " ToolTip="Vẽ trục định vị kèm bong bóng trục">
+                            <TextBlock><Run Text="🎯 " Foreground="#a78bfa"/><Run Text="Vẽ Trục Định Vị &amp; Bong Bóng Trục"/></TextBlock>
+                        </Button>
+
+                        <TextBlock Text="🪜 CẦU THANG PHONG THỦY &amp; NỘI THẤT" FontSize="11" FontWeight="Bold" Foreground="#10B981" Margin="2,8,0,4"/>
+                        <Button Style="{StaticResource StyleGreenButton}" Click="Btn_Click" Tag="DTT_STAIRCASE " ToolTip="Vẽ Cầu Thang Phong Thủy 2 Vế Chữ U (17, 21, 25 Bậc Cung Sinh) có Chiếu Nghỉ &amp; Tim Đi">
+                            <TextBlock><Run Text="🪜 " Foreground="#10B981"/><Run Text="Cầu Thang Phong Thủy (Cung Sinh)" FontWeight="Bold"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource StyleGoldButton}" Click="Btn_Click" Tag="DTT_FURNITURE " ToolTip="Tự động bố trí trọn bộ nội thất kiến trúc: Khách, Bếp, Ngủ, WC, Làm việc">
+                            <TextBlock><Run Text="🛋️ " Foreground="#fbbf24"/><Run Text="Bố Trí Trọn Bộ Nội Thất Kiến Trúc" FontWeight="Bold"/></TextBlock>
+                        </Button>
+                    </StackPanel>
+
+                    <!-- ============================================================
+                         TAB 3: 🏗️ KẾT CẤU &amp; BÊ TÔNG CỐT THÉP
+                         ============================================================ -->
+                    <StackPanel x:Name="PanelStruct" Visibility="Collapsed">
+                        <TextBlock Text="🏗️ CỐT THÉP &amp; CHI TIẾT KẾT CẤU" FontSize="11" FontWeight="Bold" Foreground="#9d4edd" Margin="2,4,0,4"/>
+                        <Button Style="{StaticResource StylePurpleButton}" Click="Btn_Click" Tag="DTT_STRUCT_MENU " ToolTip="Mở menu chọn loại thép kết cấu">
+                            <TextBlock Text="🏗️ Menu Thép Kết Cấu  (Chủ/Đai/Mặt Cắt/Bảng)" FontWeight="Bold" Foreground="#9d4edd"/>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="DTT_REBAR135 " ToolTip="Vẽ thép chủ uốn móc 135° kháng chấn">
+                            <TextBlock><Run Text="🪝 " Foreground="#9d4edd"/><Run Text="Thép Chủ Móc Kháng Chấn 135°"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="DTT_REBAR90 " ToolTip="Vẽ thép chủ uốn móc 90°">
+                            <TextBlock><Run Text="📐 " Foreground="#a855f7"/><Run Text="Thép Chủ Móc Vuông 90°"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="DTT_STIRRUP " ToolTip="Vẽ đai kín uốn móc kháng chấn 135°">
+                            <TextBlock><Run Text="🔲 " Foreground="#c084fc"/><Run Text="Thép Đai Cột/Dầm Móc 135°"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="DTT_BEAMSEC " ToolTip="Vẽ mặt cắt tiết diện dầm/cột kèm thép góc">
+                            <TextBlock><Run Text="🏛️ " Foreground="#ffb700"/><Run Text="Mặt Cắt Dầm / Cột  (BxH + Thép)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="DTT_REBARTABLE " ToolTip="Xuất bảng thống kê thép tự tính trọng lượng kg">
+                            <TextBlock><Run Text="📊 " Foreground="#10b981"/><Run Text="Xuất Bảng Thống Kê Thép (Tự Tính Kg)"/></TextBlock>
+                        </Button>
+                    </StackPanel>
+
+                    <!-- ============================================================
+                         TAB 4: 💧 MEP &amp; PCCC
+                         ============================================================ -->
+                    <StackPanel x:Name="PanelMep" Visibility="Collapsed">
+                        <TextBlock Text="💧 HỆ THỐNG CƠ ĐIỆN &amp; PCCC" FontSize="11" FontWeight="Bold" Foreground="#38bdf8" Margin="2,4,0,4"/>
+                        <Button Style="{StaticResource StyleVipButton}" Click="Btn_Click" Tag="DTT_MEP_MENU " ToolTip="Mở menu chọn loại ống MEP + PCCC">
+                            <TextBlock Text="💧 Menu Ống MEP  (Thoát/Cấp/HVAC/PCCC)" FontWeight="Bold" Foreground="#38bdf8"/>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="DTT_DRAINPIPE " ToolTip="Nhập độ dốc i% và đường kính D, vẽ tim 3D">
+                            <TextBlock><Run Text="🚰 " Foreground="#38bdf8"/><Run Text="Ống Thoát Dốc Z  (i% + Đường Kính D)"/></TextBlock>
+                        </Button>
+                    </StackPanel>
+
+                    <!-- ============================================================
+                         TAB 5: ⚡ ĐIỆN & AUTOCAD ELECTRICAL NATIVE-FIRST
+                         ============================================================ -->
+                    <StackPanel x:Name="PanelElec" Visibility="Collapsed">
+                        <TextBlock Text="⚡ TRUNG TÂM CÔNG CỤ ĐIỆN AUTOCAD ELECTRICAL" FontSize="11.5" FontWeight="Bold" Foreground="#0284C7" Margin="2,4,0,4"/>
+
+                        <!-- NHÓM 1: CÔNG CỤ AUTOCAD ELECTRICAL NATIVE GỐC -->
+                        <TextBlock Text="🔌 AUTOCAD ELECTRICAL NATIVE (TIỆN ÍCH THÔNG MINH)" FontSize="10.5" FontWeight="Bold" Foreground="#F59E0B" Margin="2,4,0,3"/>
+                        <Grid Margin="0,2,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="6"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Style="{StaticResource StyleVipButton}" Click="Btn_Click" Tag="AEWIRE" ToolTip="Vẽ dây điện thông minh AutoCAD Electrical tự động sinh giao điểm (Lệnh AEWIRE)">
+                                <TextBlock><Run Text="⚡ " Foreground="#0284C7"/><Run Text="Vẽ Dây Điện (AEWIRE)" FontWeight="Bold"/></TextBlock>
+                            </Button>
+                            <Button Grid.Column="2" Style="{StaticResource StyleVipButton}" Click="Btn_Click" Tag="AEMULTIBUS" ToolTip="Vẽ cụm bus nguồn 3 pha đa nhánh L1-L2-L3-N (Lệnh AEMULTIBUS)">
+                                <TextBlock><Run Text="⚡⚡⚡ " Foreground="#EF4444"/><Run Text="Bus 3 Pha (AEMULTIBUS)" FontWeight="Bold"/></TextBlock>
+                            </Button>
+                        </Grid>
+                        <Grid Margin="0,2,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="6"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="AECONNECTCOMP" ToolTip="Tự động nối dây giữa 2 linh kiện điện thông minh (Lệnh AECONNECTCOMP)">
+                                <TextBlock><Run Text="🔗 " Foreground="#10B981"/><Run Text="Tự Nối Dây (AECONNECT)"/></TextBlock>
+                            </Button>
+                            <Button Grid.Column="2" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="AELADDER" ToolTip="Tạo mạch thang điều khiển Control Ladder (Lệnh AELADDER)">
+                                <TextBlock><Run Text="🪜 " Foreground="#8B5CF6"/><Run Text="Vẽ Ladder (AELADDER)"/></TextBlock>
+                            </Button>
+                        </Grid>
+                        <Grid Margin="0,2,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="6"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="AEWIRENO" ToolTip="Tự động đánh số dây toàn dự án Electrical (Lệnh AEWIRENO)">
+                                <TextBlock><Run Text="🔢 " Foreground="#F59E0B"/><Run Text="Đánh Số Dây (AEWIRENO)"/></TextBlock>
+                            </Button>
+                            <Button Grid.Column="2" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="AEXREF" ToolTip="Tham chiếu chéo vị trí tiếp điểm và cuộn hút (Lệnh AEXREF)">
+                                <TextBlock><Run Text="🪞 " Foreground="#6366F1"/><Run Text="Tham Chiếu Chéo (AEXREF)"/></TextBlock>
+                            </Button>
+                        </Grid>
+                        <Grid Margin="0,2,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="6"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="AECOMPONENT" ToolTip="Chèn linh kiện Schematic từ thư viện Catalog (Lệnh AECOMPONENT)">
+                                <TextBlock><Run Text="🧩 " Foreground="#0284C7"/><Run Text="Chèn Linh Kiện (AECOMPONENT)"/></TextBlock>
+                            </Button>
+                            <Button Grid.Column="2" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="AEAUDIT" ToolTip="Kiểm toán Electrical Audit phát hiện dây hở, chân lỗi (Lệnh AEAUDIT)">
+                                <TextBlock><Run Text="🛡️ " Foreground="#EF4444"/><Run Text="Kiểm Toán (AEAUDIT)"/></TextBlock>
+                            </Button>
+                        </Grid>
+                        <Grid Margin="0,2,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="6"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="AESAVEDCIRCUIT" ToolTip="Chèn cụm mạch điện mẫu đã lưu sẵn DWG (Lệnh AESAVEDCIRCUIT)">
+                                <TextBlock><Run Text="📦 " Foreground="#10B981"/><Run Text="Chèn Mạch Lưu"/></TextBlock>
+                            </Button>
+                            <Button Grid.Column="2" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="AECIRCBUILDER" ToolTip="Mở Circuit Builder tự động sinh mạch động cơ (Lệnh AECIRCBUILDER)">
+                                <TextBlock><Run Text="⚡ " Foreground="#D97706"/><Run Text="Circuit Builder"/></TextBlock>
+                            </Button>
+                        </Grid>
+
+                        <!-- NHÓM 2: BA BẢN VẼ MẪU & MẠCH ĐIỆN KỸ THUẬT CHUẨN (DOL, SAO-TAM GIÁC, CHIẾU SÁNG 12X6M) -->
+                        <TextBlock Text="⭐ BA MẠCH &amp; MẶT BẰNG ĐIỆN CHUẨN THỰC TẾ" FontSize="10.5" FontWeight="Bold" Foreground="#10B981" Margin="2,8,0,3"/>
+                        <Button Style="{StaticResource StyleGoldButton}" Click="Btn_Click" Tag="DTT_E_LIGHTING" ToolTip="Vẽ Mặt Bằng Chiếu Sáng 12m x 6m (Kích thước lọt lòng 12000x6000, tường 200, 2 đèn, công tắc, dây nét đứt, dim mét)">
+                            <TextBlock Text="💡 1. Mặt Bằng Chiếu Sáng Phòng 12m x 6m (DTT_E_LIGHTING)" FontWeight="Bold" Foreground="#B45309"/>
+                        </Button>
+                        <Button Style="{StaticResource StyleVipButton}" Click="Btn_Click" Tag="DTT_E_DOL" ToolTip="Vẽ Mạch Khởi Động Trực Tiếp DOL 3 Pha (Chuẩn IEC tiếp điểm tự giữ NO 13-14, có chế độ tham chiếu ảnh đề bài)">
+                            <TextBlock Text="⚙️ 2. Mạch Khởi Động Trực Tiếp DOL 3 Pha (DTT_E_DOL)" FontWeight="Bold" Foreground="#0284C7"/>
+                        </Button>
+                        <Button Style="{StaticResource StylePurpleButton}" Click="Btn_Click" Tag="DTT_E_STARDELTA" ToolTip="Vẽ Mạch Khởi Động Sao - Tam Giác Y-Δ (Motor 6 cực, Khóa chéo điện NC MC3/MC4 + Khóa cơ khí, Dead-time 50ms)">
+                            <TextBlock Text="⭐ 3. Mạch Khởi Động Sao - Tam Giác Y-Δ (DTT_E_STARDELTA)" FontWeight="Bold" Foreground="#7E22CE"/>
+                        </Button>
+                        <Grid Margin="0,2,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="6"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="DTT_ELECTRICAL" ToolTip="Mở Bảng Điều Khiển Trung Tâm Điện Thông Minh (DTT_ELECTRICAL)">
+                                <TextBlock><Run Text="🎮 " Foreground="#0284C7"/><Run Text="Trung Tâm Điện"/></TextBlock>
+                            </Button>
+                            <Button Grid.Column="2" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="DTT_DIAG" ToolTip="Chẩn đoán môi trường Host ACADE, phiên bản và đường dẫn thư viện IEC (DTT_DIAG)">
+                                <TextBlock><Run Text="🔍 " Foreground="#059669"/><Run Text="Chẩn Đoán ACADE"/></TextBlock>
+                            </Button>
+                        </Grid>
+
+                        <!-- NHÓM 3: TỦ ĐIỆN VẠN NĂNG & THIẾT KẾ ĐIỆN CÔNG NGHIỆP -->
+                        <TextBlock Text="📦 TỦ ĐIỆN &amp; SƠ ĐỒ ĐƠN TUYẾN" FontSize="10.5" FontWeight="Bold" Foreground="#0284C7" Margin="2,8,0,3"/>
+                        <Button Style="{StaticResource StyleVipButton}" Click="Btn_Click" Tag="DTT_CABINET_BUILDER" ToolTip="Mở Menu Thiết Kế &amp; Sinh Tủ Điện Vạn Năng Tham Số Động (4 Tab, Live Preview)">
+                            <TextBlock Text="⚡ BỘ THIẾT KẾ TỦ ĐIỆN VẠN NĂNG (DTT_CABINET_BUILDER)" FontWeight="Bold" Foreground="#0284C7"/>
+                        </Button>
+                        <Grid Margin="0,2,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="6"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Style="{StaticResource StyleGoldButton}" Click="Btn_Click" Tag="DTT_CABLE_CALC " ToolTip="Tính toán chọn tiết diện cáp Cadivi &amp; kiểm tra độ sụt áp TCVN/IEC">
+                                <TextBlock><Run Text="⚡ " Foreground="#F59E0B"/><Run Text="Tính Tiết Diện Cáp" FontWeight="Bold"/></TextBlock>
+                            </Button>
+                            <Button Grid.Column="2" Style="{StaticResource StyleVipButton}" Click="Btn_Click" Tag="DTT_SLD_BUILDER " ToolTip="Tự động sinh Sơ Đồ Nguyên Lý Đơn Tuyến (Single Line Diagram)">
+                                <TextBlock><Run Text="📊 " Foreground="#0284C7"/><Run Text="Sơ Đồ Đơn Tuyến" FontWeight="Bold"/></TextBlock>
+                            </Button>
+                        </Grid>
+                        <Grid Margin="0,2,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="6"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="DTT_PLC_BUILDER" ToolTip="Mô-đun PLC I/O Parametric: Siemens, Mitsubishi, Omron, Schneider">
+                                <TextBlock><Run Text="🎛️ " Foreground="#8B5CF6"/><Run Text="Mô-đun PLC I/O"/></TextBlock>
+                            </Button>
+                            <Button Grid.Column="2" Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="DTT_TERMINAL_STRIP" ToolTip="Tự động sinh sơ đồ hàng kẹp Terminal Strip X1/X2">
+                                <TextBlock><Run Text="⛓️ " Foreground="#EC4899"/><Run Text="Hàng Kẹp Cầu Đấu"/></TextBlock>
+                            </Button>
+                        </Grid>
+
+                        <!-- NHÓM 4: MẶT BẰNG ĐIỆN 2D PRO & KÝ HIỆU -->
+                        <TextBlock Text="🏠 MẶT BẰNG ĐIỆN DÂN DỤNG &amp; CÔNG NGHIỆP" FontSize="10.5" FontWeight="Bold" Foreground="#B45309" Margin="2,8,0,3"/>
+                        <Button Style="{StaticResource StyleVipButton}" Click="Btn_Click" Tag="DTT_ELEC_FLOORPLAN" ToolTip="Vẽ Mặt Bằng Điện 2D Full Tính Năng: Chiếu sáng, Ổ cắm, ELV, Đi dây Loop, Tủ DB">
+                            <TextBlock Text="🏠 Vẽ Mặt Bằng Điện 2D Chi Tiết (DTT_ELEC_FLOORPLAN)" FontWeight="Bold" Foreground="#0284C7"/>
+                        </Button>
+                        <Button Style="{StaticResource StyleGreenButton}" Click="Btn_Click" Tag="DTT_EXPORT_BOM" ToolTip="Quét toàn bộ block thiết bị và xuất bảng kê vật tư sang file Excel .xlsx">
+                            <TextBlock><Run Text="📊 " Foreground="#16A34A"/><Run Text="Xuất Bảng Thống Kê Thiết Bị BOM (.xlsx)" FontWeight="Bold"/></TextBlock>
+                        </Button>
+                    </StackPanel>
+
+                    <!-- ============================================================
+                         TAB KÝ HIỆU & LINH KIỆN TỦ ĐIỆN (SYMBOLS & COMPONENTS)
+                         ============================================================ -->
+                    <StackPanel x:Name="PanelSymbols" Visibility="Collapsed">
+                        <TextBlock Text="🏷️ KHO KÝ HIỆU ĐIỆN &amp; LINH KIỆN TỰ ĐỘNG HÓA" FontSize="11" FontWeight="Bold" Foreground="#0284C7" Margin="2,4,0,4"/>
+                        
+                        <!-- BỘ LỌC PHÂN LOẠI ĐA NĂNG (8 NHÓM CHUẨN IEC / TCVN) -->
+                        <Border Background="#F1F5F9" CornerRadius="6" Padding="3" Margin="0,2,0,5">
+                            <WrapPanel ItemWidth="58" ItemHeight="26">
+                                <Button Content="Tất cả" x:Name="BtnFilterAll" Click="BtnFilterCategory_Click" Tag="All" Height="22" FontSize="9" FontWeight="SemiBold" Background="#0284C7" Foreground="#FFFFFF" BorderThickness="0" Margin="1" Cursor="Hand"/>
+                                <Button Content="Nguồn" x:Name="BtnFilterPower" Click="BtnFilterCategory_Click" Tag="POWER" Height="22" FontSize="9" FontWeight="SemiBold" Background="#FFFFFF" Foreground="#334155" BorderBrush="#CBD5E1" BorderThickness="1" Margin="1" Cursor="Hand"/>
+                                <Button Content="Bảo vệ" x:Name="BtnFilterProt" Click="BtnFilterCategory_Click" Tag="PROTECTION" Height="22" FontSize="9" FontWeight="SemiBold" Background="#FFFFFF" Foreground="#334155" BorderBrush="#CBD5E1" BorderThickness="1" Margin="1" Cursor="Hand"/>
+                                <Button Content="Contactor" x:Name="BtnFilterCont" Click="BtnFilterCategory_Click" Tag="CONTACTOR" Height="22" FontSize="9" FontWeight="SemiBold" Background="#FFFFFF" Foreground="#334155" BorderBrush="#CBD5E1" BorderThickness="1" Margin="1" Cursor="Hand"/>
+                                <Button Content="Động cơ" x:Name="BtnFilterMotor" Click="BtnFilterCategory_Click" Tag="MOTOR" Height="22" FontSize="9" FontWeight="SemiBold" Background="#FFFFFF" Foreground="#334155" BorderBrush="#CBD5E1" BorderThickness="1" Margin="1" Cursor="Hand"/>
+                                <Button Content="Rơle/Timer" x:Name="BtnFilterRelay" Click="BtnFilterCategory_Click" Tag="RELAY_TIMER" Height="22" FontSize="9" FontWeight="SemiBold" Background="#FFFFFF" Foreground="#334155" BorderBrush="#CBD5E1" BorderThickness="1" Margin="1" Cursor="Hand"/>
+                                <Button Content="Nút nhấn" x:Name="BtnFilterBtn" Click="BtnFilterCategory_Click" Tag="BUTTON" Height="22" FontSize="9" FontWeight="SemiBold" Background="#FFFFFF" Foreground="#334155" BorderBrush="#CBD5E1" BorderThickness="1" Margin="1" Cursor="Hand"/>
+                                <Button Content="Đèn/Ổ cắm" x:Name="BtnFilterLight" Click="BtnFilterCategory_Click" Tag="LIGHT" Height="22" FontSize="9" FontWeight="SemiBold" Background="#FFFFFF" Foreground="#334155" BorderBrush="#CBD5E1" BorderThickness="1" Margin="1" Cursor="Hand"/>
+                                <Button Content="Tủ điện" x:Name="BtnFilterPanel" Click="BtnFilterCategory_Click" Tag="PANEL" Height="22" FontSize="9" FontWeight="SemiBold" Background="#FFFFFF" Foreground="#334155" BorderBrush="#CBD5E1" BorderThickness="1" Margin="1" Cursor="Hand"/>
+                            </WrapPanel>
+                        </Border>
+
+                        <!-- DANH SÁCH GRID KÝ HIỆU DẠNG CARD TRỰC QUAN -->
+                        <WrapPanel x:Name="SymbolsGridPanel" Margin="0,2,0,8"/>
+                    </StackPanel>
+
+                    <!-- ============================================================
+                         TAB 6: 📐 VẼ &amp; CHỈNH SỬA 2D
+                         ============================================================ -->
+                    <StackPanel x:Name="PanelDraw2D" Visibility="Collapsed">
+                        <TextBlock Text="📐 LỆNH VẼ CƠ BẢN" FontSize="11" FontWeight="Bold" Foreground="#00f2fe" Margin="2,4,0,4"/>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_LINE ">
+                            <TextBlock><Run Text="📏 " Foreground="#00f2fe"/><Run Text="Đoạn Thẳng (_LINE)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_CIRCLE ">
+                            <TextBlock><Run Text="⚪ " Foreground="#38bdf8"/><Run Text="Hình Tròn (_CIRCLE)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_RECTANG ">
+                            <TextBlock><Run Text="▭ " Foreground="#7dd3fc"/><Run Text="Hình Chữ Nhật (_RECTANG)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_PLINE ">
+                            <TextBlock><Run Text="〰 " Foreground="#4facfe"/><Run Text="Đa Tuyến Polyline (_PLINE)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_ARC ">
+                            <TextBlock><Run Text="⌒ " Foreground="#a78bfa"/><Run Text="Cung Tròn (_ARC)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_ELLIPSE ">
+                            <TextBlock><Run Text="⬭ " Foreground="#c084fc"/><Run Text="Hình Ellipse (_ELLIPSE)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_SPLINE ">
+                            <TextBlock><Run Text="〽 " Foreground="#f472b6"/><Run Text="Đường Cong Spline (_SPLINE)"/></TextBlock>
+                        </Button>
+
+                        <TextBlock Text="✂️ HIỆU CHỈNH 2D" FontSize="11" FontWeight="Bold" Foreground="#ffb700" Margin="2,8,0,4"/>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_OFFSET ">
+                            <TextBlock><Run Text="⇌ " Foreground="#ffb700"/><Run Text="Offset Song Song (_OFFSET)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_FILLET ">
+                            <TextBlock><Run Text="⌒ " Foreground="#fbbf24"/><Run Text="Bo Góc Tròn (_FILLET)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_CHAMFER ">
+                            <TextBlock><Run Text="⊿ " Foreground="#f59e0b"/><Run Text="Vát Mép Thẳng (_CHAMFER)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_TRIM ">
+                            <TextBlock><Run Text="✂ " Foreground="#ef4444"/><Run Text="Cắt Nét Thừa (_TRIM)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_EXTEND ">
+                            <TextBlock><Run Text="⇥ " Foreground="#f43f5e"/><Run Text="Phóng Dài Nét (_EXTEND)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_MOVE ">
+                            <TextBlock><Run Text="✥ " Foreground="#10b981"/><Run Text="Di Chuyển (_MOVE)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_COPY ">
+                            <TextBlock><Run Text="❐ " Foreground="#34d399"/><Run Text="Sao Chép (_COPY)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_ROTATE ">
+                            <TextBlock><Run Text="↻ " Foreground="#6ee7b7"/><Run Text="Xoay Đối Tượng (_ROTATE)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_SCALE ">
+                            <TextBlock><Run Text="⤢ " Foreground="#9d4edd"/><Run Text="Thu Phóng Tỉ Lệ (_SCALE)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_MIRROR ">
+                            <TextBlock><Run Text="⧉ " Foreground="#a855f7"/><Run Text="Lấy Đối Xứng (_MIRROR)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_STRETCH ">
+                            <TextBlock><Run Text="⇄ " Foreground="#c084fc"/><Run Text="Kéo Dãn Đỉnh (_STRETCH)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_ARRAY ">
+                            <TextBlock><Run Text="▦ " Foreground="#38bdf8"/><Run Text="Sao Chép Mảng (_ARRAY)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_EXPLODE ">
+                            <TextBlock><Run Text="💥 " Foreground="#f87171"/><Run Text="Phá Vỡ Block (_EXPLODE)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_JOIN ">
+                            <TextBlock><Run Text="🔗 " Foreground="#4ade80"/><Run Text="Nối Nét Polyline (_JOIN)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_ALIGN ">
+                            <TextBlock><Run Text="⎘ " Foreground="#facc15"/><Run Text="Căn Gióng (_ALIGN)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_MATCHPROP ">
+                            <TextBlock><Run Text="🖌 " Foreground="#fb923c"/><Run Text="Quét Thuộc Tính (_MATCHPROP)"/></TextBlock>
+                        </Button>
+                    </StackPanel>
+
+                    <!-- ============================================================
+                         TAB 7: 📏 KÍCH THƯỚC DIM
+                         ============================================================ -->
+                    <StackPanel x:Name="PanelDim" Visibility="Collapsed">
+                        <TextBlock Text="📏 ĐO KÍCH THƯỚC DIM CHUẨN" FontSize="11" FontWeight="Bold" Foreground="#10b981" Margin="2,4,0,4"/>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_DIMLINEAR ">
+                            <TextBlock><Run Text="↔ " Foreground="#10b981"/><Run Text="Đo Thẳng Ngang/Dọc (_DIMLINEAR)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_DIMALIGNED ">
+                            <TextBlock><Run Text="⤡ " Foreground="#34d399"/><Run Text="Đo Xiên Song Song (_DIMALIGNED)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_DIMANGULAR ">
+                            <TextBlock><Run Text="∠ " Foreground="#6ee7b7"/><Run Text="Đo Góc (_DIMANGULAR)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_DIMARC ">
+                            <TextBlock><Run Text="⌒ " Foreground="#4facfe"/><Run Text="Đo Cung Tròn (_DIMARC)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_DIMRADIUS ">
+                            <TextBlock><Run Text="◎ " Foreground="#38bdf8"/><Run Text="Đo Bán Kính (_DIMRADIUS)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_DIMDIAMETER ">
+                            <TextBlock><Run Text="⊘ " Foreground="#7dd3fc"/><Run Text="Đo Đường Kính (_DIMDIAMETER)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_DIMCONTINUE ">
+                            <TextBlock><Run Text="⏩ " Foreground="#fbbf24"/><Run Text="Dim Nối Tiếp Liên Tục (_DIMCONTINUE)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_DIMBASELINE ">
+                            <TextBlock><Run Text="⇶ " Foreground="#f59e0b"/><Run Text="Dim Chuỗi Phân Tầng (_DIMBASELINE)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_DIMORDINATE ">
+                            <TextBlock><Run Text="📍 " Foreground="#ef4444"/><Run Text="Ghi Tọa Độ Điểm (_DIMORDINATE)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_DIMCENTER ">
+                            <TextBlock><Run Text="🎯 " Foreground="#f43f5e"/><Run Text="Đánh Dấu Tâm Tròn (_DIMCENTER)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_DIMREASSOCIATE ">
+                            <TextBlock><Run Text="🔄 " Foreground="#9d4edd"/><Run Text="Gắn Lại Chân Dim Rời (_DIMREASSOCIATE)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_DIMOVERRIDE ">
+                            <TextBlock><Run Text="✏️ " Foreground="#a855f7"/><Run Text="Ghi Đè Giá Trị Dim (_DIMOVERRIDE)"/></TextBlock>
+                        </Button>
+                    </StackPanel>
+
+                    <!-- ============================================================
+                         TAB 8: 🚀 TIỆN ÍCH CAD PRO
+                         ============================================================ -->
+                    <StackPanel x:Name="PanelUtil" Visibility="Collapsed">
+                        <TextBlock Text="🚀 TIỆN ÍCH TỰ ĐỘNG HÓA" FontSize="11" FontWeight="Bold" Foreground="#f43f5e" Margin="2,4,0,4"/>
+                        <Button Style="{StaticResource StyleVipButton}" Click="Btn_Click" Tag="DTT_TLEN " ToolTip="Quét chọn hàng loạt để tính tổng chiều dài, hỏi đặt text lên bản vẽ">
+                            <TextBlock Text="📏 Đo Tổng Chiều Dài Liên Tục  (TLEN)" FontWeight="Bold" Foreground="#00f2fe"/>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="DTT_TAREA " ToolTip="Quét chọn hàng loạt hình kín tính tổng diện tích m2">
+                            <TextBlock><Run Text="📐 " Foreground="#10b981"/><Run Text="Đo Tổng Diện Tích  (TAREA)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="DTT_TCOUNT " ToolTip="Click liên tục để thả nhãn số tự tăng T-01, T-02...">
+                            <TextBlock><Run Text="🔢 " Foreground="#fbbf24"/><Run Text="Đánh Số Thứ Tự Tự Tăng  (TCOUNT)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="DTT_TOGGLEBG " ToolTip="1 click đổi nền Đen/Trắng">
+                            <TextBlock><Run Text="🌓 " Foreground="#a78bfa"/><Run Text="Đổi Màu Nền CAD  Đen / Trắng"/></TextBlock>
+                        </Button>
+
+                        <TextBlock Text="📑 IN HÀNG LOẠT &amp; BÓC TÁCH DỰ TOÁN BOQ" FontSize="11" FontWeight="Bold" Foreground="#10B981" Margin="2,8,0,4"/>
+                        <Button Style="{StaticResource StyleGreenButton}" Click="Btn_Click" Tag="DTT_BOQ_FULL_EXPORT " ToolTip="Quét toàn diện bản vẽ, xuất file Excel CSV dự toán và chèn Bảng Table BOQ vào CAD">
+                            <TextBlock><Run Text="📊 " Foreground="#16A34A"/><Run Text="Bóc Tách Khối Lượng Toàn Diện (Excel &amp; CAD)" FontWeight="Bold"/></TextBlock>
+                        </Button>
+                        <Grid Margin="0,2,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="6"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Style="{StaticResource StyleVipButton}" Click="Btn_Click" Tag="DTT_RENUMBER_SHEETS " ToolTip="Tự động quét khung tên từ trên xuống dưới, trái sang phải để đánh số bản vẽ">
+                                <TextBlock><Run Text="🔢 " Foreground="#0284C7"/><Run Text="Đánh Số Bản Vẽ"/></TextBlock>
+                            </Button>
+                            <Button Grid.Column="2" Style="{StaticResource StylePurpleButton}" Click="Btn_Click" Tag="DTT_BATCH_PLOT " ToolTip="Tự động in hàng loạt các khung bản vẽ trong Model ra PDF">
+                                <TextBlock><Run Text="🖨️ " Foreground="#9d4edd"/><Run Text="In Hàng Loạt (PDF)" FontWeight="Bold"/></TextBlock>
+                            </Button>
+                        </Grid>
+
+                        <TextBlock Text="📑 QUẢN LÝ LAYER NHANH" FontSize="11" FontWeight="Bold" Foreground="#38bdf8" Margin="2,8,0,4"/>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_LAYOFF ">
+                            <TextBlock><Run Text="🚫 " Foreground="#f43f5e"/><Run Text="Tắt Layer Đối Tượng Chọn (_LAYOFF)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_LAYISO ">
+                            <TextBlock><Run Text="🎯 " Foreground="#fbbf24"/><Run Text="Cô Lập Layer Đối Tượng (_LAYISO)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_LAYON ">
+                            <TextBlock><Run Text="💡 " Foreground="#4ade80"/><Run Text="Bật Lại Toàn Bộ Layer (_LAYON)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_LAYTHW ">
+                            <TextBlock><Run Text="🔓 " Foreground="#7dd3fc"/><Run Text="Bỏ Đóng Băng Tất Cả Layer (_LAYTHW)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_LAYUNLOCKALL ">
+                            <TextBlock><Run Text="🔑 " Foreground="#a3e635"/><Run Text="Mở Khóa Tất Cả Layer (_LAYUNLOCKALL)"/></TextBlock>
+                        </Button>
+                    </StackPanel>
+
+                    <!-- ============================================================
+                         TAB 9: 🎨 VẬT LIỆU &amp; 3D SOLID
+                         ============================================================ -->
+                    <StackPanel x:Name="Panel3D" Visibility="Collapsed">
+                        <TextBlock Text="🎨 TÔ VẬT LIỆU HATCH" FontSize="11" FontWeight="Bold" Foreground="#f472b6" Margin="2,4,0,4"/>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_HATCH ">
+                            <TextBlock><Run Text="🎨 " Foreground="#f472b6"/><Run Text="Tô Mặt Cắt Hatch (_HATCH)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_GRADIENT ">
+                            <TextBlock><Run Text="🌈 " Foreground="#e879f9"/><Run Text="Tô Chuyển Sắc Gradient (_GRADIENT)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_REGION ">
+                            <TextBlock><Run Text="🔲 " Foreground="#c084fc"/><Run Text="Tạo Miền Kín Region (_REGION)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_BOUNDARY ">
+                            <TextBlock><Run Text="🔲 " Foreground="#a78bfa"/><Run Text="Dò Biên Ranh Giới (_BOUNDARY)"/></TextBlock>
+                        </Button>
+
+                        <TextBlock Text="🧊 MÔ HÌNH HÓA 3D SOLID" FontSize="11" FontWeight="Bold" Foreground="#9d4edd" Margin="2,8,0,4"/>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_EXTRUDE ">
+                            <TextBlock><Run Text="⬆ " Foreground="#9d4edd"/><Run Text="Đùn Khối Cao (_EXTRUDE)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_REVOLVE ">
+                            <TextBlock><Run Text="🌀 " Foreground="#a855f7"/><Run Text="Khối Tròn Xoay (_REVOLVE)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_LOFT ">
+                            <TextBlock><Run Text="🏺 " Foreground="#c084fc"/><Run Text="Nối Đa Tiết Diện (_LOFT)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_SWEEP ">
+                            <TextBlock><Run Text="🐍 " Foreground="#d8b4fe"/><Run Text="Quét Theo Đường Dẫn (_SWEEP)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_UNION ">
+                            <TextBlock><Run Text="➕ " Foreground="#4ade80"/><Run Text="Hợp Khối 3D (_UNION)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_SUBTRACT ">
+                            <TextBlock><Run Text="➖ " Foreground="#f87171"/><Run Text="Trừ Khối Đục Lỗ (_SUBTRACT)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_INTERSECT ">
+                            <TextBlock><Run Text="✖ " Foreground="#fbbf24"/><Run Text="Giao Khối 3D (_INTERSECT)"/></TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_SLICE ">
+                            <TextBlock><Run Text="🔪 " Foreground="#f97316"/><Run Text="Cắt Khối Solid (_SLICE)"/></TextBlock>
+                        </Button>
+                    </StackPanel>
+
+                    <!-- ============================================================
+                         TAB 10: ⚙️ CÀI ĐẶT &amp; TÙY BIẾN
+                         ============================================================ -->
+                    <StackPanel x:Name="PanelSettings" Visibility="Collapsed">
+                        <TextBlock Text="⚙️ CÀI ĐẶT HỆ THỐNG DTT PRO" FontSize="12" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="2,4,0,8"/>
+
+                        <!-- CỠ CHỮ GIAO DIỆN -->
+                        <Border CornerRadius="8" BorderBrush="{DynamicResource ThemeCardBorder}" BorderThickness="1" Background="{DynamicResource ThemeCardBg}" Padding="12" Margin="0,0,0,10">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="4" ShadowDepth="1" Direction="270" Color="#000000" Opacity="0.15"/>
+                            </Border.Effect>
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                    <TextBlock Text="🔤 " FontSize="13" Foreground="{DynamicResource ThemeAccent}"/>
+                                    <TextBlock Text="CỠ CHỮ GIAO DIỆN:" FontSize="10.5" FontWeight="Bold" Foreground="{DynamicResource ThemeTextPrimary}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <ComboBox x:Name="CmbFontSize" Style="{StaticResource StyleModernComboBox}" SelectedIndex="1" SelectionChanged="CmbFontSize_SelectionChanged">
+                                    <ComboBoxItem Content="Nhỏ (10 px) - Compact Mode"/>
+                                    <ComboBoxItem Content="Tiêu Chuẩn (11.5 px) - Normal"/>
+                                    <ComboBoxItem Content="Lớn (13.5 px) - Large Mode"/>
+                                    <ComboBoxItem Content="Rất Lớn (15 px) - Extra Large"/>
+                                </ComboBox>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- CHỦ ĐỀ GIAO DIỆN (THEME) -->
+                        <Border CornerRadius="8" BorderBrush="{DynamicResource ThemeCardBorder}" BorderThickness="1" Background="{DynamicResource ThemeCardBg}" Padding="12" Margin="0,0,0,10">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="4" ShadowDepth="1" Direction="270" Color="#000000" Opacity="0.15"/>
+                            </Border.Effect>
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                    <TextBlock Text="🌓 " FontSize="13" Foreground="{DynamicResource ThemeAccent}"/>
+                                    <TextBlock Text="CHỦ ĐỀ GIAO DIỆN (THEME):" FontSize="10.5" FontWeight="Bold" Foreground="{DynamicResource ThemeTextPrimary}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <ComboBox x:Name="CmbTheme" Style="{StaticResource StyleModernComboBox}" SelectedIndex="0" SelectionChanged="CmbTheme_SelectionChanged">
+                                    <ComboBoxItem Content="🌑 Dark Slate Pro (Xám Đậm &amp; Xanh Dương Hiện Đại)"/>
+                                    <ComboBoxItem Content="☀️ Light Studio (Trắng Sáng &amp; Xanh)"/>
+                                    <ComboBoxItem Content="🌌 Cyberpunk Dark (Navy &amp; Neon Cyan)"/>
+                                </ComboBox>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- NGÔN NGỮ (LANGUAGE) -->
+                        <Border CornerRadius="8" BorderBrush="{DynamicResource ThemeCardBorder}" BorderThickness="1" Background="{DynamicResource ThemeCardBg}" Padding="12" Margin="0,0,0,10">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="4" ShadowDepth="1" Direction="270" Color="#000000" Opacity="0.15"/>
+                            </Border.Effect>
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                    <TextBlock Text="🌐 " FontSize="13" Foreground="{DynamicResource ThemeAccent}"/>
+                                    <TextBlock Text="NGÔN NGỮ (LANGUAGE):" FontSize="10.5" FontWeight="Bold" Foreground="{DynamicResource ThemeTextPrimary}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <ComboBox x:Name="CmbLanguage" Style="{StaticResource StyleModernComboBox}" SelectedIndex="0" SelectionChanged="CmbLanguage_SelectionChanged">
+                                    <ComboBoxItem Content="🇻🇳 Tiếng Việt (Vietnamese Standard)"/>
+                                    <ComboBoxItem Content="🇬🇧 English (International CAD)"/>
+                                </ComboBox>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- QUẢN LÝ HỆ THỐNG & MENUBAR DTOOLS -->
+                        <Border CornerRadius="8" BorderBrush="{DynamicResource ThemeCardBorder}" BorderThickness="1" Background="{DynamicResource ThemeCardBg}" Padding="12" Margin="0,0,0,10">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="4" ShadowDepth="1" Direction="270" Color="#000000" Opacity="0.15"/>
+                            </Border.Effect>
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                    <TextBlock Text="🛠️ " FontSize="13" Foreground="{DynamicResource ThemeAccent}"/>
+                                    <TextBlock Text="QUẢN LÝ HỆ THỐNG &amp; MENU DTOOLS:" FontSize="10.5" FontWeight="Bold" Foreground="{DynamicResource ThemeTextPrimary}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <Grid Margin="0,0,0,6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="6"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Button Grid.Column="0" Style="{StaticResource StyleActionCardBtn}" Click="Btn_Click" Tag="DT_MENU" ToolTip="Cập nhật hoặc hiển thị lại MenuBar 'DTools Pro' trên AutoCAD">
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                            <TextBlock Text="📋 " FontSize="12"/>
+                                            <TextBlock Text="Cập Nhật MenuBar" FontWeight="SemiBold"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Grid.Column="2" Style="{StaticResource StyleActionCardBtn}" Click="Btn_Click" Tag="DT_YQREFIX" ToolTip="Khôi phục và nạp lại Menu YQArch Tiếng Việt">
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                            <TextBlock Text="🩺 " FontSize="12"/>
+                                            <TextBlock Text="Sửa Lỗi YQArch" FontWeight="SemiBold"/>
+                                        </StackPanel>
+                                    </Button>
+                                </Grid>
+                                <Button Style="{StaticResource StyleActionCardBtnDanger}" Click="Btn_Click" Tag="DT_CLEAN" ToolTip="Dọn dẹp rác, xóa RegApps, nét độ dài 0 và sửa lỗi database">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <TextBlock Text="🧹 " FontSize="12"/>
+                                        <TextBlock Text="Dọn Rác &amp; Sửa Lỗi DWG (DT_CLEAN)" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- THÔNG TIN PLUGIN -->
+                        <Border CornerRadius="8" BorderBrush="{DynamicResource ThemeControlBorder}" BorderThickness="1" Background="{DynamicResource ThemeControlBg}" Padding="12" Margin="0,0,0,6">
+                            <StackPanel>
+                                <TextBlock Text="DTT CAD TOOLSET PRO v2026" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}"/>
+                                <TextBlock Text="Native WPF | AutoCAD 2020-2026 | .NET Framework 4.8" FontSize="9" Foreground="{DynamicResource ThemeTextSecondary}" Margin="0,3,0,0"/>
+                                <TextBlock Text="Tất cả chức năng 100% tiếng Việt - Sẵn sàng thực thi 1-Click" FontSize="9" Foreground="{DynamicResource ThemeTextSecondary}" Margin="0,2,0,0"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                </Grid>
+            </ScrollViewer>
+        </Grid>
+
+        <!-- STATUS BAR -->
+        <Border Grid.Row="2" x:Name="FooterBorder" Background="{DynamicResource ThemeCardBg}" BorderBrush="{DynamicResource ThemeCardBorder}" BorderThickness="0,1,0,0" Padding="12,6">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" x:Name="TxtStatus" Text="⚡ DTools Pro v5.0 - Sẵn sàng thực thi 100% Native CAD" FontSize="10" FontWeight="Medium" Foreground="{DynamicResource ThemeTextSecondary}" VerticalAlignment="Center"/>
+                <Border Grid.Column="1" CornerRadius="10" Padding="8,2" Background="{DynamicResource ThemeAccent}">
+                    <TextBlock Text="v5.0 PRO" FontSize="9" FontWeight="ExtraBold" Foreground="#FFFFFF"/>
+                </Border>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

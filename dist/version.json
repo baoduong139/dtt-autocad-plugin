@@ -1,0 +1,16 @@
+{
+    "version":  "2026.2.0",
+    "mandatory":  false,
+    "releaseNotes":  "DTT TOOLS Pro v2026.2.0: Tich hop day du DTT TOOLS Manager, Remote Auto Updater, Safe Cleanup 8GB RAM Safe, So do DOL va Sao-Tam giac chuan IEC, va Mat bang chieu sang 12x6m.",
+    "channel":  "stable",
+    "publishedAt":  "2026-10-28T23:45:00Z",
+    "packageSize":  46141440,
+    "downloadUrl":  "https://raw.githubusercontent.com/baoduong139/dtt-autocad-plugin/main/dist/update.zip",
+    "publisher":  "DTT CAD Software Corporation",
+    "pluginDllSha256":  "E9B781F643104EC3A1D209D00475EC64031B76780CA0057B29B494DA262E28E6",
+    "releaseNotesUrl":  "https://raw.githubusercontent.com/baoduong139/dtt-autocad-plugin/main/dist/release/CHANGELOG.md",
+    "maxAutoCadVersion":  "2026",
+    "schemaVersion":  "1.0",
+    "minAutoCadVersion":  "2020",
+    "sha256":  "325EB877363374BF687EC73841521449F55DB2C22BCC16C0DAB669AE5EBE3C62"
+}

@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/DTools.Application/DTools.Application.csproj" />
+    <Project Path="src/DTools.Core/DTools.Core.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/DTools.Tests/DTools.Tests.csproj" />
+  </Folder>
+  <Project Path="DTT_AutoCAD_Plugin.csproj" />
+</Solution>

@@ -1,0 +1,15 @@
+(setvar "FILEDIA" 0)
+(setvar "CMDECHO" 1)
+-INSERT "C:/Users/Duong/.gemini/antigravity-ide/scratch/DTT_AutoCAD_Plugin/Blocks/Architectural_Doors.dwg" 0,0 1 1 0
+(setq ent (entlast))
+(princ (strcat "\nINSERTED_ENT: " (cdr (assoc 0 (entget ent)))))
+(princ (strcat "\nBLOCK_NAME: " (cdr (assoc 2 (entget ent)))))
+(vl-load-com)
+(setq obj (vlax-ename->vla-object ent))
+(princ (strcat "\nIS_DYNAMIC: " (if (= :vlax-true (vlax-get-property obj 'isdynamicblock)) "YES" "NO")))
+(setq props (vlax-invoke obj 'getdynamicblockproperties))
+(foreach p props
+  (princ (strcat "\n  PROP: " (vla-get-propertyname p) " = " (vl-prin1-to-string (vlax-get p 'value))))
+)
+QUIT
+Y

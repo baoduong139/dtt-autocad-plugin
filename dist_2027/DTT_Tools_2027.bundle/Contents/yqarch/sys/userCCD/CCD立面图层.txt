@@ -1,0 +1,16 @@
+;;; [源泉设计]-导出图层文件
+
+0,7,Continuous,yes
+Defpoints,7,Continuous,yes
+EL-文字,50,Continuous,yes
+IAR-标注,50,Continuous,yes
+RC-文字,50,Continuous,yes
+cEL-地脚线,134,Continuous,yes
+cEL-墙面完成面,30,Continuous,yes
+cEL-墙体,200,Continuous,yes
+cEL-标注,50,Continuous,yes
+cEL-地面完成面,160,Continuous,yes
+cEL-活动家私,51,HIDDEN,yes
+cEL-墙面填充,250,Continuous,yes
+cEL-天花及墙体转折线,3,Continuous,yes
+cEL-立面标高,50,Continuous,yes

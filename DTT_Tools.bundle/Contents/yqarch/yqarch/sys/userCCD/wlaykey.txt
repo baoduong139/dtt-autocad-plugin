@@ -1,0 +1,4 @@
+wrc,rc*,天花图层
+wfc,fc*,地面图层
+wdt,dt*,大样图层
+wff,ff*,家具图层
