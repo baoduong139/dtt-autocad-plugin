@@ -19,13 +19,13 @@ namespace DTT_AutoCAD_Plugin.UI
         private List<ModalOptionItem> _allOptions;
         private ModalOptionItem _selectedOption;
 
-        // Quản lý 3D Viewport & Camera
+        // Quản lý 3D Viewport & Camera (Khoảng cách chuẩn không bị choán màn hình)
         private PerspectiveCamera _camera;
         private ModelVisual3D _modelVisual;
         private ModelVisual3D _lightVisual;
-        private double _cameraDistance = 2600;
-        private double _yaw = 0.75;    // ~43 độ
-        private double _pitch = 0.45;  // ~26 độ
+        private double _cameraDistance = 4600;
+        private double _yaw = 0.80;    // ~45 độ
+        private double _pitch = 0.35;  // ~20 độ
         private Point3D _targetCenter = new Point3D(0, 1000, 0);
 
         // Chuột tương tác 3D
@@ -33,8 +33,8 @@ namespace DTT_AutoCAD_Plugin.UI
         private bool _isOrbiting = false;
         private bool _isPanning = false;
 
-        // Chế độ xem: true = 3D, false = 2D
-        private bool _is3DMode = true;
+        // Chế độ xem: mặc định false = 2D (Mặt bằng 2D chuẩn kỹ thuật AutoCAD)
+        private bool _is3DMode = false;
 
         // Tham số điều chỉnh nhanh
         private double _currentSize = 900;
@@ -55,9 +55,12 @@ namespace DTT_AutoCAD_Plugin.UI
 
         private void InitHeader()
         {
-            TxtHeaderIcon.Text = _category.Icon;
-            TxtHeaderTitle.Text = _category.Title;
-            TxtHeaderSubtitle.Text = _category.Subtitle;
+            if (TxtHeaderIcon != null) TxtHeaderIcon.Text = _category.Icon;
+            if (TxtHeaderTitle != null)
+            {
+                TxtHeaderTitle.Text = _category.Title;
+                TxtHeaderTitle.ToolTip = _category.Subtitle;
+            }
         }
 
         private void LoadOptions()
@@ -259,9 +262,9 @@ namespace DTT_AutoCAD_Plugin.UI
 
         private void BtnResetView_Click(object sender, RoutedEventArgs e)
         {
-            _yaw = 0.75;
-            _pitch = 0.45;
-            _cameraDistance = 2600;
+            _yaw = 0.80;
+            _pitch = 0.35;
+            _cameraDistance = 4600;
             _targetCenter = new Point3D(0, 1000, 0);
             UpdateCameraPosition();
         }
@@ -341,6 +344,8 @@ namespace DTT_AutoCAD_Plugin.UI
         {
             _is3DMode = false;
             Border2D.Visibility = Visibility.Visible;
+            Vp3D.Visibility = Visibility.Collapsed;
+            if (Border3DHint != null) Border3DHint.Visibility = Visibility.Collapsed;
             BtnView2D.Background = new SolidColorBrush(Color.FromRgb(2, 132, 199));
             BtnView2D.Foreground = Brushes.White;
             BtnView3D.Background = new SolidColorBrush(Color.FromRgb(30, 41, 59));
@@ -353,6 +358,8 @@ namespace DTT_AutoCAD_Plugin.UI
         {
             _is3DMode = true;
             Border2D.Visibility = Visibility.Collapsed;
+            Vp3D.Visibility = Visibility.Visible;
+            if (Border3DHint != null) Border3DHint.Visibility = Visibility.Visible;
             BtnView3D.Background = new SolidColorBrush(Color.FromRgb(2, 132, 199));
             BtnView3D.Foreground = Brushes.White;
             BtnView2D.Background = new SolidColorBrush(Color.FromRgb(30, 41, 59));
@@ -388,38 +395,42 @@ namespace DTT_AutoCAD_Plugin.UI
                 case PreviewModelType.Door:
                     group = MeshBuilder3D.BuildDoor3D(_currentSize, 2200, _openAngleDeg, _isFlipped);
                     _targetCenter = new Point3D(0, 1100, 0);
-                    _cameraDistance = Math.Max(2200, _currentSize * 2.6);
+                    _cameraDistance = 4800;
+                    _yaw = 0.80;
+                    _pitch = 0.35;
                     break;
 
                 case PreviewModelType.Column:
                     bool isRound = _selectedOption.Id.Contains("ROUND");
                     group = MeshBuilder3D.BuildColumn3D(_currentSize, 3000, isRound);
                     _targetCenter = new Point3D(0, 1500, 0);
-                    _cameraDistance = 3800;
+                    _cameraDistance = 5600;
+                    _yaw = 0.75;
+                    _pitch = 0.35;
                     break;
 
                 case PreviewModelType.Elevation:
                     group = MeshBuilder3D.BuildElevation3D(1000, _selectedOption.SelectedSize);
                     _targetCenter = new Point3D(50, 600, 0);
-                    _cameraDistance = 1800;
+                    _cameraDistance = 2800;
                     break;
 
                 case PreviewModelType.Cabinet:
                     group = MeshBuilder3D.BuildCabinet3D(_currentSize, 1800, 400);
                     _targetCenter = new Point3D(0, 1000, 0);
-                    _cameraDistance = 2600;
+                    _cameraDistance = 4200;
                     break;
 
                 case PreviewModelType.Pipe:
                     group = MeshBuilder3D.BuildPipe3D(_currentSize, 1500);
                     _targetCenter = new Point3D(0, 0, 0);
-                    _cameraDistance = 1600;
+                    _cameraDistance = 2800;
                     break;
 
                 case PreviewModelType.Wall:
                     group = MeshBuilder3D.BuildWall3D(2000, _currentSize, 1200);
                     _targetCenter = new Point3D(0, 600, 0);
-                    _cameraDistance = 2400;
+                    _cameraDistance = 3800;
                     break;
 
                 default:
@@ -427,7 +438,7 @@ namespace DTT_AutoCAD_Plugin.UI
                     group.Children.Add(MeshBuilder3D.CreateBox(new Point3D(0, 500, 0), 800, 1000, 500, Color.FromRgb(2, 132, 199)));
                     group.Children.Add(MeshBuilder3D.CreateCylinder(new Point3D(0, 1000, 0), 150, 300, Color.FromRgb(14, 165, 233)));
                     _targetCenter = new Point3D(0, 500, 0);
-                    _cameraDistance = 2200;
+                    _cameraDistance = 3400;
                     break;
             }
 
@@ -438,8 +449,8 @@ namespace DTT_AutoCAD_Plugin.UI
         private void Render2DPreview()
         {
             Canvas2D.Children.Clear();
-            double cw = Canvas2D.ActualWidth > 0 ? Canvas2D.ActualWidth : 480;
-            double ch = Canvas2D.ActualHeight > 0 ? Canvas2D.ActualHeight : 300;
+            double cw = Canvas2D.ActualWidth > 0 ? Canvas2D.ActualWidth : 380;
+            double ch = Canvas2D.ActualHeight > 0 ? Canvas2D.ActualHeight : 240;
             double midX = cw / 2.0;
             double midY = ch / 2.0;
 
@@ -451,50 +462,50 @@ namespace DTT_AutoCAD_Plugin.UI
             {
                 case PreviewModelType.Door:
                     // Mặt bằng cửa đi 2D (Khuôn + Cánh + Cung mở 90°)
-                    double dw = 140; // tỉ lệ hiển thị
+                    double dw = 95; // tỉ lệ hiển thị cân đối
                     // Khuôn trái & phải
-                    AddRect2D(midX - dw / 2 - 8, midY + 30, 8, 16, strokeCyan, Brushes.Transparent);
-                    AddRect2D(midX + dw / 2, midY + 30, 8, 16, strokeCyan, Brushes.Transparent);
+                    AddRect2D(midX - dw / 2 - 6, midY + 15, 6, 12, strokeCyan, Brushes.Transparent);
+                    AddRect2D(midX + dw / 2, midY + 15, 6, 12, strokeCyan, Brushes.Transparent);
                     // Cánh cửa mở 90 độ
-                    AddLine2D(midX - dw / 2, midY + 30, midX - dw / 2, midY + 30 - dw, strokeOrange, 2.5);
+                    AddLine2D(midX - dw / 2, midY + 15, midX - dw / 2, midY + 15 - dw, strokeOrange, 2.2);
                     // Cung mở cửa tròn
-                    AddArc2D(new Point(midX - dw / 2, midY + 30 - dw), new Point(midX + dw / 2, midY + 30), dw, strokeCyan);
+                    AddArc2D(new Point(midX - dw / 2, midY + 15 - dw), new Point(midX + dw / 2, midY + 15), dw, strokeCyan);
                     // Ký hiệu kích thước
-                    AddText2D($"RỘNG {_currentSize}mm (MẶT BẰNG 2D)", midX, midY + 70, strokeWhite, 11, true);
+                    AddText2D($"CỬA ĐI D{_currentSize}x2200mm (MẶT BẰNG 2D)", midX, midY + 45, strokeWhite, 9.5, true);
                     break;
 
                 case PreviewModelType.Column:
                     // Mặt cắt cột vuông 2D kèm đường tâm trục
-                    double cs = 110;
+                    double cs = 70;
                     AddRect2D(midX - cs / 2, midY - cs / 2, cs, cs, strokeCyan, new SolidColorBrush(Color.FromArgb(40, 2, 132, 199)));
                     // Trục chữ thập
-                    AddLine2D(midX - cs, midY, midX + cs, midY, strokeOrange, 1.2, true);
-                    AddLine2D(midX, midY - cs, midX, midY + cs, strokeOrange, 1.2, true);
-                    AddText2D($"CỘT {_currentSize}x{_currentSize}mm", midX, midY + cs / 2 + 35, strokeWhite, 11, true);
+                    AddLine2D(midX - cs, midY, midX + cs, midY, strokeOrange, 1.0, true);
+                    AddLine2D(midX, midY - cs, midX, midY + cs, strokeOrange, 1.0, true);
+                    AddText2D($"CỘT {_currentSize}x{_currentSize}mm", midX, midY + cs / 2 + 25, strokeWhite, 9.5, true);
                     break;
 
                 case PreviewModelType.Elevation:
                     // Mốc cao độ 2D: đường dóng ngang + tam giác ngược
-                    AddLine2D(midX - 120, midY, midX + 120, midY, strokeCyan, 2.0);
+                    AddLine2D(midX - 90, midY, midX + 90, midY, strokeCyan, 1.8);
                     // Tam giác chỉ cốt
                     Polygon tri = new Polygon
                     {
-                        Points = new PointCollection { new Point(midX - 25, midY), new Point(midX + 25, midY), new Point(midX, midY + 35) },
+                        Points = new PointCollection { new Point(midX - 16, midY), new Point(midX + 16, midY), new Point(midX, midY + 22) },
                         Stroke = strokeOrange,
-                        StrokeThickness = 2,
+                        StrokeThickness = 1.8,
                         Fill = new SolidColorBrush(Color.FromArgb(80, 217, 119, 6))
                     };
                     Canvas2D.Children.Add(tri);
-                    AddText2D(_selectedOption.SelectedSize, midX, midY - 25, strokeOrange, 16, true);
-                    AddText2D("CAO ĐỘ MẶT SÀN HOÀN THIỆN", midX, midY + 65, strokeWhite, 10, true);
+                    AddText2D(_selectedOption.SelectedSize, midX, midY - 20, strokeOrange, 14, true);
+                    AddText2D("CAO ĐỘ MẶT SÀN HOÀN THIỆN", midX, midY + 36, strokeWhite, 9, true);
                     break;
 
                 default:
                     // Hình chữ nhật ký hiệu chung
-                    AddRect2D(midX - 90, midY - 60, 180, 120, strokeCyan, new SolidColorBrush(Color.FromArgb(40, 2, 132, 199)));
-                    AddLine2D(midX - 90, midY - 60, midX + 90, midY + 60, strokeOrange, 1);
-                    AddLine2D(midX - 90, midY + 60, midX + 90, midY - 60, strokeOrange, 1);
-                    AddText2D(_selectedOption.Title, midX, midY + 80, strokeWhite, 11, true);
+                    AddRect2D(midX - 70, midY - 45, 140, 90, strokeCyan, new SolidColorBrush(Color.FromArgb(40, 2, 132, 199)));
+                    AddLine2D(midX - 70, midY - 45, midX + 70, midY + 45, strokeOrange, 1);
+                    AddLine2D(midX - 70, midY + 45, midX + 70, midY - 45, strokeOrange, 1);
+                    AddText2D(_selectedOption.Title, midX, midY + 58, strokeWhite, 9.5, true);
                     break;
             }
         }

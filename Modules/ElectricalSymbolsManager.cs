@@ -194,6 +194,23 @@ namespace DTT_AutoCAD_Plugin.Modules
         // LỆNH ĐẶT KÝ HIỆU LIÊN TỤC TRÊN CAD (AUTOCAD COMMAND CONTEXT)
         // ============================================================
 
+        private static bool IsValidSymbolDwg(string path)
+        {
+            if (string.IsNullOrEmpty(path) || !File.Exists(path)) return false;
+            try
+            {
+                var fi = new FileInfo(path);
+                // Bỏ qua các file mẫu AutoCAD chứa đa ký hiệu (kích thước 75,104 bytes)
+                if (fi.Length == 75104) return false;
+                if (fi.Length < 1024) return false;
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public static string ResolveSymbolDwgPath(string dwgFileOrId)
         {
             if (string.IsNullOrWhiteSpace(dwgFileOrId)) return null;
@@ -222,17 +239,17 @@ namespace DTT_AutoCAD_Plugin.Modules
 
                 // 1. Check relative path direct
                 string p1 = Path.Combine(dir, cleanRel);
-                if (File.Exists(p1)) return p1;
+                if (IsValidSymbolDwg(p1)) return p1;
 
                 // 2. Check fileName direct
                 string p2 = Path.Combine(dir, fileName);
-                if (File.Exists(p2)) return p2;
+                if (IsValidSymbolDwg(p2)) return p2;
 
                 // 3. Search in all subdirectories
                 try
                 {
                     string[] matches = Directory.GetFiles(dir, fileName, SearchOption.AllDirectories);
-                    if (matches != null && matches.Length > 0)
+                    if (matches != null && matches.Length > 0 && IsValidSymbolDwg(matches[0]))
                         return matches[0];
                 }
                 catch { }
@@ -300,28 +317,50 @@ namespace DTT_AutoCAD_Plugin.Modules
                         tr.Commit();
                     }
 
-                    // 2. Nếu Block chưa tồn tại: Tự động nạp file .dwg từ thư mục Symbols/Blocks
+                    // 2. Nếu Block chưa tồn tại: Ưu tiên tuyệt đối sinh Block Native IEC (đúng 1 ký hiệu duy nhất)
                     if (blockId.IsNull || !blockId.IsValid)
                     {
-                        string dwgPath = ResolveSymbolDwgPath(sym.DwgFile ?? sym.Id);
-                        if (!string.IsNullOrEmpty(dwgPath) && File.Exists(dwgPath))
+                        // A. Sinh trực tiếp từ thuật toán Native IEC 100% chuẩn hình học không bị trùng ký hiệu
+                        if (!string.IsNullOrEmpty(sym.SymbolType))
                         {
                             try
                             {
-                                using (Database extDb = new Database(false, true))
+                                using (Transaction tr = db.TransactionManager.StartTransaction())
                                 {
-                                    extDb.ReadDwgFile(dwgPath, FileOpenMode.OpenForReadAndAllShare, true, "");
-                                    blockId = db.Insert(blockName, extDb, true);
-                                    ed.WriteMessage($"\n[DTools] Đã nạp ký hiệu '{sym.NameVi}' từ tệp: {dwgPath}");
+                                    BlockTable bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForWrite);
+                                    blockId = CreateNativeSymbolBlock(db, tr, bt, blockName, sym);
+                                    tr.Commit();
                                 }
                             }
-                            catch (System.Exception exDwg)
+                            catch (System.Exception exNative)
                             {
-                                ed.WriteMessage($"\n⚠️ [DTools Cảnh báo] Không thể nạp DWG '{dwgPath}': {exDwg.Message}. Sẽ tự sinh hình học ký hiệu.");
+                                ed.WriteMessage($"\n⚠️ [DTools] Lỗi sinh Native Symbol '{sym.NameVi}': {exNative.Message}");
                             }
                         }
 
-                        // Nếu không có DWG hoặc lỗi nạp: Tự động sinh Block Native chuẩn IEC 100%
+                        // B. Nếu chưa có BlockId, thử tìm file DWG hợp lệ (đã lọc bỏ file mẫu đa ký hiệu)
+                        if (blockId.IsNull || !blockId.IsValid)
+                        {
+                            string dwgPath = ResolveSymbolDwgPath(sym.DwgFile ?? sym.Id);
+                            if (IsValidSymbolDwg(dwgPath))
+                            {
+                                try
+                                {
+                                    using (Database extDb = new Database(false, true))
+                                    {
+                                        extDb.ReadDwgFile(dwgPath, FileOpenMode.OpenForReadAndAllShare, true, "");
+                                        blockId = db.Insert(blockName, extDb, true);
+                                        ed.WriteMessage($"\n[DTools] Đã nạp ký hiệu '{sym.NameVi}' từ tệp: {dwgPath}");
+                                    }
+                                }
+                                catch (System.Exception exDwg)
+                                {
+                                    ed.WriteMessage($"\n⚠️ [DTools Cảnh báo] Không thể nạp DWG '{dwgPath}': {exDwg.Message}. Sẽ tự sinh hình học ký hiệu.");
+                                }
+                            }
+                        }
+
+                        // C. Fallback an toàn cuối cùng: Tự động sinh Block Native chuẩn IEC 100%
                         if (blockId.IsNull || !blockId.IsValid)
                         {
                             using (Transaction tr = db.TransactionManager.StartTransaction())
@@ -464,26 +503,35 @@ namespace DTT_AutoCAD_Plugin.Modules
                     }
                     else
                     {
-                        // 2. Thử load từ file .dwg nếu có
-                        string fullDwgPath = ResolveSymbolDwgPath(item.DwgFile ?? item.Id);
-
-                        if (!string.IsNullOrEmpty(fullDwgPath) && File.Exists(fullDwgPath))
+                        // 2. Ưu tiên tuyệt đối sinh Native IEC độc lập (đúng 1 ký hiệu chuẩn)
+                        if (!string.IsNullOrEmpty(item.SymbolType))
                         {
-                            try
+                            if (!bt.IsWriteEnabled) bt.UpgradeOpen();
+                            blockId = CreateNativeSymbolBlock(db, tr, bt, blockName, item);
+                        }
+
+                        // 3. Thử load từ file .dwg nếu có và hợp lệ (bỏ qua file mẫu đa ký hiệu)
+                        if (blockId.IsNull || !blockId.IsValid)
+                        {
+                            string fullDwgPath = ResolveSymbolDwgPath(item.DwgFile ?? item.Id);
+                            if (IsValidSymbolDwg(fullDwgPath))
                             {
-                                using (Database extDb = new Database(false, true))
+                                try
                                 {
-                                    extDb.ReadDwgFile(fullDwgPath, FileOpenMode.OpenForReadAndAllShare, true, "");
-                                    blockId = db.Insert(blockName, extDb, true);
+                                    using (Database extDb = new Database(false, true))
+                                    {
+                                        extDb.ReadDwgFile(fullDwgPath, FileOpenMode.OpenForReadAndAllShare, true, "");
+                                        blockId = db.Insert(blockName, extDb, true);
+                                    }
                                 }
-                            }
-                            catch (System.Exception exDwg)
-                            {
-                                ed.WriteMessage($"\n⚠️ [DTools Cảnh báo] Lỗi đọc file DWG '{fullDwgPath}': {exDwg.Message}");
+                                catch (System.Exception exDwg)
+                                {
+                                    ed.WriteMessage($"\n⚠️ [DTools Cảnh báo] Lỗi đọc file DWG '{fullDwgPath}': {exDwg.Message}");
+                                }
                             }
                         }
 
-                        // 3. Nếu chưa có file .dwg, tự động sinh Block bằng Native AutoCAD API 100% chuẩn TCVN/IEC!
+                        // 4. Fallback an toàn: Sinh Block bằng Native AutoCAD API 100% chuẩn TCVN/IEC!
                         if (blockId.IsNull || !blockId.IsValid)
                         {
                             if (!bt.IsWriteEnabled) bt.UpgradeOpen();

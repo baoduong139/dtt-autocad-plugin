@@ -947,7 +947,6 @@ namespace DTT_AutoCAD_Plugin.UI
             try
             {
                 // Bắt buộc chế độ chèn đúng 1 ký hiệu theo yêu cầu người dùng
-                bool isCont = false;
                 ElectricalPlacementContext.TargetSymbol = sym;
                 ElectricalPlacementContext.Scale = 1.0;
                 ElectricalPlacementContext.Rotation = 0.0;
