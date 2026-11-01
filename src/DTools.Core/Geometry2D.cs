@@ -95,6 +95,58 @@ namespace DTools.Core
             Line2D right = new Line2D(Start + (normal * -1.0), End + (normal * -1.0));
             return (left, right);
         }
+
+        /// <summary>
+        /// Tìm điểm giao cắt giữa 2 đoạn thẳng nếu có
+        /// </summary>
+        public Point2D? IntersectWith(Line2D other, double tolerance = 1e-4)
+        {
+            if (other == null) return null;
+            double x1 = Start.X, y1 = Start.Y;
+            double x2 = End.X, y2 = End.Y;
+            double x3 = other.Start.X, y3 = other.Start.Y;
+            double x4 = other.End.X, y4 = other.End.Y;
+
+            double denom = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
+            if (Math.Abs(denom) < tolerance) return null; // Song song hoặc trùng hàng
+
+            double ua = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / denom;
+            double ub = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / denom;
+
+            if (ua >= -tolerance && ua <= 1.0 + tolerance && ub >= -tolerance && ub <= 1.0 + tolerance)
+            {
+                double ix = x1 + ua * (x2 - x1);
+                double iy = y1 + ua * (y2 - y1);
+                return new Point2D(ix, iy);
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Khử trùng lặp các điểm tọa độ nằm quá gần nhau trong bán kính sai số
+        /// </summary>
+        public static List<Point2D> DeduplicatePoints(IEnumerable<Point2D> points, double tolerance = 5.0)
+        {
+            var unique = new List<Point2D>();
+            if (points == null) return unique;
+
+            foreach (var pt in points)
+            {
+                bool exists = false;
+                foreach (var u in unique)
+                {
+                    if (pt.DistanceTo(u) <= tolerance)
+                    {
+                        exists = true;
+                        break;
+                    }
+                }
+                if (!exists) unique.Add(pt);
+            }
+
+            return unique;
+        }
     }
 
     /// <summary>

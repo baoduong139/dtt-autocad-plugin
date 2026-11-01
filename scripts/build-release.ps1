@@ -28,7 +28,7 @@ if (Test-Path $testExe) {
     if ($LASTEXITCODE -ne 0) {
         throw "Co bai test that bai! Huy quy trinh dong goi Release."
     }
-    Write-Host "Tat ca 22/22 bai kiem thu tu dong deu VUOT QUA (PASS)!" -ForegroundColor Green
+    Write-Host "Tat ca bai kiem thu tu dong deu VUOT QUA (PASS)!" -ForegroundColor Green
 }
 
 Write-Host "`n[BUOC 3/3] Tien hanh dong goi tron bo qua package.ps1..." -ForegroundColor Yellow

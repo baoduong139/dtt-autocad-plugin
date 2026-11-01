@@ -45,7 +45,7 @@ Hệ thống backlog phát triển tự động của DTT Tools Pro. Được c�
 - [x] **UI-01**: Tắt popup trung tâm công cụ khi mở CAD, giữ lại Palette bên trái làm bảng điều khiển trung tâm duy nhất. *(Hoàn thành v2026.2.0)*
 - [x] **UI-02**: Thay thế hình tròn placeholder màu xanh bằng Canvas vector 2D CAD Preview top-down thực thụ. *(Hoàn thành v2026.2.0)*
 - [x] **UI-03**: Thống nhất phiên bản hiển thị thành `v2026.2.0` trên toàn bộ UI, Menu và DLL. *(Hoàn thành v2026.2.0)*
-- [ ] **UI-04**: Bổ sung bộ lọc tìm kiếm tức thì theo từ khóa không dấu tiếng Việt trong bảng ký hiệu. *(Ưu tiên P2)*
+- [x] **UI-04**: Bổ sung bộ lọc tìm kiếm tức thì theo từ khóa không dấu tiếng Việt trong bảng ký hiệu & Palette. *(Hoàn thành v2026.2.1)*
 
 ---
 

@@ -568,55 +568,46 @@ namespace DTT_AutoCAD_Plugin.Common
                     double autoScale = CadUtils.CalculateAutoSymbolScale(db, 1.0);
                     Scale3d blockScale = (width > 0 || height > 0) ? new Scale3d(1, 1, 1) : new Scale3d(autoScale);
 
-                    PromptPointOptions ppo = new PromptPointOptions($"\n📍 [DTools] Click chọn điểm đặt Block '{cleanName}' [Enter/Esc để kết thúc]: ");
-                    ppo.AllowNone = true;
+                    PromptPointOptions ppo = new PromptPointOptions($"\n📍 [DTools] Click chọn điểm đặt Block '{cleanName}' [Esc để hủy]: ");
+                    ppo.AllowNone = false;
 
-                    int count = 0;
-                    while (true)
+                    PromptPointResult ppr = ed.GetPoint(ppo);
+                    if (ppr.Status != PromptStatus.OK)
                     {
-                        PromptPointResult ppr = ed.GetPoint(ppo);
-                        if (ppr.Status != PromptStatus.OK) break;
-
-                        ObjectId blkRefId = InsertBlockReference(db, btrId, ppr.Value, blockScale, 0.0);
-                        if (!blkRefId.IsNull)
-                        {
-                            // Gán thuộc tính dynamic block nếu có
-                            if (width > 0)
-                            {
-                                SetDynamicBlockProperty(blkRefId, "Door Size", width);
-                                SetDynamicBlockProperty(blkRefId, "W", width);
-                                SetDynamicBlockProperty(blkRefId, "Distance", width);
-                                SetDynamicBlockProperty(blkRefId, "Width", width);
-                            }
-                            if (height > 0)
-                            {
-                                SetDynamicBlockProperty(blkRefId, "H", height);
-                            }
-                            if (flip)
-                            {
-                                FlipDynamicBlock(blkRefId);
-                            }
-
-                            // Cập nhật hiển thị đồ họa tức thì
-                            CadUtils.RefreshScreenAndGraphics(ed);
-
-                            count++;
-                            ppo.Message = $"\n📍 [DTools] Đã đặt {count} block '{cleanName}'. Click điểm tiếp theo [Enter/Esc để kết thúc]: ";
-                        }
-                        else
-                        {
-                            ed.WriteMessage($"\n❌ [DTools]: Không thể tạo thực thể BlockReference cho '{cleanName}'.");
-                            break;
-                        }
+                        ed.WriteMessage("\n[DTools] Đã hủy thao tác chèn Block.\n");
+                        return false;
                     }
 
-                    if (count > 0)
+                    ObjectId blkRefId = InsertBlockReference(db, btrId, ppr.Value, blockScale, 0.0);
+                    if (!blkRefId.IsNull)
                     {
+                        // Gán thuộc tính dynamic block nếu có
+                        if (width > 0)
+                        {
+                            SetDynamicBlockProperty(blkRefId, "Door Size", width);
+                            SetDynamicBlockProperty(blkRefId, "W", width);
+                            SetDynamicBlockProperty(blkRefId, "Distance", width);
+                            SetDynamicBlockProperty(blkRefId, "Width", width);
+                        }
+                        if (height > 0)
+                        {
+                            SetDynamicBlockProperty(blkRefId, "H", height);
+                        }
+                        if (flip)
+                        {
+                            FlipDynamicBlock(blkRefId);
+                        }
+
+                        // Cập nhật hiển thị đồ họa tức thì
                         CadUtils.RefreshScreenAndGraphics(ed);
-                        ed.WriteMessage($"\n✅ [DTools Pro] Đã hoàn thành chèn {count} block '{cleanName}'.\n");
+                        ed.WriteMessage($"\n✅ [DTools Pro] Đã chèn thành công 1 block '{cleanName}' tại ({ppr.Value.X:F1}, {ppr.Value.Y:F1})\n");
+                        return true;
                     }
-
-                    return count > 0;
+                    else
+                    {
+                        ed.WriteMessage($"\n❌ [DTools]: Không thể tạo thực thể BlockReference cho '{cleanName}'.\n");
+                        return false;
+                    }
                 }
             }
             catch (System.Exception ex)

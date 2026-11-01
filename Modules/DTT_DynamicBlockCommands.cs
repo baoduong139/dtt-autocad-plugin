@@ -57,7 +57,24 @@ namespace DTT_AutoCAD_Plugin.Modules
         [CommandMethod("T_INSERTBLOCK")]
         [CommandMethod("DT_BLOCK")]
         [CommandMethod("DTT_BLOCK")]
+        [CommandMethod("DT_DYNAMIC_MENU")]
+        [CommandMethod("DTT_DYNAMIC_MENU")]
         public static void CmdInsertBlock()
+        {
+            try
+            {
+                DtoolsBlockService.EnsureDefaultBlocksExist();
+                DTT_QuickMenuDialog.ShowDynamicBlockMenu();
+            }
+            catch (System.Exception ex)
+            {
+                Document doc = Application.DocumentManager.MdiActiveDocument;
+                doc?.Editor.WriteMessage($"\n❌ [DT_INSERTBLOCK Lỗi]: {ex.Message}");
+            }
+        }
+
+        [CommandMethod("DT_INSERTBLOCK_CLI")]
+        public static void CmdInsertBlockCli()
         {
             Document doc = Application.DocumentManager.MdiActiveDocument;
             if (doc == null) return;
@@ -297,76 +314,68 @@ namespace DTT_AutoCAD_Plugin.Modules
                     ? BlockPlacementContext.ElevationText 
                     : "+0.000";
 
-                PromptPointOptions ppo = new PromptPointOptions("\n📍 [DTools] Click chọn điểm đặt linh kiện trên bản vẽ [Enter/Esc để xong]: ");
-                ppo.AllowNone = true;
+                PromptPointOptions ppo = new PromptPointOptions($"\n📍 [DTools] Click chọn điểm đặt linh kiện '{blockName}' [Esc để hủy]: ");
+                ppo.AllowNone = false;
 
-                int count = 0;
-                while (true)
+                PromptPointResult ppr = ed.GetPoint(ppo);
+                if (ppr.Status != PromptStatus.OK)
                 {
-                    PromptPointResult ppr = ed.GetPoint(ppo);
-                    if (ppr.Status != PromptStatus.OK) break;
+                    ed.WriteMessage("\n[DTools] Đã hủy thao tác đặt linh kiện.\n");
+                    return;
+                }
 
-                    using (doc.LockDocument())
+                using (doc.LockDocument())
+                {
+                    ObjectId blkId = DtoolsBlockService.InsertBlockFromLibrary(db, blockName, ppr.Value, new Scale3d(1, 1, 1), 0.0);
+                    if (blkId.IsNull)
                     {
-                        ObjectId blkId = DtoolsBlockService.InsertBlockFromLibrary(db, blockName, ppr.Value, new Scale3d(1, 1, 1), 0.0);
-                        if (blkId.IsNull)
-                        {
-                            ed.WriteMessage($"\n⚠️ Không thể nạp block '{blockName}' từ thư viện Dtools.");
-                            break;
-                        }
-
-                        // Tự động gán thông số Dynamic Block đã cấu hình từ Menu
-                        if (blockName.IndexOf("Door", StringComparison.OrdinalIgnoreCase) >= 0)
-                        {
-                            DtoolsBlockService.SetDynamicBlockProperty(blkId, "Door Size", width);
-                            DtoolsBlockService.SetDynamicBlockProperty(blkId, "Wall Thickness", BlockPlacementContext.WallThickness > 0 ? BlockPlacementContext.WallThickness : 110.0);
-                            DtoolsBlockService.SetDynamicBlockProperty(blkId, "Distance", width);
-                            DtoolsBlockService.SetDynamicBlockProperty(blkId, "Width", width);
-                            string tag = !string.IsNullOrEmpty(BlockPlacementContext.TagText) 
-                                ? BlockPlacementContext.TagText 
-                                : $"D ({width}x2200)";
-                            DtoolsBlockService.SetDynamicBlockProperty(blkId, "DOOR_TAG", tag);
-
-                            if (flip)
-                            {
-                                DtoolsBlockService.FlipDynamicBlock(blkId);
-                            }
-                        }
-                        else if (blockName.IndexOf("Column", StringComparison.OrdinalIgnoreCase) >= 0)
-                        {
-                            DtoolsBlockService.SetDynamicBlockProperty(blkId, "W", width);
-                            DtoolsBlockService.SetDynamicBlockProperty(blkId, "H", height);
-                            DtoolsBlockService.SetDynamicBlockProperty(blkId, "Distance", width);
-                            DtoolsBlockService.SetDynamicBlockProperty(blkId, "Width", width);
-                            string tag = !string.IsNullOrEmpty(BlockPlacementContext.TagText) 
-                                ? BlockPlacementContext.TagText 
-                                : $"C{width}x{height}";
-                            DtoolsBlockService.SetDynamicBlockProperty(blkId, "COL_TAG", tag);
-                        }
-                        else if (blockName.IndexOf("Annotation", StringComparison.OrdinalIgnoreCase) >= 0)
-                        {
-                            DtoolsBlockService.SetDynamicBlockProperty(blkId, "ELEVATION", elevText);
-                        }
-                        else
-                        {
-                            DtoolsBlockService.SetDynamicBlockProperty(blkId, "Distance", width);
-                            DtoolsBlockService.SetDynamicBlockProperty(blkId, "Width", width);
-                            if (flip) DtoolsBlockService.FlipDynamicBlock(blkId);
-                        }
+                        ed.WriteMessage($"\n⚠️ Không thể nạp block '{blockName}' từ thư viện Dtools.\n");
+                        return;
                     }
 
-                    // Cập nhật hiển thị đồ họa tức thì
-                    CadUtils.RefreshScreenAndGraphics(ed);
+                    // Tự động gán thông số Dynamic Block đã cấu hình từ Menu
+                    if (blockName.IndexOf("Door", StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        DtoolsBlockService.SetDynamicBlockProperty(blkId, "Door Size", width);
+                        DtoolsBlockService.SetDynamicBlockProperty(blkId, "Wall Thickness", BlockPlacementContext.WallThickness > 0 ? BlockPlacementContext.WallThickness : 110.0);
+                        DtoolsBlockService.SetDynamicBlockProperty(blkId, "Distance", width);
+                        DtoolsBlockService.SetDynamicBlockProperty(blkId, "Width", width);
+                        string tag = !string.IsNullOrEmpty(BlockPlacementContext.TagText) 
+                            ? BlockPlacementContext.TagText 
+                            : $"D ({width}x2200)";
+                        DtoolsBlockService.SetDynamicBlockProperty(blkId, "DOOR_TAG", tag);
 
-                    count++;
-                    ppo.Message = $"\n📍 [DTools] Đã đặt {count} cấu kiện '{blockName}'. Click điểm tiếp theo [Enter/Esc để xong]: ";
+                        if (flip)
+                        {
+                            DtoolsBlockService.FlipDynamicBlock(blkId);
+                        }
+                    }
+                    else if (blockName.IndexOf("Column", StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        DtoolsBlockService.SetDynamicBlockProperty(blkId, "W", width);
+                        DtoolsBlockService.SetDynamicBlockProperty(blkId, "H", height);
+                        DtoolsBlockService.SetDynamicBlockProperty(blkId, "Distance", width);
+                        DtoolsBlockService.SetDynamicBlockProperty(blkId, "Width", width);
+                        string tag = !string.IsNullOrEmpty(BlockPlacementContext.TagText) 
+                            ? BlockPlacementContext.TagText 
+                            : $"C{width}x{height}";
+                        DtoolsBlockService.SetDynamicBlockProperty(blkId, "COL_TAG", tag);
+                    }
+                    else if (blockName.IndexOf("Annotation", StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        DtoolsBlockService.SetDynamicBlockProperty(blkId, "ELEVATION", elevText);
+                    }
+                    else
+                    {
+                        DtoolsBlockService.SetDynamicBlockProperty(blkId, "Distance", width);
+                        DtoolsBlockService.SetDynamicBlockProperty(blkId, "Width", width);
+                        if (flip) DtoolsBlockService.FlipDynamicBlock(blkId);
+                    }
                 }
 
-                if (count > 0)
-                {
-                    CadUtils.RefreshScreenAndGraphics(ed);
-                    ed.WriteMessage($"\n✅ [DTools]: Đã chèn xong {count} linh kiện '{blockName}'.");
-                }
+                // Cập nhật hiển thị đồ họa tức thì
+                CadUtils.RefreshScreenAndGraphics(ed);
+                ed.WriteMessage($"\n✅ [DTools Pro] Đã chèn xong 1 cấu kiện '{blockName}' tại ({ppr.Value.X:F1}, {ppr.Value.Y:F1})!\n");
             }
             catch (System.Exception ex)
             {

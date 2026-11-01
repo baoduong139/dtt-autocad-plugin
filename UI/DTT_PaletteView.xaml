@@ -491,6 +491,7 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="28"/>
                             <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="26"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="🔍" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource ThemeAccent}"/>
                         <TextBox Grid.Column="1" x:Name="TxtSearch" 
@@ -501,7 +502,15 @@
                                  FontSize="11" 
                                  VerticalContentAlignment="Center"
                                  Padding="2,0,4,0"
+                                 ToolTip="Gõ từ khóa tìm kiếm (hỗ trợ tiếng Việt không dấu: cau thang, cot, tu dien, day...)"
                                  TextChanged="TxtSearch_TextChanged"/>
+                        <Button Grid.Column="2" x:Name="BtnClearSearch"
+                                Content="✕" FontSize="10" FontWeight="Bold"
+                                Background="Transparent" BorderThickness="0"
+                                Foreground="{DynamicResource ThemeTextMuted}"
+                                Cursor="Hand" Click="BtnClearSearch_Click"
+                                ToolTip="Xóa bộ lọc tìm kiếm"
+                                Visibility="Collapsed"/>
                     </Grid>
                 </Border>
             </StackPanel>
@@ -936,6 +945,12 @@
                         <Button Style="{StaticResource StyleVipButton}" Click="Btn_Click" Tag="DTT_GRID_SYSTEM " ToolTip="Sinh hệ thống lưới trục kiến trúc đa nhịp tự động (nhập khoảng cách nhịp X, Y) kèm bong bóng 2 đầu và chuỗi kích thước Dim">
                             <TextBlock Text="📐 Sinh Lưới Trục Đa Nhịp &amp; Dim Tự Động (DTT_GRID_SYSTEM)" FontWeight="Bold" Foreground="#0284C7"/>
                         </Button>
+                        <Button Style="{StaticResource StyleVipButton}" Click="Btn_Click" Tag="DTT_COLUMN_GRID " ToolTip="Tự động đặt cột BTCT vuông/tròn (220x220, 300x300...) kèm Solid Hatch tại tất cả giao điểm lưới trục">
+                            <TextBlock Text="🏛️ Đặt Cột BTCT Tại Giao Lưới Trục (DTT_COLUMN_GRID)" FontWeight="Bold" Foreground="#DC2626"/>
+                        </Button>
+                        <Button Style="{StaticResource StyleVipButton}" Click="Btn_Click" Tag="DTT_WALL_AUTO " ToolTip="Tự động sinh nét tường đôi hoàn thiện (110mm / 220mm) từ tim trục hoặc đa tuyến Polyline">
+                            <TextBlock Text="🧱 Tự Động Sinh Tường Đôi Từ Tim Trục (DTT_WALL_AUTO)" FontWeight="Bold" Foreground="#D97706"/>
+                        </Button>
                         <Button Style="{StaticResource StyleVipButton}" Click="Btn_Click" Tag="DTT_SCAN_TO_CAD " ToolTip="Quét ảnh chụp / scan / PDF bản vẽ và tự động dựng lại nét CAD (DWG) bằng AI Vision &amp; Computer Vision">
                             <TextBlock Text="⚡🤖 Quét Bản Vẽ (Ảnh/PDF) Ra CAD (AI Vision)" FontWeight="Bold" Foreground="#7C3AED"/>
                         </Button>
@@ -1177,6 +1192,25 @@
                         <Button Style="{StaticResource StyleGreenButton}" Click="Btn_Click" Tag="DTT_EXPORT_BOM" ToolTip="Quét toàn bộ block thiết bị và xuất bảng kê vật tư sang file Excel .xlsx">
                             <TextBlock><Run Text="📊 " Foreground="#16A34A"/><Run Text="Xuất Bảng Thống Kê Thiết Bị BOM (.xlsx)" FontWeight="Bold"/></TextBlock>
                         </Button>
+
+                        <!-- NHÓM 5: ĐÁNH SỐ DÂY THÔNG MINH & DRC ĐIỆN -->
+                        <TextBlock Text="🛡️ ĐÁNH SỐ DÂY &amp; KIỂM TRA MẠCH DRC" FontSize="10.5" FontWeight="Bold" Foreground="#10B981" Margin="2,8,0,3"/>
+                        <Grid Margin="0,2,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="6"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Style="{StaticResource StyleVipButton}" Click="Btn_Click" Tag="DTT_SMART_WIRENUM " ToolTip="Tự động đánh số dây thông minh từ số bắt đầu hoặc theo pha (Lệnh DTT_SMART_WIRENUM)">
+                                <TextBlock><Run Text="🔢 " Foreground="#0284C7"/><Run Text="Đánh Số Dây Auto" FontWeight="Bold"/></TextBlock>
+                            </Button>
+                            <Button Grid.Column="2" Style="{StaticResource StyleVipButton}" Click="Btn_Click" Tag="DTT_ELEC_DRC " ToolTip="Kiểm tra xung đột mạch điện DRC, chân hở mạch, trùng tên tiếp điểm và xuất báo cáo (Lệnh DTT_ELEC_DRC)">
+                                <TextBlock><Run Text="🛡️ " Foreground="#EF4444"/><Run Text="Kiểm Tra DRC Mạch" FontWeight="Bold"/></TextBlock>
+                            </Button>
+                        </Grid>
+                        <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="DTT_CROSS_REF " ToolTip="Tự động lập bảng tham chiếu chéo cuộn hút rơ-le và các cặp tiếp điểm NO/NC (DTT_CROSS_REF)">
+                            <TextBlock><Run Text="🔗 " Foreground="#8B5CF6"/><Run Text="Tham Chiếu Chéo Rơ-le (Cross-Reference)"/></TextBlock>
+                        </Button>
                     </StackPanel>
 
                     <!-- ============================================================
@@ -1237,7 +1271,7 @@
 
                                 <!-- ĐIỀU KHIỂN CHÈN CHUẨN: CHỌN TRƯỚC -> CHÈN 1 LẦN DUY NHẤT -->
                                 <StackPanel Grid.Row="3" Margin="0,2,0,0">
-                                    <CheckBox x:Name="ChkContinuousInsert" Content="Chèn liên tục (nhiều điểm)" FontSize="9.5" Foreground="#94A3B8" Cursor="Hand" Margin="0,0,0,4" Click="ChkContinuousInsert_Click"/>
+                                    <CheckBox x:Name="ChkContinuousInsert" Content="Chèn liên tục (nhiều điểm)" FontSize="9.5" Foreground="#94A3B8" Cursor="Hand" Margin="0,0,0,4" Visibility="Collapsed" IsChecked="False" Click="ChkContinuousInsert_Click"/>
                                     <Button x:Name="BtnInsertSelectedSymbol" Content="⚡ CHÈN 1 KÝ HIỆU RA CAD" Click="BtnInsertSelectedSymbol_Click" Height="28" Background="#0284C7" Foreground="#FFFFFF" FontWeight="Bold" FontSize="10" BorderThickness="0" Cursor="Hand">
                                         <Button.Resources>
                                             <Style TargetType="Border">
@@ -1281,6 +1315,12 @@
                         </Button>
 
                         <TextBlock Text="✂️ HIỆU CHỈNH 2D" FontSize="11" FontWeight="Bold" Foreground="#ffb700" Margin="2,8,0,4"/>
+                        <Button Style="{StaticResource StyleVipButton}" Click="Btn_Click" Tag="DTT_QUICK_OFFSET " ToolTip="Offset song song 2 phía tự động tạo tim trục hoặc bề dày tường (Lệnh DTT_QUICK_OFFSET)">
+                            <TextBlock Text="↔️ Offset Song Song 2 Phía (DTT_QUICK_OFFSET)" FontWeight="Bold" Foreground="#0284C7"/>
+                        </Button>
+                        <Button Style="{StaticResource StyleVipButton}" Click="Btn_Click" Tag="DTT_FILLET_ALL " ToolTip="Bo tròn toàn bộ đỉnh cho các Polyline chỉ với 1 thao tác (Lệnh DTT_FILLET_ALL)">
+                            <TextBlock Text="🔄 Bo Toàn Bộ Góc Polyline (DTT_FILLET_ALL)" FontWeight="Bold" Foreground="#10B981"/>
+                        </Button>
                         <Button Style="{StaticResource Style3DButton}" Click="Btn_Click" Tag="_OFFSET ">
                             <TextBlock><Run Text="⇌ " Foreground="#ffb700"/><Run Text="Offset Song Song (_OFFSET)"/></TextBlock>
                         </Button>

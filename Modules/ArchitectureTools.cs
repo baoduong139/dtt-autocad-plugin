@@ -28,7 +28,7 @@ namespace DTT_AutoCAD_Plugin.Modules
                 PreviewKind.Wall,
                 new[] {
                     new ParameterField("Thick", "Bề dày tường:", "220", "mm", new[] { "220", "110", "100", "75", "150", "200" }),
-                    new ParameterField("Continuous", "Chế độ vẽ liên tục:", "Có", null, new[] { "Có", "Không" })
+                    new ParameterField("Continuous", "Chế độ vẽ liên tục:", "Không", null, new[] { "Không", "Có" })
                 });
             if (pr == null) return;
             double thick = pr.GetDouble("Thick", 220.0);
@@ -483,81 +483,68 @@ namespace DTT_AutoCAD_Plugin.Modules
 
             CadUtils.FocusDwgView();
 
-            PromptKeywordOptions pko = new PromptKeywordOptions($"\n🚪 [{desc}] Vẽ liên tục? [Có/Không] <Có>: ");
-            pko.Keywords.Add("Có"); pko.Keywords.Add("Không"); pko.Keywords.Default = "Có"; pko.AllowNone = true;
-            PromptResult prCont = ed.GetKeywords(pko);
-            bool continuous = (prCont.Status != PromptStatus.OK || prCont.StringResult != "Không");
+            PromptPointOptions ppo1 = new PromptPointOptions($"\n🚪 [DTT CỬA] Click điểm đặt BẢN LỀ cửa [{desc}] [Esc để hủy]: ");
+            PromptPointResult ppr1 = ed.GetPoint(ppo1);
+            if (ppr1.Status != PromptStatus.OK) return;
 
-            int count = 0;
-            do
+            // Hỏi hướng mở
+            PromptKeywordOptions pkDir = new PromptKeywordOptions("\n🚪 Hướng cửa mở: [Phải/Trái/Trên/Dưới] <Phải>: ");
+            pkDir.Keywords.Add("Phải"); pkDir.Keywords.Add("Trái");
+            pkDir.Keywords.Add("Trên"); pkDir.Keywords.Add("Dưới");
+            pkDir.Keywords.Default = "Phải"; pkDir.AllowNone = true;
+            PromptResult prDir = ed.GetKeywords(pkDir);
+            string dir = (prDir.Status == PromptStatus.OK) ? prDir.StringResult : "Phải";
+
+            Point3d pt = ppr1.Value;
+
+            using (doc.LockDocument())
+            using (Transaction tr = db.TransactionManager.StartTransaction())
             {
-                PromptPointOptions ppo1 = new PromptPointOptions($"\n🚪 [DTT CỬA] Click điểm đặt BẢN LỀ cửa [{desc}]: ");
-                PromptPointResult ppr1 = ed.GetPoint(ppo1);
-                if (ppr1.Status != PromptStatus.OK) break;
+                ObjectId doorLayer = CadUtils.GetOrCreateLayer(db, "A-DOOR", 3, LineWeight.LineWeight025);
+                BlockTable bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForRead);
+                BlockTableRecord btr = (BlockTableRecord)tr.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForWrite);
 
-                // Hỏi hướng mở
-                PromptKeywordOptions pkDir = new PromptKeywordOptions("\n🚪 Hướng cửa mở: [Phải/Trái/Trên/Dưới] <Phải>: ");
-                pkDir.Keywords.Add("Phải"); pkDir.Keywords.Add("Trái");
-                pkDir.Keywords.Add("Trên"); pkDir.Keywords.Add("Dưới");
-                pkDir.Keywords.Default = "Phải"; pkDir.AllowNone = true;
-                PromptResult prDir = ed.GetKeywords(pkDir);
-                string dir = (prDir.Status == PromptStatus.OK) ? prDir.StringResult : "Phải";
+                double startAngle, endAngle;
+                Point2d leafEnd;
 
-                Point3d pt = ppr1.Value;
-
-                using (doc.LockDocument())
-                using (Transaction tr = db.TransactionManager.StartTransaction())
+                switch (dir)
                 {
-                    ObjectId doorLayer = CadUtils.GetOrCreateLayer(db, "A-DOOR", 3, LineWeight.LineWeight025);
-                    BlockTable bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForRead);
-                    BlockTableRecord btr = (BlockTableRecord)tr.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForWrite);
-
-                    double startAngle, endAngle;
-                    Point2d leafEnd;
-
-                    switch (dir)
-                    {
-                        case "Trái":
-                            startAngle = Math.PI / 2; endAngle = Math.PI;
-                            leafEnd = new Point2d(pt.X, pt.Y + doorW);
-                            break;
-                        case "Trên":
-                            startAngle = Math.PI; endAngle = 3 * Math.PI / 2;
-                            leafEnd = new Point2d(pt.X - doorW, pt.Y);
-                            break;
-                        case "Dưới":
-                            startAngle = 0; endAngle = Math.PI / 2;
-                            leafEnd = new Point2d(pt.X + doorW, pt.Y);
-                            break;
-                        default: // Phải
-                            startAngle = Math.PI / 2; endAngle = Math.PI;
-                            leafEnd = new Point2d(pt.X, pt.Y + doorW);
-                            break;
-                    }
-
-                    // Cánh cửa (dày 40mm)
-                    Polyline leaf = new Polyline();
-                    leaf.AddVertexAt(0, new Point2d(pt.X, pt.Y), 0, 0, 0);
-                    leaf.AddVertexAt(1, new Point2d(pt.X, pt.Y + doorW), 0, 0, 0);
-                    leaf.AddVertexAt(2, new Point2d(pt.X + 40, pt.Y + doorW), 0, 0, 0);
-                    leaf.AddVertexAt(3, new Point2d(pt.X + 40, pt.Y), 0, 0, 0);
-                    leaf.Closed = true;
-                    leaf.LayerId = doorLayer;
-                    btr.AppendEntity(leaf); tr.AddNewlyCreatedDBObject(leaf, true);
-
-                    // Cung tròn mở cửa
-                    Arc swing = new Arc(pt, doorW, startAngle, endAngle) { LayerId = doorLayer };
-                    btr.AppendEntity(swing); tr.AddNewlyCreatedDBObject(swing, true);
-
-                    tr.Commit(); ed.Regen();
+                    case "Trái":
+                        startAngle = Math.PI / 2; endAngle = Math.PI;
+                        leafEnd = new Point2d(pt.X, pt.Y + doorW);
+                        break;
+                    case "Trên":
+                        startAngle = Math.PI; endAngle = 3 * Math.PI / 2;
+                        leafEnd = new Point2d(pt.X - doorW, pt.Y);
+                        break;
+                    case "Dưới":
+                        startAngle = 0; endAngle = Math.PI / 2;
+                        leafEnd = new Point2d(pt.X + doorW, pt.Y);
+                        break;
+                    default: // Phải
+                        startAngle = Math.PI / 2; endAngle = Math.PI;
+                        leafEnd = new Point2d(pt.X, pt.Y + doorW);
+                        break;
                 }
 
-                count++;
-                ed.WriteMessage($"\n🚪 [{count}] Đã chèn cửa [{desc}] ✓");
+                // Cánh cửa (dày 40mm)
+                Polyline leaf = new Polyline();
+                leaf.AddVertexAt(0, new Point2d(pt.X, pt.Y), 0, 0, 0);
+                leaf.AddVertexAt(1, new Point2d(pt.X, pt.Y + doorW), 0, 0, 0);
+                leaf.AddVertexAt(2, new Point2d(pt.X + 40, pt.Y + doorW), 0, 0, 0);
+                leaf.AddVertexAt(3, new Point2d(pt.X + 40, pt.Y), 0, 0, 0);
+                leaf.Closed = true;
+                leaf.LayerId = doorLayer;
+                btr.AppendEntity(leaf); tr.AddNewlyCreatedDBObject(leaf, true);
 
-            } while (continuous);
+                // Cung tròn mở cửa
+                Arc swing = new Arc(pt, doorW, startAngle, endAngle) { LayerId = doorLayer };
+                btr.AppendEntity(swing); tr.AddNewlyCreatedDBObject(swing, true);
 
-            ed.WriteMessage($"\n🚪 [DTT CỬA] Hoàn thành! Đã chèn {count} cửa [{desc}] ✓\n");
+                tr.Commit(); ed.Regen();
+            }
+
+            ed.WriteMessage($"\n✅ [DTT CỬA] Đã chèn thành công 1 cửa [{desc}] ✓\n");
         }
 
         private static void DrawDoor2Wing(double doorW, double doorH, string desc)
@@ -745,67 +732,54 @@ namespace DTT_AutoCAD_Plugin.Modules
 
             CadUtils.FocusDwgView();
 
-            PromptKeywordOptions pko = new PromptKeywordOptions($"\n🪟 [{desc}] Vẽ liên tục? [Có/Không] <Có>: ");
-            pko.Keywords.Add("Có"); pko.Keywords.Add("Không"); pko.Keywords.Default = "Có"; pko.AllowNone = true;
-            PromptResult prCont = ed.GetKeywords(pko);
-            bool continuous = (prCont.Status != PromptStatus.OK || prCont.StringResult != "Không");
+            PromptPointOptions ppo = new PromptPointOptions($"\n🪟 [DTT CỬA SỔ] Click điểm đặt cửa sổ [{desc}] [Esc để hủy]: ");
+            PromptPointResult ppr = ed.GetPoint(ppo);
+            if (ppr.Status != PromptStatus.OK) return;
 
-            int count = 0;
-            do
+            Point3d pt = ppr.Value;
+            double wallT = 220.0;
+
+            using (doc.LockDocument())
+            using (Transaction tr = db.TransactionManager.StartTransaction())
             {
-                PromptPointOptions ppo = new PromptPointOptions($"\n🪟 [DTT CỬA SỔ] Click điểm đặt cửa sổ [{desc}]: ");
-                PromptPointResult ppr = ed.GetPoint(ppo);
-                if (ppr.Status != PromptStatus.OK) break;
+                ObjectId winLayer = CadUtils.GetOrCreateLayer(db, "A-WINDOW", 4, LineWeight.LineWeight025);
+                BlockTable bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForRead);
+                BlockTableRecord btr = (BlockTableRecord)tr.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForWrite);
 
-                Point3d pt = ppr.Value;
-                double wallT = 220.0;
+                // Khung cửa sổ ngoài
+                Polyline frame = new Polyline();
+                frame.AddVertexAt(0, new Point2d(pt.X, pt.Y), 0, 0, 0);
+                frame.AddVertexAt(1, new Point2d(pt.X + winW, pt.Y), 0, 0, 0);
+                frame.AddVertexAt(2, new Point2d(pt.X + winW, pt.Y + wallT), 0, 0, 0);
+                frame.AddVertexAt(3, new Point2d(pt.X, pt.Y + wallT), 0, 0, 0);
+                frame.Closed = true; frame.LayerId = winLayer;
+                btr.AppendEntity(frame); tr.AddNewlyCreatedDBObject(frame, true);
 
-                using (doc.LockDocument())
-                using (Transaction tr = db.TransactionManager.StartTransaction())
+                // 2 lớp kính phân cách (tùy số cánh)
+                int numPanes = (winW >= 1500.0) ? 3 : (winW >= 900.0 ? 2 : 1);
+                double glassStep = wallT / (numPanes + 1);
+                for (int i = 1; i <= numPanes; i++)
                 {
-                    ObjectId winLayer = CadUtils.GetOrCreateLayer(db, "A-WINDOW", 4, LineWeight.LineWeight025);
-                    BlockTable bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForRead);
-                    BlockTableRecord btr = (BlockTableRecord)tr.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForWrite);
-
-                    // Khung cửa sổ ngoài
-                    Polyline frame = new Polyline();
-                    frame.AddVertexAt(0, new Point2d(pt.X, pt.Y), 0, 0, 0);
-                    frame.AddVertexAt(1, new Point2d(pt.X + winW, pt.Y), 0, 0, 0);
-                    frame.AddVertexAt(2, new Point2d(pt.X + winW, pt.Y + wallT), 0, 0, 0);
-                    frame.AddVertexAt(3, new Point2d(pt.X, pt.Y + wallT), 0, 0, 0);
-                    frame.Closed = true; frame.LayerId = winLayer;
-                    btr.AppendEntity(frame); tr.AddNewlyCreatedDBObject(frame, true);
-
-                    // 2 lớp kính phân cách (tùy số cánh)
-                    int numPanes = (winW >= 1500.0) ? 3 : (winW >= 900.0 ? 2 : 1);
-                    double glassStep = wallT / (numPanes + 1);
-                    for (int i = 1; i <= numPanes; i++)
-                    {
-                        double glassY = pt.Y + glassStep * i;
-                        Line glass = new Line(
-                            new Point3d(pt.X, glassY, 0),
-                            new Point3d(pt.X + winW, glassY, 0)) { LayerId = winLayer };
-                        btr.AppendEntity(glass); tr.AddNewlyCreatedDBObject(glass, true);
-                    }
-
-                    // Đường chia cánh giữa (nếu 2 cánh)
-                    if (numPanes > 1)
-                    {
-                        Line divider = new Line(
-                            new Point3d(pt.X + winW / 2, pt.Y, 0),
-                            new Point3d(pt.X + winW / 2, pt.Y + wallT, 0)) { LayerId = winLayer };
-                        btr.AppendEntity(divider); tr.AddNewlyCreatedDBObject(divider, true);
-                    }
-
-                    tr.Commit(); ed.Regen();
+                    double glassY = pt.Y + glassStep * i;
+                    Line glass = new Line(
+                        new Point3d(pt.X, glassY, 0),
+                        new Point3d(pt.X + winW, glassY, 0)) { LayerId = winLayer };
+                    btr.AppendEntity(glass); tr.AddNewlyCreatedDBObject(glass, true);
                 }
 
-                count++;
-                ed.WriteMessage($"\n🪟 [{count}] Đã chèn cửa sổ [{desc}] ✓");
+                // Đường chia cánh giữa (nếu 2 cánh)
+                if (numPanes > 1)
+                {
+                    Line divider = new Line(
+                        new Point3d(pt.X + winW / 2, pt.Y, 0),
+                        new Point3d(pt.X + winW / 2, pt.Y + wallT, 0)) { LayerId = winLayer };
+                    btr.AppendEntity(divider); tr.AddNewlyCreatedDBObject(divider, true);
+                }
 
-            } while (continuous);
+                tr.Commit(); ed.Regen();
+            }
 
-            ed.WriteMessage($"\n🪟 [DTT CỬA SỔ] Hoàn thành! Đã chèn {count} cửa sổ ✓\n");
+            ed.WriteMessage($"\n✅ [DTT CỬA SỔ] Đã chèn thành công 1 cửa sổ [{desc}] ✓\n");
         }
 
         private static void DrawLouver(double w, double h, string desc)
@@ -1457,5 +1431,257 @@ namespace DTT_AutoCAD_Plugin.Modules
                 btr.AppendEntity(rotDimTot); tr.AddNewlyCreatedDBObject(rotDimTot, true);
             }
         }
+
+        #region Automated Architecture: Column at Grid & Auto Double Wall
+
+        // ============================================================
+        // LỆNH ĐẶT CỘT BÊ TÔNG CỐT THÉP TỰ ĐỘNG TẠI GIAO ĐIỂM LƯỚI TRỤC
+        // ============================================================
+
+        [CommandMethod("DTT_COLUMN_GRID")]
+        [CommandMethod("DTT_COL_GRID")]
+        public static void CmdColumnAtGridIntersections()
+        {
+            Document doc = Application.DocumentManager.MdiActiveDocument;
+            if (doc == null) return;
+            Database db = doc.Database;
+            Editor ed = doc.Editor;
+
+            CadUtils.FocusDwgView();
+
+            // 1. Nhập kích thước cột B x H (mặc định 220 x 220 mm)
+            PromptDoubleOptions pdoW = new PromptDoubleOptions("\n👉 [DTT CỘT GIAO TRỤC] Bề rộng cột B (mm): ") { DefaultValue = 220.0 };
+            PromptDoubleResult pdrW = ed.GetDouble(pdoW);
+            if (pdrW.Status != PromptStatus.OK) return;
+            double colW = pdrW.Value;
+
+            PromptDoubleOptions pdoH = new PromptDoubleOptions("\n👉 Chiều dài cột H (mm): ") { DefaultValue = 220.0 };
+            PromptDoubleResult pdrH = ed.GetDouble(pdoH);
+            if (pdrH.Status != PromptStatus.OK) return;
+            double colH = pdrH.Value;
+
+            // 2. Quét chọn các đường trục (hoặc nhấn Enter để tự động chọn lớp A-GRID-AXIS)
+            PromptSelectionOptions pso = new PromptSelectionOptions
+            {
+                MessageForAdding = "\n👉 Quét chọn các đường trục (Hoặc Enter để tự động quét toàn bộ layer 'A-GRID-AXIS'): "
+            };
+
+            TypedValue[] filter = new TypedValue[]
+            {
+                new TypedValue((int)DxfCode.Operator, "<OR"),
+                new TypedValue((int)DxfCode.Start, "LINE"),
+                new TypedValue((int)DxfCode.Start, "LWPOLYLINE"),
+                new TypedValue((int)DxfCode.Operator, "OR>")
+            };
+
+            PromptSelectionResult psr = ed.GetSelection(pso, new SelectionFilter(filter));
+            List<Line> axisLines = new List<Line>();
+
+            using (doc.LockDocument())
+            using (Transaction tr = db.TransactionManager.StartTransaction())
+            {
+                BlockTable bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForRead);
+                BlockTableRecord btr = (BlockTableRecord)tr.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForWrite);
+
+                if (psr.Status == PromptStatus.OK && psr.Value != null && psr.Value.Count > 0)
+                {
+                    foreach (SelectedObject so in psr.Value)
+                    {
+                        if (so == null) continue;
+                        Line l = tr.GetObject(so.ObjectId, OpenMode.ForRead) as Line;
+                        if (l != null) axisLines.Add(l);
+                    }
+                }
+                else
+                {
+                    // Tự động quét từ ModelSpace trên layer chứa chữ GRID hoặc TRUC
+                    foreach (ObjectId id in btr)
+                    {
+                        Entity ent = tr.GetObject(id, OpenMode.ForRead) as Entity;
+                        if (ent is Line line && (ent.Layer.IndexOf("GRID", StringComparison.OrdinalIgnoreCase) >= 0 || ent.Layer.IndexOf("TRUC", StringComparison.OrdinalIgnoreCase) >= 0))
+                        {
+                            axisLines.Add(line);
+                        }
+                    }
+                }
+
+                if (axisLines.Count < 2)
+                {
+                    ed.WriteMessage("\n⚠️ Không tìm thấy đủ ít nhất 2 đường trục để tính giao điểm!\n");
+                    tr.Commit();
+                    return;
+                }
+
+                // 3. Tính toán các điểm giao nhau
+                var interPoints = new Point3dCollection();
+                for (int i = 0; i < axisLines.Count; i++)
+                {
+                    for (int j = i + 1; j < axisLines.Count; j++)
+                    {
+                        axisLines[i].IntersectWith(axisLines[j], Intersect.OnBothOperands, interPoints, IntPtr.Zero, IntPtr.Zero);
+                    }
+                }
+
+                // Khử trùng lặp giao điểm
+                List<Point3d> uniquePts = new List<Point3d>();
+                foreach (Point3d pt in interPoints)
+                {
+                    bool dup = false;
+                    foreach (Point3d u in uniquePts)
+                    {
+                        if (pt.DistanceTo(u) < 10.0) { dup = true; break; }
+                    }
+                    if (!dup) uniquePts.Add(pt);
+                }
+
+                if (uniquePts.Count == 0)
+                {
+                    ed.WriteMessage("\n⚠️ Không tìm thấy giao điểm cắt nhau giữa các trục được chọn!\n");
+                    tr.Commit();
+                    return;
+                }
+
+                ObjectId colLayer = CadUtils.GetOrCreateLayer(db, "A-COLS", 1, LineWeight.LineWeight050);
+                ObjectId hatchLayer = CadUtils.GetOrCreateLayer(db, "A-COLS-HATCH", 8, LineWeight.LineWeight015);
+
+                double halfW = colW / 2.0;
+                double halfH = colH / 2.0;
+                int colsPlaced = 0;
+
+                foreach (Point3d center in uniquePts)
+                {
+                    Polyline colRect = new Polyline(4);
+                    colRect.AddVertexAt(0, new Point2d(center.X - halfW, center.Y - halfH), 0, 0, 0);
+                    colRect.AddVertexAt(1, new Point2d(center.X + halfW, center.Y - halfH), 0, 0, 0);
+                    colRect.AddVertexAt(2, new Point2d(center.X + halfW, center.Y + halfH), 0, 0, 0);
+                    colRect.AddVertexAt(3, new Point2d(center.X - halfW, center.Y + halfH), 0, 0, 0);
+                    colRect.Closed = true;
+                    colRect.LayerId = colLayer;
+
+                    ObjectId rectId = btr.AppendEntity(colRect);
+                    tr.AddNewlyCreatedDBObject(colRect, true);
+
+                    // Hatch đặc (SOLID) cho cột BTCT
+                    try
+                    {
+                        Hatch hatch = new Hatch();
+                        hatch.LayerId = hatchLayer;
+                        hatch.SetHatchPattern(HatchPatternType.PreDefined, "SOLID");
+                        btr.AppendEntity(hatch);
+                        tr.AddNewlyCreatedDBObject(hatch, true);
+
+                        ObjectIdCollection loopIds = new ObjectIdCollection { rectId };
+                        hatch.AppendLoop(HatchLoopTypes.Outermost, loopIds);
+                        hatch.EvaluateHatch(true);
+                    }
+                    catch { }
+
+                    colsPlaced++;
+                }
+
+                tr.Commit();
+                ed.Regen();
+                ed.WriteMessage($"\n✅ [DTT CỘT BTCT] Đã sinh thành công {colsPlaced} cột ({colW:0.##} x {colH:0.##} mm) tại các giao điểm lưới trục!\n");
+            }
+        }
+
+        // ============================================================
+        // LỆNH TỰ ĐỘNG SINH TƯỜNG ĐÔI 110/220MM TỪ TIM TRỤC / POLYLINE
+        // ============================================================
+
+        [CommandMethod("DTT_WALL_AUTO")]
+        [CommandMethod("DTT_WALL_AXIS")]
+        public static void CmdWallFromAxis()
+        {
+            Document doc = Application.DocumentManager.MdiActiveDocument;
+            if (doc == null) return;
+            Database db = doc.Database;
+            Editor ed = doc.Editor;
+
+            CadUtils.FocusDwgView();
+
+            PromptDoubleOptions pdo = new PromptDoubleOptions("\n👉 [DTT TƯỜNG TỰ ĐỘNG] Nhập bề dày tường hoàn thiện (mm) [110 / 220]: ")
+            {
+                DefaultValue = 220.0
+            };
+            PromptDoubleResult pdr = ed.GetDouble(pdo);
+            if (pdr.Status != PromptStatus.OK) return;
+            double thickness = pdr.Value;
+            double halfThick = thickness / 2.0;
+
+            PromptSelectionOptions pso = new PromptSelectionOptions
+            {
+                MessageForAdding = $"\n👉 Quét chọn các đường tim tường/trục (để tạo tường đôi dày {thickness:0.##}mm): "
+            };
+
+            TypedValue[] filter = new TypedValue[]
+            {
+                new TypedValue((int)DxfCode.Operator, "<OR"),
+                new TypedValue((int)DxfCode.Start, "LINE"),
+                new TypedValue((int)DxfCode.Start, "LWPOLYLINE"),
+                new TypedValue((int)DxfCode.Start, "POLYLINE"),
+                new TypedValue((int)DxfCode.Start, "ARC"),
+                new TypedValue((int)DxfCode.Operator, "OR>")
+            };
+
+            PromptSelectionResult psr = ed.GetSelection(pso, new SelectionFilter(filter));
+            if (psr.Status != PromptStatus.OK || psr.Value == null || psr.Value.Count == 0) return;
+
+            int wallLines = 0;
+            using (doc.LockDocument())
+            using (Transaction tr = db.TransactionManager.StartTransaction())
+            {
+                ObjectId wallLayer = CadUtils.GetOrCreateLayer(db, "A-WALL", 2, LineWeight.LineWeight035);
+                BlockTable bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForRead);
+                BlockTableRecord btr = (BlockTableRecord)tr.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForWrite);
+
+                foreach (SelectedObject so in psr.Value)
+                {
+                    if (so == null) continue;
+                    Curve c = tr.GetObject(so.ObjectId, OpenMode.ForRead) as Curve;
+                    if (c == null) continue;
+
+                    try
+                    {
+                        var left = c.GetOffsetCurves(halfThick);
+                        if (left != null)
+                        {
+                            foreach (DBObject obj in left)
+                            {
+                                if (obj is Entity ent)
+                                {
+                                    ent.LayerId = wallLayer;
+                                    btr.AppendEntity(ent);
+                                    tr.AddNewlyCreatedDBObject(ent, true);
+                                    wallLines++;
+                                }
+                            }
+                        }
+
+                        var right = c.GetOffsetCurves(-halfThick);
+                        if (right != null)
+                        {
+                            foreach (DBObject obj in right)
+                            {
+                                if (obj is Entity ent)
+                                {
+                                    ent.LayerId = wallLayer;
+                                    btr.AppendEntity(ent);
+                                    tr.AddNewlyCreatedDBObject(ent, true);
+                                    wallLines++;
+                                }
+                            }
+                        }
+                    }
+                    catch { }
+                }
+
+                tr.Commit();
+                ed.Regen();
+                ed.WriteMessage($"\n✅ [DTT TƯỜNG ĐÔI] Đã sinh thành công {wallLines} nét tường (Bề dày {thickness:0.##}mm, Layer: A-WALL)!\n");
+            }
+        }
+
+        #endregion
     }
 }

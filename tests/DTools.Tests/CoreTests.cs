@@ -298,5 +298,92 @@ namespace DTools.Tests
         }
 
         #endregion
+
+        #region 8. Unit Tests Xử Lý Chuỗi Tiếng Việt & Giao Điểm Hình Học
+
+        [TestMethod]
+        public void StringUtils_RemoveDiacritics_ShouldRemoveVietnameseAccents()
+        {
+            Assert.AreEqual("Cau Thang Phong Thuy", StringUtils.RemoveDiacritics("Cầu Thang Phong Thủy"));
+            Assert.AreEqual("Tu Dien Phan Phoi", StringUtils.RemoveDiacritics("Tủ Điện Phân Phối"));
+            Assert.AreEqual("Den LED Chieu Sang", StringUtils.RemoveDiacritics("Đèn LED Chiếu Sáng"));
+            Assert.AreEqual("Cot Be Tong Cot Thep", StringUtils.RemoveDiacritics("Cột Bê Tông Cốt Thép"));
+        }
+
+        [TestMethod]
+        public void StringUtils_ContainsUnaccented_ShouldMatchRegardlessOfAccents()
+        {
+            Assert.IsTrue(StringUtils.ContainsUnaccented("Vẽ Cầu Thang Chuẩn Phong Thủy", "cau thang"));
+            Assert.IsTrue(StringUtils.ContainsUnaccented("Bộ Thiết Kế Tủ Điện Vạn Năng", "tu dien"));
+            Assert.IsTrue(StringUtils.ContainsUnaccented("Đặt Cột BTCT Tại Giao Điểm Trục", "cot"));
+            Assert.IsTrue(StringUtils.ContainsUnaccented("Đánh Số Dây Tự Động L1-L2-L3-N-PE", "day"));
+            Assert.IsFalse(StringUtils.ContainsUnaccented("Mặt Bằng Nhà Kiến Trúc", "tu dien"));
+        }
+
+        [TestMethod]
+        public void Line2D_IntersectWith_ShouldCalculateIntersectionAccurately()
+        {
+            var lineA = new Line2D(new Point2D(0, 50), new Point2D(100, 50)); // Ngang Y=50
+            var lineB = new Line2D(new Point2D(50, 0), new Point2D(50, 100)); // Dọc X=50
+
+            var inter = lineA.IntersectWith(lineB);
+            Assert.IsNotNull(inter);
+            Assert.AreEqual(50.0, inter.Value.X, 1e-4);
+            Assert.AreEqual(50.0, inter.Value.Y, 1e-4);
+
+            // Hai đường song song
+            var lineC = new Line2D(new Point2D(0, 60), new Point2D(100, 60));
+            Assert.IsNull(lineA.IntersectWith(lineC));
+        }
+
+        [TestMethod]
+        public void DeduplicatePoints_ShouldRemoveCloseIntersections()
+        {
+            var pts = new[]
+            {
+                new Point2D(100.0, 100.0),
+                new Point2D(100.2, 100.1),
+                new Point2D(200.0, 200.0),
+                new Point2D(100.1, 99.9)
+            };
+
+            var unique = Line2D.DeduplicatePoints(pts, tolerance: 2.0);
+            Assert.AreEqual(2, unique.Count, "Chỉ còn 2 cụm điểm duy nhất: (100, 100) và (200, 200)");
+        }
+
+        #endregion
+
+        #region 9. Unit Tests Chuẩn Hóa Dynamic Blocks Kiến Trúc & Kết Cấu
+
+        [TestMethod]
+        public void DynamicBlockUtils_FormatDoorTag_ShouldFormatStandardDimensions()
+        {
+            Assert.AreEqual("D (800x2100)", DynamicBlockUtils.FormatDoorTag(800, 2100));
+            Assert.AreEqual("D (900x2200)", DynamicBlockUtils.FormatDoorTag(900, 2200));
+            Assert.AreEqual("D (1200x2200)", DynamicBlockUtils.FormatDoorTag(1200));
+            Assert.IsTrue(DynamicBlockUtils.IsValidDoorWidth(900));
+            Assert.IsFalse(DynamicBlockUtils.IsValidDoorWidth(100));
+        }
+
+        [TestMethod]
+        public void DynamicBlockUtils_FormatColumnTag_ShouldFormatStandardSections()
+        {
+            Assert.AreEqual("C200x200", DynamicBlockUtils.FormatColumnTag(200, 200));
+            Assert.AreEqual("C220x220", DynamicBlockUtils.FormatColumnTag(220, 220));
+            Assert.AreEqual("C300x300", DynamicBlockUtils.FormatColumnTag(300, 300));
+            Assert.IsTrue(DynamicBlockUtils.IsValidColumnSize(220));
+            Assert.IsFalse(DynamicBlockUtils.IsValidColumnSize(50));
+        }
+
+        [TestMethod]
+        public void DynamicBlockUtils_FormatElevationTag_ShouldIncludeSignAndPrecision()
+        {
+            Assert.AreEqual("+0.000", DynamicBlockUtils.FormatElevationTag(0.0));
+            Assert.AreEqual("+3.600", DynamicBlockUtils.FormatElevationTag(3.6));
+            Assert.AreEqual("+7.200", DynamicBlockUtils.FormatElevationTag(7.2));
+            Assert.AreEqual("-0.450", DynamicBlockUtils.FormatElevationTag(-0.45));
+        }
+
+        #endregion
     }
 }

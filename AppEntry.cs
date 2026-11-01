@@ -156,6 +156,8 @@ namespace DTT_AutoCAD_Plugin
                 ed.WriteMessage("\n📌 Gõ lệnh 'DTT' hoặc 'DTOOLS' để BẬT / TẮT Palette công cụ.");
                 ed.WriteMessage("\n🌟 MENU POPUP TRUNG TÂM 2D/3D: 'DT_MODAL' / 'DT_CENTER_MODAL' / 'DT_POPUP'");
                 ed.WriteMessage("\n📦 THƯ VIỆN DYNAMIC BLOCKS: 'DT_INSERTBLOCK' | CỬA: 'DT_DOOR' | CỘT: 'DT_COLUMN'");
+                ed.WriteMessage("\n🏛️ LƯỚI TRỤC & CỘT TỰ ĐỘNG: 'DTT_GRID_SYSTEM' | 'DTT_COLUMN_GRID' | 'DTT_WALL_AUTO'");
+                ed.WriteMessage("\n↔️ VẼ & HIỆU CHỈNH 2D: 'DTT_QUICK_OFFSET' | 'DTT_FILLET_ALL' | ĐO: 'DTT_TLEN'");
                 ed.WriteMessage("\n🔧 BẢO DƯỠNG BẢN VẼ: 'DT_CLEAN' | FONT: 'DTT_FIXFONT' | PHẲNG HÓA: 'DTT_FLATTEN'");
                 ed.WriteMessage("\n⚡ NẠP MENU YQARCH: 'DTT_LOAD_YQ' / 'YQ_RELOAD'");
                 ed.WriteMessage("\n=======================================================\n");

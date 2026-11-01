@@ -57,13 +57,23 @@ namespace DTT_AutoCAD_Plugin.UI
                 string cmdTag = btn.Tag.ToString().Trim();
                 if (string.IsNullOrWhiteSpace(cmdTag)) return;
 
-                // 1. Phân định rõ ràng: CHỈ mở Center Modal 2D/3D khi người dùng bấm nút mở KHO THƯ VIỆN DYNAMIC BLOCKS
-                // Tránh việc bấm chức năng bảo dưỡng hay lệnh vẽ mà cũng hiện menu gây đơ AutoCAD
-                bool isBlockLibraryModal = cmdTag == "DT_INSERTBLOCK" || 
-                                           cmdTag == "DTT_INSERTBLOCK" || 
-                                           cmdTag == "DT_BLOCK" || 
-                                           cmdTag == "DTT_BLOCK" || 
-                                           cmdTag == "DT_MODAL" || 
+                // 1. Phân định rõ ràng: Mở Menu Nhỏ Chèn Dynamic Blocks khi bấm DT_INSERTBLOCK
+                bool isDynamicBlockMenu = cmdTag == "DT_INSERTBLOCK" || 
+                                          cmdTag == "DTT_INSERTBLOCK" || 
+                                          cmdTag == "DT_BLOCK" || 
+                                          cmdTag == "DTT_BLOCK" ||
+                                          cmdTag == "DT_DYNAMIC_MENU" ||
+                                          cmdTag == "DTT_DYNAMIC_MENU";
+
+                if (isDynamicBlockMenu)
+                {
+                    DTT_QuickMenuDialog.ShowDynamicBlockMenu();
+                    TxtStatus.Text = "📦 Đã mở Menu Nhỏ Chèn Dynamic Blocks";
+                    return;
+                }
+
+                // Mở Center Modal 3D khi người dùng bấm các lệnh 3D Modal chuyên biệt
+                bool isBlockLibraryModal = cmdTag == "DT_MODAL" || 
                                            cmdTag == "DTT_MODAL" || 
                                            cmdTag == "DT_CENTER_MODAL" || 
                                            cmdTag == "DT_POPUP" || 
@@ -136,6 +146,45 @@ namespace DTT_AutoCAD_Plugin.UI
                     case "DTT_WIN_MENU":
                         ArchitectureTools.CmdShowWindowMenu();
                         TxtStatus.Text = "🪟 Đã mở Menu Chọn Loại Cửa Sổ";
+                        return;
+
+                    case "DTT_COLUMN_GRID":
+                    case "DTT_COL_GRID":
+                        ArchitectureTools.CmdColumnAtGridIntersections();
+                        TxtStatus.Text = "🏛️ Đã kích hoạt Đặt Cột BTCT Tại Giao Điểm Trục";
+                        return;
+
+                    case "DTT_WALL_AUTO":
+                    case "DTT_WALL_AXIS":
+                        ArchitectureTools.CmdWallFromAxis();
+                        TxtStatus.Text = "🧱 Đã kích hoạt Tự Động Sinh Tường Đôi 110/220mm";
+                        return;
+
+                    case "DTT_QUICK_OFFSET":
+                    case "DTT_QOFFSET":
+                        SuperUtilityTools.CmdQuickDualOffset();
+                        TxtStatus.Text = "↔️ Đã kích hoạt Offset Song Song 2 Phía";
+                        return;
+
+                    case "DTT_FILLET_ALL":
+                    case "DTT_FALL":
+                        SuperUtilityTools.CmdFilletAllPolyline();
+                        TxtStatus.Text = "🔄 Đã kích hoạt Bo Toàn Bộ Góc Polyline";
+                        return;
+
+                    case "DTT_SMART_WIRENUM":
+                        ElectricalTools.CmdSmartWireNumbering();
+                        TxtStatus.Text = "🔢 Đã mở Bộ Đánh Số Dây Tự Động L1-L2-L3-N-PE";
+                        return;
+
+                    case "DTT_ELEC_DRC":
+                        ElectricalTools.CmdElectricalDRC();
+                        TxtStatus.Text = "🛡️ Đang chạy Kiểm Tra Xung Đột & DRC Mạch Điện";
+                        return;
+
+                    case "DTT_CROSS_REF":
+                        ElectricalTools.CmdRelayCrossRef();
+                        TxtStatus.Text = "🔗 Đang tạo Bảng Tham Chiếu Chéo Rơ-le";
                         return;
 
                     case "DTT_STRUCT_MENU":
@@ -337,14 +386,24 @@ namespace DTT_AutoCAD_Plugin.UI
         }
 
         /// <summary>
-        /// TÌM KIẾM NHANH (LIVE SEARCH): Gõ đến đâu lọc nút lệnh đến đó
+        /// TÌM KIẾM NHANH (LIVE SEARCH): Hỗ trợ tiếng Việt không dấu (cau thang -> Cầu thang, tu dien -> Tủ điện...)
         /// </summary>
         private void TxtSearch_TextChanged(object sender, TextChangedEventArgs e)
         {
-            string query = TxtSearch.Text.Trim().ToLower();
+            string query = TxtSearch.Text.Trim();
+            if (BtnClearSearch != null)
+            {
+                BtnClearSearch.Visibility = string.IsNullOrEmpty(query) ? Visibility.Collapsed : Visibility.Visible;
+            }
             _currentSymbolKeyword = query;
             LoadSymbolsGrid();
             ApplySearchFilter(query);
+        }
+
+        private void BtnClearSearch_Click(object sender, RoutedEventArgs e)
+        {
+            TxtSearch.Text = "";
+            TxtSearch.Focus();
         }
 
         private void ApplySearchFilter(string query)
@@ -374,9 +433,9 @@ namespace DTT_AutoCAD_Plugin.UI
                     string btnTag = btn.Tag?.ToString() ?? "";
                     string btnTip = btn.ToolTip?.ToString() ?? "";
 
-                    bool isMatch = btnContent.ToLower().Contains(query) ||
-                                  btnTag.ToLower().Contains(query) ||
-                                  btnTip.ToLower().Contains(query);
+                    bool isMatch = DTools.Core.StringUtils.ContainsUnaccented(btnContent, query) ||
+                                  DTools.Core.StringUtils.ContainsUnaccented(btnTag, query) ||
+                                  DTools.Core.StringUtils.ContainsUnaccented(btnTip, query);
 
                     btn.Visibility = isMatch ? Visibility.Visible : Visibility.Collapsed;
                     if (isMatch)
@@ -887,21 +946,20 @@ namespace DTT_AutoCAD_Plugin.UI
             _isInsertingSymbol = true;
             try
             {
-                bool isCont = ChkContinuousInsert != null && ChkContinuousInsert.IsChecked == true;
+                // Bắt buộc chế độ chèn đúng 1 ký hiệu theo yêu cầu người dùng
+                bool isCont = false;
                 ElectricalPlacementContext.TargetSymbol = sym;
                 ElectricalPlacementContext.Scale = 1.0;
                 ElectricalPlacementContext.Rotation = 0.0;
-                ElectricalPlacementContext.IsContinuous = isCont;
+                ElectricalPlacementContext.IsContinuous = false;
 
-                TxtStatus.Text = isCont
-                    ? $"👉 [Chèn liên tục] Click các vị trí đặt [{sym.NameVi}]... (Enter/Esc kết thúc)"
-                    : $"👉 [Chèn 1 điểm] Click chọn vị trí đặt ký hiệu [{sym.NameVi}]...";
+                TxtStatus.Text = $"👉 [Chèn 1 điểm] Click chọn vị trí đặt ký hiệu [{sym.NameVi}]...";
 
                 CadUtils.FocusDwgView();
 
                 using (DocumentLock docLock = doc.LockDocument())
                 {
-                    ElectricalSymbolsManager.InsertSymbolInteractive(doc, sym, 1.0, 0.0, isCont);
+                    ElectricalSymbolsManager.InsertSymbolInteractive(doc, sym, 1.0, 0.0, false);
                 }
             }
             catch (System.Exception ex)

@@ -52,6 +52,7 @@ namespace DTT_AutoCAD_Plugin.UI
                       "#06b6d4", "#001d24", () => ShowMepMenu(), dlg);
 
             AddSectionLabel(panel, "🔧 TIỆN ÍCH BẢN VẼ & HỆ THỐNG:");
+            AddVipButton(panel, "📦 Menu Nhỏ Dynamic Blocks (DT_INSERTBLOCK)", () => ShowDynamicBlockMenu(), dlg);
             AddButton(panel, "📦 Menu Popup 2D/3D Dynamic Blocks (DT_MODAL)",
                       "#8b5cf6", "#1c0b3b", () => RunCmd("DT_MODAL"), dlg);
             AddButton(panel, "🔤 Chuẩn Hóa Font Tiếng Việt Hết Lỗi '?' (DTT_FIXFONT)",
@@ -584,6 +585,141 @@ namespace DTT_AutoCAD_Plugin.UI
                 InsertSymbolDirectly(sym);
             }
             catch { }
+        }
+
+        /// <summary>
+        /// Hiển thị Menu Nhỏ Chèn Dynamic Blocks Nội Bộ Thư Viện DTools Pro
+        /// Lệnh: DT_INSERTBLOCK / DTT_INSERTBLOCK / DT_DYNAMIC_MENU
+        /// </summary>
+        public static void ShowDynamicBlockMenu()
+        {
+            var dlg = new DTT_QuickMenuDialog();
+            dlg.TxtDialogIcon.Text = "📦";
+            dlg.TxtDialogTitle.Text = "CHÈN DYNAMIC BLOCKS NỘI BỘ";
+            dlg.TxtDialogSubtitle.Text = "Chọn Cấu Kiện Động • Tùy Biến Kích Thước • Chèn 1 Điểm Ra CAD";
+
+            var panel = dlg.ContentPanel;
+
+            // 1. CỬA ĐI ĐỘNG
+            AddSectionLabel(panel, "🚪 CỬA ĐI ĐỘNG (ARCHITECTURAL_DOORS):");
+            AddButton(panel, "🚪 Cửa Đi D800x2200 (Phòng Ngủ)",
+                      "#0284C7", "#F0F9FF",
+                      () => InsertDynamicBlockDirectly("Architectural_Doors", 800, 2200, false, null, dlg), dlg);
+            AddButton(panel, "🚪 Cửa Đi D900x2200 (Cửa Chính / Thông Phòng)",
+                      "#0284C7", "#F0F9FF",
+                      () => InsertDynamicBlockDirectly("Architectural_Doors", 900, 2200, false, null, dlg), dlg);
+            AddButton(panel, "🚪 Cửa Đi D1000x2200 (Cửa Đại Tiêu Chuẩn)",
+                      "#0284C7", "#F0F9FF",
+                      () => InsertDynamicBlockDirectly("Architectural_Doors", 1000, 2200, false, null, dlg), dlg);
+            AddButton(panel, "🚪 Cửa Đi D1200x2200 (Cửa Đại 2 Cánh Rộng)",
+                      "#0284C7", "#F0F9FF",
+                      () => InsertDynamicBlockDirectly("Architectural_Doors", 1200, 2200, false, null, dlg), dlg);
+            AddButton(panel, "🔄 Cửa Đi D900x2200 [LẬT HƯỚNG FLIP]",
+                      "#0369A1", "#E0F2FE",
+                      () => InsertDynamicBlockDirectly("Architectural_Doors", 900, 2200, true, null, dlg), dlg);
+
+            // 2. CỘT KIẾN TRÚC & KẾT CẤU
+            AddSectionLabel(panel, "🏛️ CỘT KIẾN TRÚC & KẾT CẤU (ARCHITECTURAL_COLUMNS):");
+            AddButton(panel, "🏛️ Cột Vuông C200x200 mm (Cột Nhỏ / Tường 100)",
+                      "#7C3AED", "#FAF5FF",
+                      () => InsertDynamicBlockDirectly("Architectural_Columns", 200, 200, false, null, dlg), dlg);
+            AddButton(panel, "🏛️ Cột Vuông C220x220 mm (Chuẩn Tường Gạch 220)",
+                      "#7C3AED", "#FAF5FF",
+                      () => InsertDynamicBlockDirectly("Architectural_Columns", 220, 220, false, null, dlg), dlg);
+            AddButton(panel, "🏛️ Cột Vuông C250x250 mm (Cột Nhà 3-4 Tầng)",
+                      "#7C3AED", "#FAF5FF",
+                      () => InsertDynamicBlockDirectly("Architectural_Columns", 250, 250, false, null, dlg), dlg);
+            AddButton(panel, "🏛️ Cột Vuông C300x300 mm (Cột Trục Trọng Yếu)",
+                      "#7C3AED", "#FAF5FF",
+                      () => InsertDynamicBlockDirectly("Architectural_Columns", 300, 300, false, null, dlg), dlg);
+            AddButton(panel, "🏛️ Cột Vuông C400x400 mm (Cột Chịu Lực Lớn)",
+                      "#7C3AED", "#FAF5FF",
+                      () => InsertDynamicBlockDirectly("Architectural_Columns", 400, 400, false, null, dlg), dlg);
+
+            // 3. CAO ĐỘ KIẾN TRÚC
+            AddSectionLabel(panel, "📐 CAO ĐỘ KIẾN TRÚC (ANNOTATIONS):");
+            AddButton(panel, "📐 Cao Độ Sàn Tầng 1: +0.000",
+                      "#B45309", "#FFFBEB",
+                      () => InsertDynamicBlockDirectly("Annotations", 0, 0, false, "+0.000", dlg), dlg);
+            AddButton(panel, "📐 Cao Độ Sàn Tầng 2: +3.600",
+                      "#B45309", "#FFFBEB",
+                      () => InsertDynamicBlockDirectly("Annotations", 0, 0, false, "+3.600", dlg), dlg);
+            AddButton(panel, "📐 Cao Độ Sàn Tầng 3: +7.200",
+                      "#B45309", "#FFFBEB",
+                      () => InsertDynamicBlockDirectly("Annotations", 0, 0, false, "+7.200", dlg), dlg);
+            AddButton(panel, "📐 Cao Độ Cốt Âm Sân/Móng: -0.450",
+                      "#B45309", "#FFFBEB",
+                      () => InsertDynamicBlockDirectly("Annotations", 0, 0, false, "-0.450", dlg), dlg);
+
+            // 4. DANH SÁCH FILE BLOCK TRONG THƯ MỤC BLOCKS
+            try
+            {
+                var otherBlocks = Common.DtoolsBlockService.GetAvailableBlockNames();
+                if (otherBlocks != null && otherBlocks.Count > 0)
+                {
+                    var filtered = otherBlocks.FindAll(b =>
+                        !b.Equals("Architectural_Doors", StringComparison.OrdinalIgnoreCase) &&
+                        !b.Equals("Architectural_Columns", StringComparison.OrdinalIgnoreCase) &&
+                        !b.Equals("Annotations", StringComparison.OrdinalIgnoreCase));
+
+                    if (filtered.Count > 0)
+                    {
+                        AddSectionLabel(panel, "📦 BLOCK KHÁC TRONG KHO (BLOCKS/):");
+                        foreach (var blk in filtered)
+                        {
+                            string localName = blk;
+                            AddButton(panel, $"📦 Block: {localName}", "#059669", "#ECFDF5",
+                                      () => InsertDynamicBlockDirectly(localName, 0, 0, false, null, dlg), dlg);
+                        }
+                    }
+                }
+            }
+            catch { }
+
+            // 5. TIỆN ÍCH DYNAMIC BLOCKS
+            AddSectionLabel(panel, "🔧 TIỆN ÍCH DYNAMIC BLOCKS:");
+            AddButton(panel, "🔍 Xem Thuộc Tính Dynamic Block (DT_PROPS)",
+                      "#64748B", "#F1F5F9", () => RunCmd("DT_DYNAMIC_PROPS"), dlg);
+            AddButton(panel, "📂 Mở Thư Mục Kho Blocks (DT_OPENBLOCKS)",
+                      "#64748B", "#F1F5F9", () => RunCmd("DT_OPENBLOCKS"), dlg);
+            AddButton(panel, "🌐 Mở Menu Popup 3D Mở Rộng (DT_MODAL)",
+                      "#8B5CF6", "#FAF5FF", () => RunCmd("DT_MODAL"), dlg);
+
+            dlg.ShowDialog();
+        }
+
+        private static void InsertDynamicBlockDirectly(string blockName, double width, double height, bool flip, string elevText, DTT_QuickMenuDialog dlg)
+        {
+            try
+            {
+                if (dlg != null) dlg.Close();
+
+                var doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+                if (doc == null)
+                {
+                    MessageBox.Show("Không tìm thấy bản vẽ AutoCAD đang mở. Vui lòng mở hoặc tạo bản vẽ trước.", "DTools Cảnh Báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                BlockPlacementContext.TargetBlockName = blockName;
+                BlockPlacementContext.Width = width;
+                BlockPlacementContext.Height = height;
+                BlockPlacementContext.Flip = flip;
+                BlockPlacementContext.ElevationText = !string.IsNullOrEmpty(elevText) ? elevText : "+0.000";
+
+                if (blockName.IndexOf("Door", StringComparison.OrdinalIgnoreCase) >= 0)
+                    BlockPlacementContext.TagText = $"D ({width}x2200)";
+                else if (blockName.IndexOf("Column", StringComparison.OrdinalIgnoreCase) >= 0)
+                    BlockPlacementContext.TagText = $"C{width}x{height}";
+
+                Common.CadUtils.FocusDwgView();
+                DTT_DynamicBlockCommands.CmdFastPlace();
+            }
+            catch (Exception ex)
+            {
+                var ed = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument?.Editor;
+                ed?.WriteMessage($"\n❌ [DTools Lỗi] Chèn Dynamic Block thất bại: {ex.Message}\n");
+            }
         }
 
         // ============================================================

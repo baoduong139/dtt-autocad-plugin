@@ -294,5 +294,160 @@ namespace DTT_AutoCAD_Plugin.Modules
                 doc?.Editor.WriteMessage("\n[DTT LỖI] Không thể đổi màu nền: " + ex.Message + "\n");
             }
         }
+
+        #region Fast Drafting: Quick Offset & Fillet All
+
+        [CommandMethod("DTT_QUICK_OFFSET")]
+        [CommandMethod("DTT_QOFFSET")]
+        public static void CmdQuickDualOffset()
+        {
+            Document doc = Application.DocumentManager.MdiActiveDocument;
+            if (doc == null) return;
+            Database db = doc.Database;
+            Editor ed = doc.Editor;
+
+            CadUtils.FocusDwgView();
+
+            PromptDoubleOptions pdo = new PromptDoubleOptions("\n👉 [DTT QUICK OFFSET] Nhập khoảng cách offset mỗi bên (mm): ")
+            {
+                DefaultValue = 110.0,
+                AllowZero = false,
+                AllowNegative = false
+            };
+            PromptDoubleResult pdr = ed.GetDouble(pdo);
+            if (pdr.Status != PromptStatus.OK) return;
+            double dist = pdr.Value;
+
+            PromptSelectionOptions pso = new PromptSelectionOptions
+            {
+                MessageForAdding = $"\n👉 [DTT QUICK OFFSET ±{dist:0.##}mm] Quét chọn các đường thẳng/đoạn cong cần offset 2 phía: "
+            };
+
+            TypedValue[] filter = new TypedValue[]
+            {
+                new TypedValue((int)DxfCode.Operator, "<OR"),
+                new TypedValue((int)DxfCode.Start, "LINE"),
+                new TypedValue((int)DxfCode.Start, "LWPOLYLINE"),
+                new TypedValue((int)DxfCode.Start, "POLYLINE"),
+                new TypedValue((int)DxfCode.Start, "ARC"),
+                new TypedValue((int)DxfCode.Start, "CIRCLE"),
+                new TypedValue((int)DxfCode.Start, "SPLINE"),
+                new TypedValue((int)DxfCode.Operator, "OR>")
+            };
+
+            PromptSelectionResult psr = ed.GetSelection(pso, new SelectionFilter(filter));
+            if (psr.Status != PromptStatus.OK || psr.Value == null || psr.Value.Count == 0) return;
+
+            int createdCount = 0;
+            using (doc.LockDocument())
+            using (Transaction tr = db.TransactionManager.StartTransaction())
+            {
+                BlockTable bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForRead);
+                BlockTableRecord btr = (BlockTableRecord)tr.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForWrite);
+
+                foreach (SelectedObject so in psr.Value)
+                {
+                    if (so == null) continue;
+                    Curve c = tr.GetObject(so.ObjectId, OpenMode.ForRead) as Curve;
+                    if (c == null) continue;
+
+                    try
+                    {
+                        // Offset +dist
+                        DBObjectCollection leftColl = c.GetOffsetCurves(dist);
+                        if (leftColl != null)
+                        {
+                            foreach (DBObject obj in leftColl)
+                            {
+                                if (obj is Entity ent)
+                                {
+                                    btr.AppendEntity(ent);
+                                    tr.AddNewlyCreatedDBObject(ent, true);
+                                    createdCount++;
+                                }
+                            }
+                        }
+
+                        // Offset -dist
+                        DBObjectCollection rightColl = c.GetOffsetCurves(-dist);
+                        if (rightColl != null)
+                        {
+                            foreach (DBObject obj in rightColl)
+                            {
+                                if (obj is Entity ent)
+                                {
+                                    btr.AppendEntity(ent);
+                                    tr.AddNewlyCreatedDBObject(ent, true);
+                                    createdCount++;
+                                }
+                            }
+                        }
+                    }
+                    catch { }
+                }
+
+                tr.Commit();
+            }
+
+            ed.Regen();
+            ed.WriteMessage($"\n✅ [DTT QUICK OFFSET] Đã hoàn thành! Tạo mới {createdCount} đường song song 2 phía (±{dist:0.##}mm).\n");
+        }
+
+        [CommandMethod("DTT_FILLET_ALL")]
+        [CommandMethod("DTT_FALL")]
+        public static void CmdFilletAllPolyline()
+        {
+            Document doc = Application.DocumentManager.MdiActiveDocument;
+            if (doc == null) return;
+            Database db = doc.Database;
+            Editor ed = doc.Editor;
+
+            CadUtils.FocusDwgView();
+
+            PromptDoubleOptions pdo = new PromptDoubleOptions("\n👉 [DTT FILLET ALL] Nhập bán kính bo tròn R (mm): ")
+            {
+                DefaultValue = 100.0,
+                AllowZero = true,
+                AllowNegative = false
+            };
+            PromptDoubleResult pdr = ed.GetDouble(pdo);
+            if (pdr.Status != PromptStatus.OK) return;
+            double radius = pdr.Value;
+
+            PromptSelectionOptions pso = new PromptSelectionOptions
+            {
+                MessageForAdding = $"\n👉 [DTT FILLET ALL R={radius:0.##}mm] Quét chọn các Polyline cần bo toàn bộ đỉnh: "
+            };
+
+            TypedValue[] filter = new TypedValue[]
+            {
+                new TypedValue((int)DxfCode.Operator, "<OR"),
+                new TypedValue((int)DxfCode.Start, "LWPOLYLINE"),
+                new TypedValue((int)DxfCode.Start, "POLYLINE"),
+                new TypedValue((int)DxfCode.Operator, "OR>")
+            };
+
+            PromptSelectionResult psr = ed.GetSelection(pso, new SelectionFilter(filter));
+            if (psr.Status != PromptStatus.OK || psr.Value == null || psr.Value.Count == 0) return;
+
+            // Thiết lập biến hệ thống FILLETRAD
+            try
+            {
+                Application.SetSystemVariable("FILLETRAD", radius);
+            }
+            catch { }
+
+            int processed = 0;
+            foreach (SelectedObject so in psr.Value)
+            {
+                if (so == null) continue;
+                doc.SendStringToExecute($"\x03\x03_FILLET _P (handent \"{so.ObjectId.Handle}\")\n", true, false, false);
+                processed++;
+            }
+
+            ed.WriteMessage($"\n✅ [DTT FILLET ALL] Đang tự động bo tròn toàn bộ đỉnh cho {processed} Polyline với bán kính R={radius:0.##}mm!\n");
+        }
+
+        #endregion
     }
 }

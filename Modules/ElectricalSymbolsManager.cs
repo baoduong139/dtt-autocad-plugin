@@ -259,7 +259,7 @@ namespace DTT_AutoCAD_Plugin.Modules
 
             double scale = ElectricalPlacementContext.Scale > 0 ? ElectricalPlacementContext.Scale : 1.0;
             double rot = ElectricalPlacementContext.Rotation;
-            bool continuous = ElectricalPlacementContext.IsContinuous;
+            bool continuous = false; // Bắt buộc chèn 1 ký hiệu duy nhất
 
             InsertSymbolInteractive(doc, sym, scale, rot, continuous);
         }
