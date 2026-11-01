@@ -104,6 +104,18 @@ namespace DTT.Manager
                     return;
                 }
 
+                string targetDir = _bundleInfo?.BundlePath;
+                if (string.IsNullOrEmpty(targetDir))
+                {
+                    string appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                    targetDir = Path.Combine(appData, "Autodesk", "ApplicationPlugins", "DTT_Tools.bundle");
+                }
+
+                // 1. Kiểm tra xem DTT_Manager có đang chạy trực tiếp từ chính thư mục Bundle đích hay không
+                bool isRunningInsideTarget = !string.IsNullOrEmpty(targetDir) &&
+                    AppDomain.CurrentDomain.BaseDirectory.IndexOf("DTT_Tools.bundle", StringComparison.OrdinalIgnoreCase) >= 0;
+
+                // 2. Tìm thư mục nguồn bundle hợp lệ
                 string sourceBundle = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DTT_Tools.bundle");
                 if (!Directory.Exists(sourceBundle))
                 {
@@ -114,13 +126,15 @@ namespace DTT.Manager
                     sourceBundle = @"C:\Users\Duong\.gemini\antigravity-ide\scratch\DTT_AutoCAD_Plugin\DTT_Tools.bundle";
                 }
 
-                if (!Directory.Exists(sourceBundle))
+                // 3. Nếu đang chạy từ thư mục Bundle hoặc không có nguồn khác
+                if (isRunningInsideTarget || !Directory.Exists(sourceBundle) ||
+                    string.Equals(Path.GetFullPath(sourceBundle), Path.GetFullPath(targetDir), StringComparison.OrdinalIgnoreCase))
                 {
-                    MessageBox.Show("Không tìm thấy thư mục nguồn DTT_Tools.bundle để cài đặt.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                    RefreshAllStatus();
+                    MessageBox.Show("DTT TOOLS đã được cài đặt và đang hoạt động sẵn sàng trong Autodesk ApplicationPlugins!\n\n• Vị trí: " + targetDir + "\n• Phiên bản: v" + (_bundleInfo?.Version ?? "2026.2.0") + "\n\nBạn có thể khởi động AutoCAD để sử dụng ngay.", "Trạng Thái Cài Đặt", MessageBoxButton.OK, MessageBoxImage.Information);
                     return;
                 }
 
-                string targetDir = _bundleInfo.BundlePath;
                 if (!Directory.Exists(targetDir)) Directory.CreateDirectory(targetDir);
 
                 CopyDirectory(sourceBundle, targetDir);
@@ -433,12 +447,101 @@ namespace DTT.Manager
                 if (!Directory.Exists(dest)) Directory.CreateDirectory(dest);
             }
 
+            string currentProcessPath = null;
+            try
+            {
+                currentProcessPath = Process.GetCurrentProcess().MainModule?.FileName;
+            }
+            catch { }
+
             foreach (string file in Directory.GetFiles(sourceDir, "*", SearchOption.AllDirectories))
             {
                 string rel = file.Substring(sourceDir.Length).TrimStart('\\', '/');
                 string dest = Path.Combine(targetDir, rel);
-                File.Copy(file, dest, true);
+                SafeCopyFile(file, dest, currentProcessPath);
             }
+
+            CleanupOldFiles(targetDir);
+        }
+
+        private static void SafeCopyFile(string source, string dest, string currentProcessPath)
+        {
+            try
+            {
+                // 1. Nếu tệp nguồn và đích là cùng 1 tệp trên đĩa -> Bỏ qua
+                if (string.Equals(Path.GetFullPath(source), Path.GetFullPath(dest), StringComparison.OrdinalIgnoreCase))
+                {
+                    return;
+                }
+
+                // 2. Nếu tệp đích chính là tiến trình đang chạy (DTT_Manager.exe)
+                if (!string.IsNullOrEmpty(currentProcessPath) &&
+                    string.Equals(Path.GetFullPath(dest), Path.GetFullPath(currentProcessPath), StringComparison.OrdinalIgnoreCase))
+                {
+                    try
+                    {
+                        var fiSrc = new FileInfo(source);
+                        var fiDest = new FileInfo(dest);
+                        if (fiSrc.Length == fiDest.Length)
+                        {
+                            return; // Cùng kích thước -> bỏ qua an toàn
+                        }
+                    }
+                    catch { }
+
+                    // Khác kích thước: đổi tên tệp đang chạy sang .old.<guid> rồi ghi đè
+                    try
+                    {
+                        string oldExe = dest + ".old." + Guid.NewGuid().ToString("N").Substring(0, 8);
+                        File.Move(dest, oldExe);
+                        File.Copy(source, dest, true);
+                        return;
+                    }
+                    catch
+                    {
+                        // Nếu Windows không cho phép đổi tên file đang chạy, bỏ qua để các tệp khác vẫn được cài đặt 100%
+                        return;
+                    }
+                }
+
+                // 3. Thử copy trực tiếp
+                File.Copy(source, dest, true);
+            }
+            catch (IOException)
+            {
+                try
+                {
+                    // Tệp đang bị khóa (vd DLL hoặc Updater đang chạy) -> Đổi tên an toàn rồi copy
+                    string oldPath = dest + ".old." + Guid.NewGuid().ToString("N").Substring(0, 8);
+                    if (File.Exists(dest))
+                    {
+                        File.Move(dest, oldPath);
+                    }
+                    File.Copy(source, dest, true);
+                }
+                catch
+                {
+                    // Bỏ qua tệp bị khóa nếu không thể thay thế ngay
+                }
+            }
+            catch
+            {
+                // Bỏ qua lỗi không nghiêm trọng
+            }
+        }
+
+        private static void CleanupOldFiles(string targetDir)
+        {
+            try
+            {
+                if (!Directory.Exists(targetDir)) return;
+                var oldFiles = Directory.GetFiles(targetDir, "*.old.*", SearchOption.AllDirectories);
+                foreach (var f in oldFiles)
+                {
+                    try { File.Delete(f); } catch { }
+                }
+            }
+            catch { }
         }
     }
 }

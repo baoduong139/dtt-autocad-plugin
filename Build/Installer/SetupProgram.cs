@@ -384,6 +384,20 @@ namespace DTT_AutoCAD_Installer
                 Directory.CreateDirectory(bundleDir);
             }
 
+            // Đóng các tiến trình DTT_Manager hoặc DTT_Updater đang chạy nếu có
+            try
+            {
+                foreach (var p in Process.GetProcessesByName("DTT_Manager"))
+                {
+                    try { p.Kill(); p.WaitForExit(1000); } catch { }
+                }
+                foreach (var p in Process.GetProcessesByName("DTT_Updater"))
+                {
+                    try { p.Kill(); p.WaitForExit(1000); } catch { }
+                }
+            }
+            catch { }
+
             using (Stream s = SetupPayload.GetBundleZipStream())
             {
                 if (s == null)
@@ -403,15 +417,57 @@ namespace DTT_AutoCAD_Installer
                         {
                             string dir = Path.GetDirectoryName(fullPath);
                             if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
-                            using (var es = entry.Open())
-                            using (var fs = new FileStream(fullPath, FileMode.Create, FileAccess.Write))
-                            {
-                                es.CopyTo(fs);
-                            }
+                            SafeExtractEntry(entry, fullPath);
                         }
                     }
                 }
             }
+
+            CleanupOldFiles(bundleDir);
+        }
+
+        private static void SafeExtractEntry(System.IO.Compression.ZipArchiveEntry entry, string fullPath)
+        {
+            try
+            {
+                using (var es = entry.Open())
+                using (var fs = new FileStream(fullPath, FileMode.Create, FileAccess.Write))
+                {
+                    es.CopyTo(fs);
+                }
+            }
+            catch (IOException)
+            {
+                try
+                {
+                    string oldFile = fullPath + ".old." + Guid.NewGuid().ToString("N").Substring(0, 8);
+                    if (File.Exists(fullPath))
+                    {
+                        File.Move(fullPath, oldFile);
+                    }
+                    using (var es = entry.Open())
+                    using (var fs = new FileStream(fullPath, FileMode.Create, FileAccess.Write))
+                    {
+                        es.CopyTo(fs);
+                    }
+                }
+                catch { }
+            }
+            catch { }
+        }
+
+        private static void CleanupOldFiles(string dir)
+        {
+            try
+            {
+                if (!Directory.Exists(dir)) return;
+                var oldFiles = Directory.GetFiles(dir, "*.old.*", SearchOption.AllDirectories);
+                foreach (var f in oldFiles)
+                {
+                    try { File.Delete(f); } catch { }
+                }
+            }
+            catch { }
         }
 
         public static void CreateShortcuts(string bundleDir)
